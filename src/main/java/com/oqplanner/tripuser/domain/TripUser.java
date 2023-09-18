@@ -13,6 +13,7 @@ import java.util.Date;
 @AllArgsConstructor
 public class TripUser {
 
+    private String tripUserNo;
     private String tripUserName;
     private String tripProjYn;
     private Date tripUserRedDt;

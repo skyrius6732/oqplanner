@@ -4,13 +4,21 @@
 
 <mapper namespace="com.oqplanner.tripuser.mapper.TripUserMapper">
     <insert id="saveUserInfo" parameterType="TripUser">
-        INSERT INTO TRIP_USER(TRIP_USER_NM, TRIP_PROJ_YN, TRIP_USER_REG_DT, TRIP_USER_MOD_DT)
-        VALUES (#{tripUserName}, #{tripProjYn}, sysdate(), sysdate())
+        INSERT INTO TRIP_USER(TRIP_USER_NO, TRIP_USER_NAME, TRIP_PROJ_YN, TRIP_USER_REG_DT, TRIP_USER_MOD_DT)
+        VALUES (#{tripUserNo}, #{tripUserName}, #{tripProjYn}, sysdate(), sysdate())
     </insert>
+
+    <delete id="removeUserInfoBytripUserNo" parameterType="java.lang.String">
+        DELETE FROM TRIP_USER
+        <where>
+            <if test='tripUserNo != null and tripUserNo != ""'>
+                AND TRIP_USER_NO = #{tripUserNo}
+            </if>
+        </where>
+    </delete>
 
     <!--<select id="getUserInfo" resultType="com.oqplanner.tripuser.domain.TripUser">
         select * from TRIP_USER
     </select>-->
-
 
 </mapper>

@@ -5,6 +5,9 @@ import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface TripUserMapper {
-    public int saveUserInfo(TripUser tripUser);
+    int saveUserInfo(TripUser tripUser);
+    int removeUserInfoBytripUserNo(String tripUserNo);
+
+
 
 }

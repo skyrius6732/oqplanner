@@ -13,7 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TripPlan {
-    private String tripPlanNo;
+    private int tripPlanNo;
     private String tripPlanNm;
     private String tripPlannerNm;
     private Date tripPlanStDt;
