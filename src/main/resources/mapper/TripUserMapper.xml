@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.oqplanner.tripuser.mapper.TripUserMapper">
+    <insert id="saveUserInfo" parameterType="TripUser">
+        INSERT INTO TRIP_USER(TRIP_USER_NM, TRIP_PROJ_YN, TRIP_USER_REG_DT, TRIP_USER_MOD_DT)
+        VALUES (#{tripUserName}, #{tripProjYn}, sysdate(), sysdate())
+    </insert>
+
+    <!--<select id="getUserInfo" resultType="com.oqplanner.tripuser.domain.TripUser">
+        select * from TRIP_USER
+    </select>-->
+
+
+</mapper>

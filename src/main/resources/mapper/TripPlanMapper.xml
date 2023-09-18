@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.oqplanner.tripplan.mapper.TripPlanMapper">
+    <insert id="savePlanInfo" parameterType="TripPlan">
+        INSERT INTO TRIP_PLAN(TRIP_PLAN_NO,
+                              TRIP_PLAN_NM,
+                              TRIP_PLANNER_NM,
+                              TRIP_PLAN_ST_DT,
+                              TRIP_PLAN_ED_DT,
+                              TRIP_PLAN_DEFAULT_YN,
+                              TRIP_PLAN_ST_TIME,
+                              TRIP_PLAN_TIME_UNIT,
+                              TRIP_PLAN_ALL_NUM,
+                              TRIP_PLAN_REG_DT,
+                              TRIP_PLAN_MOD_DT)
+        VALUES (#{tripPlanNo},
+                #{tripPlanNm},
+                #{tripPlannerNm},
+                #{tripPlanStDt},
+                #{tripPlanEdDt},
+                #{tripPlanDefaultYn},
+                #{tripPlanStTime},
+                #{tripPlanTimeUnit},
+                #{tripPlanAllNum},
+                sysdate(),
+                sysdate())
+    </insert>
+
+    <select id="getTripPlanStTimeLength" parameterType="map" resultType="map">
+        SELECT
+            CASE
+                WHEN LENGTH(#{tripPlanStTime}) = 3 THEN CONCAT('0', #{tripPlanStTime})
+                ELSE #{tripPlanStTime}
+                END AS trip_plan_st_time
+        FROM trip_plan
+    </select>
+
+    <select id="getPlanInfoList" resultType="tripPlan">
+        SELECT TRIP_PLAN_NO,
+               TRIP_PLAN_NM,
+               TRIP_PLANNER_NM,
+               TRIP_PLAN_ST_DT,
+               TRIP_PLAN_ED_DT,
+               TRIP_PLAN_DEFAULT_YN,
+               TRIP_PLAN_ST_TIME,
+               TRIP_PLAN_TIME_UNIT,
+               TRIP_PLAN_ALL_NUM,
+               TRIP_PLAN_REG_DT,
+               TRIP_PLAN_MOD_DT
+          FROM TRIP_PLAN
+          <where>
+              <if test='tripPlannerNm != null and tripPlannerNm != ""'>
+                  AND TRIP_PLANNER_NM = #{tripPlannerNm}
+              </if>
+              <if test='tripPlanNm != null and tripPlanNm != ""'>
+                  AND TRIP_PLAN_NM = #{tripPlanNm}
+              </if>
+          </where>
+--           ORDER BY TRIP_PLAN_NO
+    </select>
+
+    <delete id="removePlanInfo">
+        DELETE FROM TRIP_PLAN
+        <where>
+            <if test='tripPlannerNm != null and tripPlannerNm != ""'>
+                AND TRIP_PLANNER_NM = #{tripPlannerNm}
+            </if>
+            <if test='tripPlanNm != null and tripPlanNm != ""'>
+                AND TRIP_PLAN_NM = #{tripPlanNm}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="removePlanInfoBytripPlanNo" parameterType="java.lang.String">
+        DELETE FROM TRIP_PLAN
+        <where>
+            <if test='tripPlanNo != null and tripPlanNo != ""'>
+                AND TRIP_PLAN_NO = #{tripPlanNo}
+            </if>
+        </where>
+    </delete>
+
+
+</mapper>
