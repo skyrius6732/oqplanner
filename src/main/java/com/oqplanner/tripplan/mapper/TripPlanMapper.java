@@ -9,11 +9,11 @@ import java.util.Map;
 
 @Mapper
 public interface TripPlanMapper {
-    public int savePlanInfo(TripPlan tripPlan);
-    public List<TripPlan> getPlanInfoList(TripPlan tripPlan);
-    public Map<String,String> getTripPlanStTimeLength(TripPlan tripPlan);
-    public int removePlanInfo(TripPlan tripPlan);
+    int savePlanInfo(TripPlan tripPlan);
+    List<TripPlan> getPlanInfoList(TripPlan tripPlan);
+    Map<String,String> getTripPlanStTimeLength(TripPlan tripPlan);
+    int removePlanInfo(TripPlan tripPlan);
 
-    public int removePlanInfoBytripPlanNo(String tripPlanNo);
+    int removePlanInfoBytripPlanNo(String tripPlanNo);
 
 }
