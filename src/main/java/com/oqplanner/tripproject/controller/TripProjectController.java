@@ -1,6 +1,7 @@
 package com.oqplanner.tripproject.controller;
 
 
+import com.oqplanner.tripplan.domain.TripPlan;
 import com.oqplanner.tripproject.domain.TripProject;
 import com.oqplanner.tripproject.service.TripProjectService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,10 +12,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Tag(name="trip-project-controller",  description = "여행 일정 Controller 입니다.")
@@ -38,6 +39,23 @@ public class TripProjectController {
 
         return tripProjectService.saveProject(tripProject);
     }
+
+    @Operation(summary = "여행프로젝트 삭제", description = "여행프로젝트 삭제 메서드 입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "여행프로젝트 삭제 저장 성공", content = @Content(schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = Error.class)))
+    })
+    @DeleteMapping("/info")
+    public int removeProject(@RequestBody TripPlan tripPlan){
+
+        Map paramMap = new HashMap();
+        paramMap.put("tripPlanNo", tripPlan.getTripPlanNo());
+
+        return tripProjectService.removeProject(paramMap);
+    }
+
+
+
 
 
 

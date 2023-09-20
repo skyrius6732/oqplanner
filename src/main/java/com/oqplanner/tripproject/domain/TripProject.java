@@ -1,6 +1,7 @@
 package com.oqplanner.tripproject.domain;
 
 
+import com.oqplanner.tripplan.domain.TripPlan;
 import lombok.*;
 
 @Builder

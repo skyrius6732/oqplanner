@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -56,11 +57,22 @@ public class TripPlanService {
         return tripPlanMapper.getPlanInfoList(tripPlan);
     }
 
+    public TripPlan getPlanInfo(TripPlan tripPlan){
+        return tripPlanMapper.getPlanInfo(tripPlan);
+    }
+
     public Map<String,String> getTripPlanStTimeLength(TripPlan tripPlan){
         return tripPlanMapper.getTripPlanStTimeLength(tripPlan);
     }
 
     public int removePlanInfo(TripPlan tripPlan){
+
+        // 여행 프로젝트 데이터 삭제
+
+        Map paramMap = new HashMap();
+        paramMap.put("tripPlanNo",tripPlan.getTripPlanNo());
+        tripProjectMapper.removeProject(paramMap);
+
         return tripPlanMapper.removePlanInfo(tripPlan);
     }
     public int removePlanInfoBytripPlanNo(String tripPlanNo){

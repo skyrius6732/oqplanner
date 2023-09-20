@@ -39,15 +39,26 @@ public class TripPlanController {
         return tripPlanService.savePlanInfo(tripPlan);
     }
 
+    @Operation(summary = "여행계획 리스트 조회", description = "여행계획 리스트 조회 메서드 입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "여행계획 리스트 조회 성공", content = @Content(schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = Error.class)))
+    })
+    @GetMapping("/info/list")
+    public List<TripPlan> getPlanInfoList(@RequestBody TripPlan tripPlan) {
+        return tripPlanService.getPlanInfoList(tripPlan);
+    }
+
     @Operation(summary = "여행계획 조회", description = "여행계획 조회 메서드 입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "여행계획 조회 성공", content = @Content(schema = @Schema(implementation = User.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @GetMapping("/info")
-    public List<TripPlan> getPlanInfo(@RequestBody TripPlan tripPlan) {
-        return tripPlanService.getPlanInfoList(tripPlan);
+    public TripPlan getPlanInfo(@RequestBody TripPlan tripPlan) {
+        return tripPlanService.getPlanInfo(tripPlan);
     }
+
 
     @Operation(summary = "여행계획 삭제", description = "여행계획 삭제 메서드 입니다.")
     @ApiResponses(value = {
@@ -69,6 +80,8 @@ public class TripPlanController {
     public int removePlanInfoBytripPlanNo(@PathVariable String tripPlanNo){
         return tripPlanService.removePlanInfoBytripPlanNo(tripPlanNo);
     }
+
+
 
 
 

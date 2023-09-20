@@ -27,7 +27,7 @@ public class TripUserController {
         this.tripPlanService = tripPlanService;
     }
 
-    @Operation(summary = "여행자 저장", description = "여행자 저장 메서드 입니다.")
+    @Operation(summary = "여행유저 저장", description = "여행유저 저장 메서드 입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "사용자 정보 저장 성공", content = @Content(schema = @Schema(implementation = User.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = Error.class)))
@@ -38,6 +38,13 @@ public class TripUserController {
         return tripUserService.saveUserInfo(tripUser);
     }
 
+
+
+    @Operation(summary = "여행유저 삭제", description = "여행유저 삭제 메서드 입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "사용자 정보 저장 성공", content = @Content(schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = Error.class)))
+    })
     @DeleteMapping("/info/{tripUserNo}")
     public int removeUserInfoBytripUserNo(@PathVariable String tripUserNo){
         return tripUserService.removeUserInfoBytripUserNo(tripUserNo);

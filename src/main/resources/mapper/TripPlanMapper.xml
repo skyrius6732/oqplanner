@@ -61,9 +61,39 @@
 --           ORDER BY TRIP_PLAN_NO
     </select>
 
+    <select id="getPlanInfo" resultType="tripPlan">
+        SELECT TRIP_PLAN_NO,
+        TRIP_PLAN_NM,
+        TRIP_PLANNER_NM,
+        TRIP_PLAN_ST_DT,
+        TRIP_PLAN_ED_DT,
+        TRIP_PLAN_DEFAULT_YN,
+        TRIP_PLAN_ST_TIME,
+        TRIP_PLAN_TIME_UNIT,
+        TRIP_PLAN_ALL_NUM,
+        TRIP_PLAN_REG_DT,
+        TRIP_PLAN_MOD_DT
+        FROM TRIP_PLAN
+        <where>
+            <if test='tripPlannerNm != null and tripPlannerNm != ""'>
+                AND TRIP_PLANNER_NM = #{tripPlannerNm}
+            </if>
+            <if test='tripPlanNm != null and tripPlanNm != ""'>
+                AND TRIP_PLAN_NM = #{tripPlanNm}
+            </if>
+            <if test='tripPlanNo != null and tripPlanNo != ""'>
+                AND TRIP_PLAN_NO = #{tripPlanNo}
+            </if>
+        </where>
+        --           ORDER BY TRIP_PLAN_NO
+    </select>
+
     <delete id="removePlanInfo">
         DELETE FROM TRIP_PLAN
         <where>
+            <if test='tripPlanNo != null and tripPlanNo != ""'>
+                AND TRIP_PLAN_NO = #{tripPlanNo}
+            </if>
             <if test='tripPlannerNm != null and tripPlannerNm != ""'>
                 AND TRIP_PLANNER_NM = #{tripPlannerNm}
             </if>

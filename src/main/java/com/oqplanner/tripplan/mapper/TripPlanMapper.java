@@ -11,6 +11,7 @@ import java.util.Map;
 public interface TripPlanMapper {
     int savePlanInfo(TripPlan tripPlan);
     List<TripPlan> getPlanInfoList(TripPlan tripPlan);
+    TripPlan getPlanInfo(TripPlan tripPlan);
     Map<String,String> getTripPlanStTimeLength(TripPlan tripPlan);
     int removePlanInfo(TripPlan tripPlan);
 

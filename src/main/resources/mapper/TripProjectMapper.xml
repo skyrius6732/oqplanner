@@ -13,4 +13,16 @@
                 #{tripUserNo})
     </insert>
 
+    <delete id="removeProject" parameterType="map">
+        DELETE FROM TRIP_PROJECT
+        <where>
+            <if test='tripPlanNo != null and tripPlanNo != ""'>
+                AND TRIP_PLAN_NO = #{tripPlanNo}
+            </if>
+            <if test='tripProjectNo != null and tripProjectNo != ""'>
+                AND TRIP_PROJECT_NO = #{tripProjectNo}
+            </if>
+        </where>
+    </delete>
+
 </mapper>
