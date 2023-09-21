@@ -13,15 +13,15 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TripPlan {
-    private int tripPlanNo;
+    String tripPlanNo;
     private String tripPlanNm;
     private String tripPlannerNm;
     private Date tripPlanStDt;
     private Date tripPlanEdDt;
     private String tripPlanDefaultYn;
     private String tripPlanStTime;
-    private String tripPlanTimeUnit;
-    private String tripPlanAllNum;
+    private int tripPlanTimeUnit;
+    private int tripPlanAllNum;
     private Date tripPlanRegDt;
     private Date tripPlanModDt;
 
