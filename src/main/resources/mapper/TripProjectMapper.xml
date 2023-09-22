@@ -9,7 +9,7 @@
                                  TRIP_PLAN_NO,
                                  TRIP_USER_NO)
         VALUES (#{tripProjectNo},
-                #{tripPlanNo},
+                #{tripPlan.tripPlanNo},
                 #{tripUserNo})
     </insert>
 
@@ -24,5 +24,6 @@
             </if>
         </where>
     </delete>
+
 
 </mapper>

@@ -11,4 +11,5 @@ import java.util.Map;
 public interface TripProjectMapper {
     int saveProject(TripProject tripProject);
     int removeProject(Map paramMap);
+
 }

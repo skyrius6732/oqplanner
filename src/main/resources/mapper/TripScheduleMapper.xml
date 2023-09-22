@@ -3,6 +3,25 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.oqplanner.tripschedule.mapper.TripScheduleMapper">
+
+    <resultMap id="tripProjectMap" type="tripProject">
+        <id property="tripProjectNo" column="TRIP_PROJECT_NO"/>
+        <result property="tripUserNo" column="TRIP_USER_NO"/>
+        <association property="tripPlan" javaType="tripPlan">
+            <id property="tripPlanNo" column="TRIP_PLAN_NO"/>
+            <result property="tripPlanNm" column="TRIP_PLAN_NM"/>
+            <result property="tripPlannerNm" column="TRIP_PLANNER_NM"/>
+            <result property="tripPlanStDt" column="TRIP_PLAN_ST_DT"/>
+            <result property="tripPlanEdDt" column="TRIP_PLAN_ED_DT"/>
+            <result property="tripPlanDefaultYn" column="TRIP_PLAN_DEFAULT_YN"/>
+            <result property="tripPlanStTime" column="TRIP_PLAN_ST_TIME"/>
+            <result property="tripPlanTimeUnit" column="TRIP_PLAN_TIME_UNIT"/>
+            <result property="tripPlanAllNum" column="TRIP_PLAN_ALL_NUM"/>
+            <result property="tripPlanRegDt" column="TRIP_PLAN_REG_DT"/>
+            <result property="tripPlanModDt" column="TRIP_PLAN_NOD_DT"/>
+        </association>
+    </resultMap>
+
     <insert id="saveSchedule" parameterType="map">
         INSERT INTO TRIP_SCHEDULE(
                         TRIP_PROJECT_NO,
@@ -33,4 +52,50 @@
              sysdate())
         </foreach>
     </insert>
+
+    <select id="getScheduleList" parameterType="TripSchedule">
+        SELECT  TRIP_PROJECT_NO,
+                TRIP_SCHEDULE_ST_TIME,
+                TRIP_SCHEDULE_ED_TIME,
+                TRIP_SCHEDULE_DEPART,
+                TRIP_SCHEDULE_ARRIVE,
+                TRIP_SCHEDULE_TRANSPORT,
+                TRIP_SCHEDULE_COST,
+                TRIP_SCHEDULE_NOTE,
+                TRIP_SCHEDULE_ORDER,
+                TRIP_SCHEDULE_DAY,
+                TRIP_SCHEDULE_REG_DT,
+                TRIP_SCHEDULE_MOD_DT
+          FROM  TRIP_SCHEDULE
+        <where>
+            <if test='tripProjectNo != null and tripProjectNo != ""'>
+                AND TRIP_PROJECT_NO = #{tripProjectNo}
+            </if>
+        </where>
+    </select>
+
+    <select id="getPlanInfoBytripProjectNo" parameterType="tripProject" resultMap="tripProjectMap">
+        SELECT tproj.TRIP_PROJECT_NO,
+               tplan.TRIP_PLAN_NO,
+               tplan.TRIP_PLAN_NM,
+               tplan.TRIP_PLAN_ST_TIME,
+               tplan.TRIP_PLAN_TIME_UNIT,
+               tproj.TRIP_USER_NO
+        FROM TRIP_PLAN tplan
+                 JOIN TRIP_PROJECT tproj
+                      ON tplan.TRIP_PLAN_NO = tproj.TRIP_PLAN_NO
+        WHERE tproj.TRIP_PROJECT_NO = #{tripProjectNo}
+    </select>
+
+    <select id="getMaxTripScheduleDay" parameterType="String" resultType="int">
+        SELECT MAX(TRIP_SCHEDULE_DAY) + 1 AS TRIP_SCHEDULE_DAY
+        FROM TRIP_SCHEDULE ts
+        WHERE TRIP_PROJECT_NO =  #{tripProjectNo}
+    </select>
+
+
+
+
+
+
 </mapper>

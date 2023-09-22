@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-@Tag(name="trip-project-controller",  description = "여행 일정 Controller 입니다.")
+@Tag(name="trip-project-controller",  description = "여행 프로젝트 Controller 입니다.")
 @RestController
 @RequestMapping("/trip/project")
 public class TripProjectController {
@@ -46,10 +46,16 @@ public class TripProjectController {
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @DeleteMapping("/info")
-    public int removeProject(@RequestBody TripPlan tripPlan){
+    public int removeProject(@RequestBody TripProject tripProject){
 
+        // tripProjectNo는 세션에 저장 가정
+        // tripUserNo는 세션에 저장 가정
+        
         Map paramMap = new HashMap();
+        String tripProjectNo = tripProject.getTripProjectNo();
+        TripPlan tripPlan = tripProject.getTripPlan();
         paramMap.put("tripPlanNo", tripPlan.getTripPlanNo());
+        paramMap.put("tripProjectNo", tripProjectNo);
 
         return tripProjectService.removeProject(paramMap);
     }

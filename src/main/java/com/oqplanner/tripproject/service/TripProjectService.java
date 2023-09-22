@@ -18,12 +18,14 @@ public class TripProjectService {
     private TripProjectMapper tripProjectMapper;
 
     public int saveProject(TripProject tripProject){
-
         return tripProjectMapper.saveProject(tripProject);
     }
     public int removeProject(Map paramMap){
         return tripProjectMapper.removeProject(paramMap);
     }
+
+
+
 
 
 

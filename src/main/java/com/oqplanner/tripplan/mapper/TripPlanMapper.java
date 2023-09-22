@@ -2,6 +2,7 @@ package com.oqplanner.tripplan.mapper;
 
 
 import com.oqplanner.tripplan.domain.TripPlan;
+import com.oqplanner.tripproject.domain.TripProject;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -16,5 +17,7 @@ public interface TripPlanMapper {
     int removePlanInfo(TripPlan tripPlan);
 
     int removePlanInfoBytripPlanNo(String tripPlanNo);
+
+
 
 }

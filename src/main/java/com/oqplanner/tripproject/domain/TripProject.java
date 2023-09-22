@@ -13,7 +13,8 @@ import lombok.*;
 public class TripProject {
 
     private String tripProjectNo;
-    private String tripPlanNo;
+    private TripPlan tripPlan;
+//    private String tripPlanNo;
     private String tripUserNo;
 
 }
