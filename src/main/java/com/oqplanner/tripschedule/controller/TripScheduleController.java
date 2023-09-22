@@ -32,4 +32,9 @@ public class TripScheduleController {
     public int addSchedule (@RequestBody TripProject tripProject){
         return tripScheduleService.addSchedule(tripProject);
     }
+
+    @PutMapping("/info")
+    public int modifySchedule (@RequestBody TripSchedule tripSchedule){
+        return tripScheduleService.modifySchedule(tripSchedule);
+    }
 }

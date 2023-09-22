@@ -16,4 +16,8 @@ public interface TripScheduleMapper {
     TripProject getPlanInfoBytripProjectNo(TripProject tripProject);
 
     int getMaxTripScheduleDay(String tripProjectNo);
+
+    int modifySchedule(TripSchedule tripSchedule);
+    String getBeforeDayEdTime(TripSchedule tripSchedule);
+    String getAfterDayStTime(TripSchedule tripSchedule);
 }

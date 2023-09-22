@@ -103,7 +103,7 @@ public class TripScheduleService {
                     // tripScheduleDay 기존값 +1 값을 넣어야함
                     // mapper 사용
                     int maxScheduleDay = tripScheduleMapper.getMaxTripScheduleDay(tripProjectNo);
-                    dayMap.put("tripScheduleDay", maxScheduleDay);
+                    dayMap.put("tripScheduleDay", maxScheduleDay+1);
                 }
 
                 startTime = endTime;
@@ -130,6 +130,48 @@ public class TripScheduleService {
         tripProject = tripScheduleMapper.getPlanInfoBytripProjectNo(tripProject);
 
         return saveSchedule(tripProject,"add");
+    }
+
+    public int modifySchedule(TripSchedule tripSchedule){
+
+        int scheduleDay = tripSchedule.getTripScheduleDay();
+
+        if(scheduleDay>=0){
+            int today = tripSchedule.getTripScheduleDay();
+            // 수정값 날짜 이전 날짜의 마지막 행 TRIP_SCHEDULE_ED_TIME
+            tripSchedule.setTripScheduleDay(today-1);
+            String beforeDayEdTime = tripScheduleMapper.getBeforeDayEdTime(tripSchedule);
+            // 수정값 날짜 이후 날짜의 마지막 행 TRIP_SCHEDULE_ST_TIME
+            tripSchedule.setTripScheduleDay(today+1);
+            String afterDayStTime = tripScheduleMapper.getAfterDayStTime(tripSchedule);
+
+            boolean checkFlag = false;
+
+            if(beforeDayEdTime != null || beforeDayEdTime.equals("")){
+                if(!tripSchedule.getTripScheduleStTime().equals(beforeDayEdTime)){
+                    checkFlag = false;
+                }else{
+                    checkFlag = true;
+
+                }
+            }
+
+            if(afterDayStTime != null || afterDayStTime.equals("")){
+                if(!tripSchedule.getTripScheduleEdTime().equals(afterDayStTime)){
+                    checkFlag = false;
+                }else{
+                    checkFlag = true;
+                }
+            }
+            if(checkFlag){
+                return tripScheduleMapper.modifySchedule(tripSchedule);
+            }else{
+                return -1;
+            }
+
+        }
+        // -1 이전 값이나 이후 값이 현재 날짜와 같지 않음
+        return -1;
     }
 
 

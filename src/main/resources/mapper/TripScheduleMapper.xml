@@ -88,11 +88,57 @@
     </select>
 
     <select id="getMaxTripScheduleDay" parameterType="String" resultType="int">
-        SELECT MAX(TRIP_SCHEDULE_DAY) + 1 AS TRIP_SCHEDULE_DAY
+        SELECT MAX(TRIP_SCHEDULE_DAY) AS TRIP_SCHEDULE_DAY
         FROM TRIP_SCHEDULE ts
         WHERE TRIP_PROJECT_NO =  #{tripProjectNo}
     </select>
 
+    <update id="modifySchedule" parameterType="TripSchedule">
+        UPDATE TRIP_SCHEDULE
+           SET TRIP_SCHEDULE_ST_TIME = #{tripScheduleStTime},
+               TRIP_SCHEDULE_ED_TIME = #{tripScheduleEdTime},
+               TRIP_SCHEDULE_DEPART = #{tripScheduleDepart},
+               TRIP_SCHEDULE_ARRIVE = #{tripScheduleArrive},
+               TRIP_SCHEDULE_TRANSPORT = #{tripScheduleTransport},
+               TRIP_SCHEDULE_COST = #{tripScheduleCost},
+               TRIP_SCHEDULE_NOTE = #{tripScheduleNote},
+               TRIP_SCHEDULE_ORDER = #{tripScheduleOrder},
+               TRIP_SCHEDULE_DAY = #{tripScheduleDay},
+               TRIP_SCHEDULE_MOD_DT = sysdate()
+        <where>
+               TRIP_SCHEDULE_ORDER = #{tripScheduleOrder}
+            <if test='tripProjectNo != null and tripProjectNo != ""'>
+                AND TRIP_PROJECT_NO = #{tripProjectNo}
+            </if>
+            <if test='tripScheduleDay != null and tripScheduleDay != ""'>
+                AND TRIP_SCHEDULE_DAY = #{tripScheduleDay}
+            </if>
+        </where>
+    </update>
+
+    <select id="getBeforeDayEdTime" parameterType="TripSchedule" resultType="String">
+        SELECT TRIP_SCHEDULE_ED_TIME
+        FROM TRIP_SCHEDULE ts
+        WHERE TRIP_PROJECT_NO = #{tripProjectNo}
+          AND TRIP_SCHEDULE_DAY = #{tripScheduleDay}
+          AND TRIP_SCHEDULE_ORDER = (
+            SELECT MAX(TRIP_SCHEDULE_ORDER)
+            FROM TRIP_SCHEDULE
+            WHERE TRIP_PROJECT_NO = #{tripProjectNo}
+        )
+    </select>
+
+    <select id="getAfterDayStTime" parameterType="TripSchedule" resultType="String">
+        SELECT TRIP_SCHEDULE_ST_TIME
+        FROM TRIP_SCHEDULE ts
+        WHERE TRIP_PROJECT_NO = #{tripProjectNo}
+          AND TRIP_SCHEDULE_DAY = #{tripScheduleDay}
+          AND TRIP_SCHEDULE_ORDER = (
+            SELECT MIN(TRIP_SCHEDULE_ORDER)
+            FROM TRIP_SCHEDULE
+            WHERE TRIP_PROJECT_NO = #{tripProjectNo}
+        )
+    </select>
 
 
 
