@@ -132,7 +132,7 @@ public class TripScheduleService {
         return saveSchedule(tripProject,"add");
     }
 
-    public int modifySchedule(TripSchedule tripSchedule){
+    /*public int modifySchedule2(TripSchedule tripSchedule){
 
         int scheduleDay = tripSchedule.getTripScheduleDay();
 
@@ -164,6 +164,7 @@ public class TripScheduleService {
                 }
             }
             if(checkFlag){
+                tripSchedule.setTripScheduleDay(today);
                 return tripScheduleMapper.modifySchedule(tripSchedule);
             }else{
                 return -1;
@@ -172,6 +173,215 @@ public class TripScheduleService {
         }
         // -1 이전 값이나 이후 값이 현재 날짜와 같지 않음
         return -1;
+    }*/
+
+    public int modifySchedule(TripSchedule tripSchedule){
+//        String bdet = tripScheduleMapper.getBeforeDayEdTime(tripSchedule);
+//        String adst = tripScheduleMapper.getAfterDayStTime(tripSchedule);
+//        String boet = tripScheduleMapper.getBeforeOrderEdTime(tripSchedule);
+//        String aost = tripScheduleMapper.getAfterOrderStTime(tripSchedule);
+
+
+        String tripProjectNo = tripSchedule.getTripProjectNo();
+        
+        TripProject tripProject = TripProject.builder()
+                .tripProjectNo(tripProjectNo)
+                .build();
+        tripProject = tripScheduleMapper.getPlanInfoBytripProjectNo(tripProject);
+
+        int tripScheduleDay = tripSchedule.getTripScheduleDay();
+        int tripScheduleOrder = tripSchedule.getTripScheduleOrder();
+        int maxTripScheduleDay = tripProject.getTripPlan().getTripPlanAllNum();    // TripScheduleDay 최대값
+        int maxTripScheduleOrder = tripScheduleMapper.getMaxTripScheduleOrder(tripSchedule);    // TripScheduleOrder 최대값
+
+        int currentScheduleStTime = Integer.parseInt(tripSchedule.getTripScheduleStTime());
+        int currentScheduleEdTime = Integer.parseInt(tripSchedule.getTripScheduleEdTime());
+        int numCurrentStTime = (int)(Math.log10(currentScheduleStTime) + 1);
+        int numCurrentEdTime = (int)(Math.log10(currentScheduleEdTime) + 1);
+
+
+
+//        int beforeScheduleEdTime = Integer.parseInt(tripScheduleMapper.getBeforeOrderEdTime(tripSchedule));
+//        int afterScheduleStTime = Integer.parseInt(tripScheduleMapper.getAfterOrderStTime(tripSchedule));
+//        int numBeforeEdTime = (int)(Math.log10(beforeScheduleEdTime) + 1);
+//        int numAfterStTime = (int)(Math.log10(afterScheduleStTime) + 1);
+
+
+
+        // "stTime/edTime" 이 int형 변환 후 3자리 일시 2400을 더해서 비교 진행
+        // 단, 조건은 앞 시간은 2300과 같이 0이 안붙고 int형 변환시 4자리
+        //          뒷 시간은 0100과 같이 0이 붙고 int형 변환시 3자리 일때만 2400을 더한다.
+        if(tripScheduleDay == 0){
+
+
+            // TRIP_SCHEDULE_DAY가 0일때
+            if(tripScheduleOrder == 0){
+                int afterScheduleStTime = Integer.parseInt(tripScheduleMapper.getAfterOrderStTime(tripSchedule));
+                int numAfterStTime = (int)(Math.log10(afterScheduleStTime) + 1);
+
+                if(numCurrentEdTime == 3 && numAfterStTime > 3){     // 앞시간이 3자리 뒷시간이 4자리
+                    numCurrentEdTime = numCurrentEdTime+2400;
+                }
+                if(numCurrentEdTime > numAfterStTime){      // 앞시간이 더 큰 경우
+                    return -1;
+                }
+            }else if(tripScheduleOrder == maxTripScheduleOrder){
+
+                int beforeScheduleEdTime = Integer.parseInt(tripScheduleMapper.getBeforeOrderEdTime(tripSchedule));
+                int afterScheduleStTime = Integer.parseInt(tripScheduleMapper.getAfterOrderStTime(tripSchedule));
+                int numBeforeEdTime = (int)(Math.log10(beforeScheduleEdTime) + 1);
+                int numAfterStTime = (int)(Math.log10(afterScheduleStTime) + 1);
+
+                if(numBeforeEdTime == 3 && numCurrentStTime > 3){     // 앞시간이 3자리 뒷시간이 4자리
+                    numBeforeEdTime = numBeforeEdTime+2400;
+                }
+
+                if(numBeforeEdTime > numCurrentStTime){     // 앞시간이 더 큰 경우
+                    return -1;
+                }
+
+                if(numCurrentEdTime == 3 && numAfterStTime > 3){     // 앞시간이 3자리 뒷시간이 4자리
+                    numCurrentEdTime = numCurrentEdTime+2400;
+                }
+
+                if(numCurrentEdTime > numAfterStTime){     // 앞시간이 더 큰 경우
+                    return -1;
+                }
+
+            }else{
+
+                int beforeScheduleEdTime = Integer.parseInt(tripScheduleMapper.getBeforeOrderEdTime(tripSchedule));
+                int afterScheduleStTime = Integer.parseInt(tripScheduleMapper.getAfterOrderStTime(tripSchedule));
+                int numBeforeEdTime = (int)(Math.log10(beforeScheduleEdTime) + 1);
+                int numAfterStTime = (int)(Math.log10(afterScheduleStTime) + 1);
+
+                if(numBeforeEdTime == 3 && numCurrentStTime > 3){     // 앞시간이 3자리 뒷시간이 4자리
+                    numBeforeEdTime = numBeforeEdTime+2400;
+                }
+                if(numBeforeEdTime > numCurrentStTime){     // 앞시간이 더 큰 경우
+                    return -1;
+                }
+
+                if(numCurrentEdTime == 3 && numAfterStTime > 3){     // 앞시간이 3자리 뒷시간이 4자리
+                    numCurrentEdTime = numCurrentEdTime+2400;
+                }
+                if(numCurrentEdTime > numAfterStTime){     // 앞시간이 더 큰 경우
+                    return -1;
+                }
+            }
+        }else if(tripScheduleDay == maxTripScheduleDay){        // TRIP_SCHEDULE_DAY가 MAX일때
+            if(tripScheduleOrder == 0){
+
+
+                int beforeScheduleEdTime = Integer.parseInt(tripScheduleMapper.getBeforeOrderEdTime(tripSchedule));
+                int afterScheduleStTime = Integer.parseInt(tripScheduleMapper.getAfterOrderStTime(tripSchedule));
+                int numBeforeEdTime = (int)(Math.log10(beforeScheduleEdTime) + 1);
+                int numAfterStTime = (int)(Math.log10(afterScheduleStTime) + 1);
+
+                if(numBeforeEdTime == 3 && numCurrentStTime > 3){     // 앞시간이 3자리 뒷시간이 4자리
+                    numBeforeEdTime = numBeforeEdTime+2400;
+                }
+                if(numBeforeEdTime > numCurrentStTime){      // 앞시간이 더 큰 경우
+                    return -1;
+                }
+
+                if(numCurrentEdTime == 3 && numAfterStTime > 3){     // 앞시간이 3자리 뒷시간이 4자리
+                    numCurrentEdTime = numCurrentEdTime+2400;
+                }
+                if(numCurrentEdTime > numAfterStTime){      // 앞시간이 더 큰 경우
+                    return -1;
+                }
+            }else if(tripScheduleOrder == maxTripScheduleOrder){
+
+                int beforeScheduleEdTime = Integer.parseInt(tripScheduleMapper.getBeforeOrderEdTime(tripSchedule));
+                int numBeforeEdTime = (int)(Math.log10(beforeScheduleEdTime) + 1);
+
+                if(numBeforeEdTime == 3 && numCurrentStTime > 3){     // 앞시간이 3자리 뒷시간이 4자리
+                    numBeforeEdTime = numBeforeEdTime+2400;
+                }
+
+                if(numBeforeEdTime > numCurrentStTime){     // 앞시간이 더 큰 경우
+                    return -1;
+                }
+
+            }else{
+
+                int beforeScheduleEdTime = Integer.parseInt(tripScheduleMapper.getBeforeOrderEdTime(tripSchedule));
+                int afterScheduleStTime = Integer.parseInt(tripScheduleMapper.getAfterOrderStTime(tripSchedule));
+                int numBeforeEdTime = (int)(Math.log10(beforeScheduleEdTime) + 1);
+                int numAfterStTime = (int)(Math.log10(afterScheduleStTime) + 1);
+
+                if(numBeforeEdTime == 3 && numCurrentStTime > 3){     // 앞시간이 3자리 뒷시간이 4자리
+                    numBeforeEdTime = numBeforeEdTime+2400;
+                }
+                if(numBeforeEdTime > numCurrentStTime){     // 앞시간이 더 큰 경우
+                    return -1;
+                }
+
+                if(numCurrentEdTime == 3 && numAfterStTime > 3){     // 앞시간이 3자리 뒷시간이 4자리
+                    numCurrentEdTime = numCurrentEdTime+2400;
+                }
+                if(numCurrentEdTime > numAfterStTime){     // 앞시간이 더 큰 경우
+                    return -1;
+                }
+            }
+
+        }else{                                                  // TRIP_SCHEDULE_DAY > 0 && // TRIP_SCHEDULE_DAY가 0 < MAX일때
+
+            int beforeScheduleEdTime = Integer.parseInt(tripScheduleMapper.getBeforeOrderEdTime(tripSchedule));
+            int afterScheduleStTime = Integer.parseInt(tripScheduleMapper.getAfterOrderStTime(tripSchedule));
+            int numBeforeEdTime = (int)(Math.log10(beforeScheduleEdTime) + 1);
+            int numAfterStTime = (int)(Math.log10(afterScheduleStTime) + 1);
+            if(tripScheduleOrder == 0){
+
+                if(numBeforeEdTime == 3 && numCurrentStTime > 3){     // 앞시간이 3자리 뒷시간이 4자리
+                    numBeforeEdTime = numBeforeEdTime+2400;
+                }
+                if(numBeforeEdTime > numCurrentStTime){      // 앞시간이 더 큰 경우
+                    return -1;
+                }
+
+                if(numCurrentEdTime == 3 && numAfterStTime > 3){     // 앞시간이 3자리 뒷시간이 4자리
+                    numCurrentEdTime = numCurrentEdTime+2400;
+                }
+                if(numCurrentEdTime > numAfterStTime){      // 앞시간이 더 큰 경우
+                    return -1;
+                }
+            }else if(tripScheduleOrder == maxTripScheduleOrder){
+                if(numBeforeEdTime == 3 && numCurrentStTime > 3){     // 앞시간이 3자리 뒷시간이 4자리
+                    numBeforeEdTime = numBeforeEdTime+2400;
+                }
+
+                if(numBeforeEdTime > numCurrentStTime){     // 앞시간이 더 큰 경우
+                    return -1;
+                }
+
+                if(numCurrentEdTime == 3 && numAfterStTime > 3){     // 앞시간이 3자리 뒷시간이 4자리
+                    numCurrentEdTime = numCurrentEdTime+2400;
+                }
+
+                if(numCurrentEdTime > numAfterStTime){     // 앞시간이 더 큰 경우
+                    return -1;
+                }
+
+            }else{
+                if(numBeforeEdTime == 3 && numCurrentStTime > 3){     // 앞시간이 3자리 뒷시간이 4자리
+                    numBeforeEdTime = numBeforeEdTime+2400;
+                }
+                if(numBeforeEdTime > numCurrentStTime){     // 앞시간이 더 큰 경우
+                    return -1;
+                }
+
+                if(numCurrentEdTime == 3 && numAfterStTime > 3){     // 앞시간이 3자리 뒷시간이 4자리
+                    numCurrentEdTime = numCurrentEdTime+2400;
+                }
+                if(numCurrentEdTime > numAfterStTime){     // 앞시간이 더 큰 경우
+                    return -1;
+                }
+            }
+        }
+
+        return tripScheduleMapper.modifySchedule(tripSchedule);
     }
 
 

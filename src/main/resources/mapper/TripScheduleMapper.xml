@@ -80,6 +80,7 @@
                tplan.TRIP_PLAN_NM,
                tplan.TRIP_PLAN_ST_TIME,
                tplan.TRIP_PLAN_TIME_UNIT,
+               tplan.TRIP_PLAN_ALL_NUM,
                tproj.TRIP_USER_NO
         FROM TRIP_PLAN tplan
                  JOIN TRIP_PROJECT tproj
@@ -120,11 +121,12 @@
         SELECT TRIP_SCHEDULE_ED_TIME
         FROM TRIP_SCHEDULE ts
         WHERE TRIP_PROJECT_NO = #{tripProjectNo}
-          AND TRIP_SCHEDULE_DAY = #{tripScheduleDay}
+          AND TRIP_SCHEDULE_DAY = #{tripScheduleDay} - 1
           AND TRIP_SCHEDULE_ORDER = (
             SELECT MAX(TRIP_SCHEDULE_ORDER)
             FROM TRIP_SCHEDULE
             WHERE TRIP_PROJECT_NO = #{tripProjectNo}
+              AND TRIP_SCHEDULE_DAY = #{tripScheduleDay} - 1
         )
     </select>
 
@@ -132,12 +134,36 @@
         SELECT TRIP_SCHEDULE_ST_TIME
         FROM TRIP_SCHEDULE ts
         WHERE TRIP_PROJECT_NO = #{tripProjectNo}
-          AND TRIP_SCHEDULE_DAY = #{tripScheduleDay}
+          AND TRIP_SCHEDULE_DAY = #{tripScheduleDay} + 1
           AND TRIP_SCHEDULE_ORDER = (
             SELECT MIN(TRIP_SCHEDULE_ORDER)
             FROM TRIP_SCHEDULE
             WHERE TRIP_PROJECT_NO = #{tripProjectNo}
+              AND TRIP_SCHEDULE_DAY = #{tripScheduleDay} + 1
         )
+    </select>
+
+    <select id="getBeforeOrderEdTime" parameterType="TripSchedule" resultType="String">
+        SELECT TRIP_SCHEDULE_ED_TIME
+        FROM TRIP_SCHEDULE ts
+        WHERE TRIP_PROJECT_NO = #{tripProjectNo}
+          AND TRIP_SCHEDULE_DAY = #{tripScheduleDay}
+          AND TRIP_SCHEDULE_ORDER = #{tripScheduleOrder} - 1
+    </select>
+
+    <select id="getAfterOrderStTime" parameterType="TripSchedule" resultType="String">
+        SELECT TRIP_SCHEDULE_ST_TIME
+        FROM TRIP_SCHEDULE ts
+        WHERE TRIP_PROJECT_NO = #{tripProjectNo}
+          AND TRIP_SCHEDULE_DAY = #{tripScheduleDay}
+          AND TRIP_SCHEDULE_ORDER = #{tripScheduleOrder} + 1
+    </select>
+
+    <select id="getMaxTripScheduleOrder" parameterType="TripSchedule" resultType="int">
+        SELECT MAX(TRIP_SCHEDULE_ORDER) AS TRIP_SCHEDULE_DAY
+        FROM TRIP_SCHEDULE ts
+        WHERE TRIP_PROJECT_NO = #{tripProjectNo}
+          AND TRIP_SCHEDULE_DAY = #{tripScheduleDay}
     </select>
 
 
