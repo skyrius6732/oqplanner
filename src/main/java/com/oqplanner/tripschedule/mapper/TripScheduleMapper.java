@@ -20,8 +20,8 @@ public interface TripScheduleMapper {
     int modifySchedule(TripSchedule tripSchedule);
     String getBeforeDayEdTime(TripSchedule tripSchedule);
     String getAfterDayStTime(TripSchedule tripSchedule);
-    String getBeforeOrderEdTime(TripSchedule tripSchedule);
-    String getAfterOrderStTime(TripSchedule tripSchedule);
+    String getOrderEdDt(TripSchedule tripSchedule);
+    String getOrderStDt(TripSchedule tripSchedule);
 
     int getMaxTripScheduleOrder(TripSchedule tripSchedule);
 

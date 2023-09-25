@@ -13,6 +13,8 @@ import java.util.Date;
 public class TripSchedule {
     private String tripScheduleNo;
     private String tripProjectNo;
+    private String tripScheduleStDt;
+    private String tripScheduleEdDt;
     private String tripScheduleStTime;
     private String tripScheduleEdTime;
     private String tripScheduleDepart;

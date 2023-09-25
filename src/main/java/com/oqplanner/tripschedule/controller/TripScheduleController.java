@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.List;
 
 @Tag(name="trip-schedule-controller",  description = "여행 일정 Controller 입니다.")
@@ -34,7 +35,7 @@ public class TripScheduleController {
     }
 
     @PutMapping("/info")
-    public int modifySchedule (@RequestBody TripSchedule tripSchedule){
+    public int modifySchedule (@RequestBody TripSchedule tripSchedule)throws ParseException {
         return tripScheduleService.modifySchedule(tripSchedule);
     }
 }

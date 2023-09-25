@@ -25,6 +25,8 @@
     <insert id="saveSchedule" parameterType="map">
         INSERT INTO TRIP_SCHEDULE(
                         TRIP_PROJECT_NO,
+                        TRIP_SCHEDULE_ST_DT,
+                        TRIP_SCHEDULE_ED_DT,
                         TRIP_SCHEDULE_ST_TIME,
                         TRIP_SCHEDULE_ED_TIME,
                         TRIP_SCHEDULE_DEPART,
@@ -39,6 +41,8 @@
         VALUES
         <foreach item="item" index="index" collection="scheduleList" separator=",">
             (#{item.tripProjectNo},
+             #{item.tripScheduleStDt},
+             #{item.tripScheduleEdDt},
              #{item.tripScheduleStTime},
              #{item.tripScheduleEdTime},
              #{item.tripScheduleDepart},
@@ -55,6 +59,8 @@
 
     <select id="getScheduleList" parameterType="TripSchedule">
         SELECT  TRIP_PROJECT_NO,
+                TRIP_SCHEDULE_ST_DT,
+                TRIP_SCHEDULE_ED_DT,
                 TRIP_SCHEDULE_ST_TIME,
                 TRIP_SCHEDULE_ED_TIME,
                 TRIP_SCHEDULE_DEPART,
@@ -96,7 +102,10 @@
 
     <update id="modifySchedule" parameterType="TripSchedule">
         UPDATE TRIP_SCHEDULE
-           SET TRIP_SCHEDULE_ST_TIME = #{tripScheduleStTime},
+           SET
+               TRIP_SCHEDULE_ST_DT = #{tripScheduleStDt},
+               TRIP_SCHEDULE_ED_DT = #{tripScheduleEdDt},
+               TRIP_SCHEDULE_ST_TIME = #{tripScheduleStTime},
                TRIP_SCHEDULE_ED_TIME = #{tripScheduleEdTime},
                TRIP_SCHEDULE_DEPART = #{tripScheduleDepart},
                TRIP_SCHEDULE_ARRIVE = #{tripScheduleArrive},
@@ -143,20 +152,20 @@
         )
     </select>
 
-    <select id="getBeforeOrderEdTime" parameterType="TripSchedule" resultType="String">
-        SELECT TRIP_SCHEDULE_ED_TIME
+    <select id="getOrderEdDt" parameterType="TripSchedule" resultType="String">
+        SELECT CONCAT(TRIP_SCHEDULE_ST_DT,TRIP_SCHEDULE_ED_TIME)
         FROM TRIP_SCHEDULE ts
         WHERE TRIP_PROJECT_NO = #{tripProjectNo}
           AND TRIP_SCHEDULE_DAY = #{tripScheduleDay}
-          AND TRIP_SCHEDULE_ORDER = #{tripScheduleOrder} - 1
+          AND TRIP_SCHEDULE_ORDER = #{tripScheduleOrder}
     </select>
 
-    <select id="getAfterOrderStTime" parameterType="TripSchedule" resultType="String">
-        SELECT TRIP_SCHEDULE_ST_TIME
+    <select id="getOrderStDt" parameterType="TripSchedule" resultType="String">
+        SELECT CONCAT(TRIP_SCHEDULE_ED_DT,TRIP_SCHEDULE_ST_TIME)
         FROM TRIP_SCHEDULE ts
         WHERE TRIP_PROJECT_NO = #{tripProjectNo}
           AND TRIP_SCHEDULE_DAY = #{tripScheduleDay}
-          AND TRIP_SCHEDULE_ORDER = #{tripScheduleOrder} + 1
+          AND TRIP_SCHEDULE_ORDER = #{tripScheduleOrder}
     </select>
 
     <select id="getMaxTripScheduleOrder" parameterType="TripSchedule" resultType="int">
