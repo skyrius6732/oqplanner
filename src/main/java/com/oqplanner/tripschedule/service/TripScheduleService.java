@@ -156,48 +156,6 @@ public class TripScheduleService {
         return saveSchedule(tripProject,"add");
     }
 
-    /*public int modifySchedule2(TripSchedule tripSchedule){
-
-        int scheduleDay = tripSchedule.getTripScheduleDay();
-
-        if(scheduleDay>=0){
-            int today = tripSchedule.getTripScheduleDay();
-            // 수정값 날짜 이전 날짜의 마지막 행 TRIP_SCHEDULE_ED_TIME
-            tripSchedule.setTripScheduleDay(today-1);
-            String beforeDayEdTime = tripScheduleMapper.getBeforeDayEdTime(tripSchedule);
-            // 수정값 날짜 이후 날짜의 마지막 행 TRIP_SCHEDULE_ST_TIME
-            tripSchedule.setTripScheduleDay(today+1);
-            String afterDayStTime = tripScheduleMapper.getAfterDayStTime(tripSchedule);
-
-            boolean checkFlag = false;
-
-            if(beforeDayEdTime != null || beforeDayEdTime.equals("")){
-                if(!tripSchedule.getTripScheduleStTime().equals(beforeDayEdTime)){
-                    checkFlag = false;
-                }else{
-                    checkFlag = true;
-
-                }
-            }
-
-            if(afterDayStTime != null || afterDayStTime.equals("")){
-                if(!tripSchedule.getTripScheduleEdTime().equals(afterDayStTime)){
-                    checkFlag = false;
-                }else{
-                    checkFlag = true;
-                }
-            }
-            if(checkFlag){
-                tripSchedule.setTripScheduleDay(today);
-                return tripScheduleMapper.modifySchedule(tripSchedule);
-            }else{
-                return -1;
-            }
-
-        }
-        // -1 이전 값이나 이후 값이 현재 날짜와 같지 않음
-        return -1;
-    }*/
 
     public int modifySchedule(TripSchedule tripSchedule) throws ParseException {
 //        String bdet = tripScheduleMapper.getBeforeDayEdTime(tripSchedule);
@@ -235,27 +193,16 @@ public class TripScheduleService {
         Date currentStDt = dateFormat.parse(tripScheduleStDt+currentScheduleStTime);
         Date currentEdDt = dateFormat.parse(tripScheduleEdDt+currentScheduleEdTime);
 
-        Date orderStDt = dateFormat.parse(tripScheduleMapper.getOrderStDt(tripSchedule));
-        Date orderEdDt = dateFormat.parse(tripScheduleMapper.getOrderEdDt(tripSchedule));
-
-//        int currentEdToOrderSt = currentEdDt.compareTo(orderStDt);
-//        int orderEdTocurrentSt = orderEdDt.compareTo(currentStDt);
         if(tripScheduleDay == 1){
             if(tripScheduleOrder == 0){
-                int paramDay = 0;
-                int paramOrder = 0;
-                TripSchedule param = null;
+                int paramDay = tripScheduleDay;
+                int paramOrder = tripScheduleOrder+1;
 
-                paramDay = tripScheduleDay;
-                paramOrder = tripScheduleOrder+1;
-
-                param = TripSchedule.builder().tripProjectNo(tripProjectNo)
+                TripSchedule param = TripSchedule.builder().tripProjectNo(tripProjectNo)
                         .tripScheduleDay(paramDay)
                         .tripScheduleOrder(paramOrder)
                         .build();
-                orderStDt = dateFormat.parse(tripScheduleMapper.getOrderStDt(param));
-                System.out.println("orderStDt ::: " + orderStDt);
-                System.out.println("currentEdDt ::: " + currentEdDt);
+                Date orderStDt = dateFormat.parse(tripScheduleMapper.getOrderStDt(param));
                 int currentEdToOrderSt = currentEdDt.compareTo(orderStDt);
                 if(currentEdToOrderSt > 0){
                     return -1;
@@ -263,19 +210,15 @@ public class TripScheduleService {
             }
         }else if(tripScheduleDay == maxTripScheduleDay){
             if(tripScheduleOrder == maxTripScheduleOrder){
-                int paramDay = 0;
-                int paramOrder = 0;
-                TripSchedule param = null;
+                int paramDay = tripScheduleDay;
+                int paramOrder = tripScheduleOrder-1;
 
-                paramDay = tripScheduleDay;
-                paramOrder = tripScheduleOrder-1;
-
-                param = TripSchedule.builder().tripProjectNo(tripProjectNo)
+                TripSchedule param = TripSchedule.builder().tripProjectNo(tripProjectNo)
                         .tripScheduleDay(paramDay)
                         .tripScheduleOrder(paramOrder)
                         .build();
 
-                orderEdDt = dateFormat.parse(tripScheduleMapper.getOrderEdDt(param));
+                Date orderEdDt = dateFormat.parse(tripScheduleMapper.getOrderEdDt(param));
                 int orderEdTocurrentSt = orderEdDt.compareTo(currentStDt);
 
                 if(orderEdTocurrentSt > 0){
@@ -283,20 +226,18 @@ public class TripScheduleService {
                 }
             }
         }else{
-            int paramDay = 0;
-            int paramOrder = 0;
-            TripSchedule param = null;
+
 
             if(tripScheduleOrder == 0){
-                 paramDay = tripScheduleDay-1;
-                 paramOrder = maxTripScheduleOrder;
+                 int paramDay = tripScheduleDay-1;
+                 int paramOrder = maxTripScheduleOrder;
 
-                 param = TripSchedule.builder().tripProjectNo(tripProjectNo)
+                 TripSchedule param = TripSchedule.builder().tripProjectNo(tripProjectNo)
                         .tripScheduleDay(paramDay)
                         .tripScheduleOrder(paramOrder)
                         .build();
 
-                orderEdDt = dateFormat.parse(tripScheduleMapper.getOrderEdDt(param));
+                Date orderEdDt = dateFormat.parse(tripScheduleMapper.getOrderEdDt(param));
                 int orderEdTocurrentSt = orderEdDt.compareTo(currentStDt);
                 if(orderEdTocurrentSt > 0){
                     return -1;
@@ -310,7 +251,7 @@ public class TripScheduleService {
                         .tripScheduleOrder(paramOrder)
                         .build();
 
-                orderStDt = dateFormat.parse(tripScheduleMapper.getOrderStDt(param));
+                Date orderStDt = dateFormat.parse(tripScheduleMapper.getOrderStDt(param));
                 int currentEdToOrderSt = currentEdDt.compareTo(orderStDt);
                 if(currentEdToOrderSt > 0){
                     return -1;
@@ -318,18 +259,16 @@ public class TripScheduleService {
 
 
             }else if(tripScheduleOrder == maxTripScheduleOrder){
-                 paramDay = tripScheduleDay+1;
-                 paramOrder = 0;
+                 int paramDay = tripScheduleDay+1;
+                 int paramOrder = 0;
 
-                 param = TripSchedule.builder().tripProjectNo(tripProjectNo)
+                 TripSchedule param = TripSchedule.builder().tripProjectNo(tripProjectNo)
                         .tripScheduleDay(paramDay)
                         .tripScheduleOrder(paramOrder)
                         .build();
 
-                orderStDt = dateFormat.parse(tripScheduleMapper.getOrderStDt(param));
+                Date orderStDt = dateFormat.parse(tripScheduleMapper.getOrderStDt(param));
                 int currentEdToOrderSt = currentEdDt.compareTo(orderStDt);
-                System.out.println("currentEdDt :: " + currentEdDt);
-                System.out.println("orderStDt :: " + orderStDt);
                 if(currentEdToOrderSt > 0){
                     return -1;
                 }
@@ -342,31 +281,23 @@ public class TripScheduleService {
                         .tripScheduleOrder(paramOrder)
                         .build();
 
-                orderEdDt = dateFormat.parse(tripScheduleMapper.getOrderEdDt(param));
+                Date orderEdDt = dateFormat.parse(tripScheduleMapper.getOrderEdDt(param));
                 int orderEdTocurrentSt = orderEdDt.compareTo(currentStDt);
-                System.out.println("orderEdDt :: " + orderEdDt);
-                System.out.println("currentStDt :: " + currentStDt);
                 if(orderEdTocurrentSt > 0){
                     return -1;
                 }
 
 
             }else{
-
-                // 이전 값 비교
-                 paramDay = tripScheduleDay;
-                 paramOrder = tripScheduleOrder-1;
-
-                 param = TripSchedule.builder().tripProjectNo(tripProjectNo)
+                 int paramDay = tripScheduleDay;
+                 int paramOrder = tripScheduleOrder-1;
+                 TripSchedule param = TripSchedule.builder().tripProjectNo(tripProjectNo)
                         .tripScheduleDay(paramDay)
                         .tripScheduleOrder(paramOrder)
                         .build();
 
-
-                orderEdDt = dateFormat.parse(tripScheduleMapper.getOrderEdDt(param));
+                Date orderEdDt = dateFormat.parse(tripScheduleMapper.getOrderEdDt(param));
                 int orderEdTocurrentSt = orderEdDt.compareTo(currentStDt);
-                System.out.println("orderEdDt :: " + orderEdDt);
-                System.out.println("currentStDt :: " + currentStDt);
                 if(orderEdTocurrentSt > 0){
                     return -1;
                 }
@@ -381,10 +312,8 @@ public class TripScheduleService {
                         .tripScheduleOrder(paramOrder)
                         .build();
 
-                orderStDt = dateFormat.parse(tripScheduleMapper.getOrderStDt(param));
+                Date orderStDt = dateFormat.parse(tripScheduleMapper.getOrderStDt(param));
                 int currentEdToOrderSt = currentEdDt.compareTo(orderStDt);
-                System.out.println("currentEdDt :: " + currentEdDt);
-                System.out.println("orderStDt :: " + orderStDt);
                 if(currentEdToOrderSt > 0){
                     return -1;
                 }
