@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.util.List;
+import java.util.Map;
 
 @Tag(name="trip-schedule-controller",  description = "여행 일정 Controller 입니다.")
 @RestController
@@ -37,5 +38,20 @@ public class TripScheduleController {
     @PutMapping("/info")
     public int modifySchedule (@RequestBody TripSchedule tripSchedule)throws ParseException {
         return tripScheduleService.modifySchedule(tripSchedule);
+    }
+
+    @PutMapping("/info/list")
+    public int modifyScheduleList (@RequestBody TripProject tripProject)throws ParseException {
+        return tripScheduleService.modifyScheduleList(tripProject);
+    }
+
+    @GetMapping("/info/list/date")
+    public Map getScheduleListByDate (@RequestBody TripProject tripProject) {
+        return tripScheduleService.getScheduleListByDate(tripProject);
+    }
+
+    @DeleteMapping("/info")
+    public int removeSchedule (@RequestBody Map paramMap) throws ParseException {
+        return tripScheduleService.removeSchedule(paramMap);
     }
 }

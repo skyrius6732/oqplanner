@@ -25,4 +25,8 @@ public interface TripScheduleMapper {
 
     int getMaxTripScheduleOrder(TripSchedule tripSchedule);
 
+    Map getScheduleListByDate(TripSchedule tripSchedule);
+
+    int removeSchedule(TripSchedule tripSchedule);
+
 }
