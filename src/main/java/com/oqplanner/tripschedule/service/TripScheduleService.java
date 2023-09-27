@@ -37,14 +37,22 @@ public class TripScheduleService {
         int timeUnit = tripPlan.getTripPlanTimeUnit();
 
         // yyyymmdd를 넣기위한 캘린더 생성
-        Date date = tripPlan.getTripPlanStDt();
+        Date date = null;
+        if(type.equals("new")) {    // new : 신규건
+            date = tripPlan.getTripPlanStDt();
+        }else{  // add : 추가건
+            date =  tripPlan.getTripPlanEdDt(); // 마지막날 planEdDt를 가져와야함
+        }
+
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         int nightIdx = 0;
 
-        int tripDay = 1;    // add Default (일정 추가시 사용)
-        if(type.equals("new")) {   
+        int tripDay = 0;
+        if(type.equals("new")) {   // new : 신규건
             tripDay = tripPlan.getTripPlanAllNum();
+        }else{  // add : 추가건
+            tripDay = 1; // add Default (일정 추가시 1일치 schedule만 생성)
         }
         // row 별 앞 시간
         String startTime = tripPlan.getTripPlanStTime();
@@ -149,6 +157,10 @@ public class TripScheduleService {
         // 추후에 앞단에서 session 통해 tripProjectNo 가져 와야함
         // 현재는 포스트맨에서 전달
 
+        // 추후에 saveSchedule 메서드 태우기전에
+        // 예를들어 여행일자가 4일 일때 추가적으로 5일째 schedule 등록방지를 위해
+        // 체크로직이 필요함(해당 사항은 백단보다 프론트단에서 4일이 등록이 되어있다면
+        // UI 적으로 + 버튼을 없애 진행하는것이 좋겠음)
         tripProject = tripScheduleMapper.getPlanInfoBytripProjectNo(tripProject);
 
         return saveSchedule(tripProject,"add");
@@ -378,6 +390,7 @@ public class TripScheduleService {
 
     public int removeSchedule(Map<String,String> paramMap) throws ParseException {
 
+        int returnNum = 0;
         String tripProjectNo = paramMap.get("tripProjectNo");
         int tripDelDay = Integer.parseInt(paramMap.get("tripScheduleDay"));
 
@@ -385,11 +398,22 @@ public class TripScheduleService {
         tripProject = tripScheduleMapper.getPlanInfoBytripProjectNo(tripProject);
         int planNum = tripProject.getTripPlan().getTripPlanAllNum();
 
+        
+
+        
+
+
         // 삭제 파라미터(projectNo과 삭제될 tripScheduleDay로 삭제 진행)
         TripSchedule tripSchedule = TripSchedule.builder()
                 .tripProjectNo(tripProjectNo)
                 .tripScheduleDay(tripDelDay).build();
-        tripScheduleMapper.removeSchedule(tripSchedule);
+        
+        // 삭제 파라미터(projectNo과 삭제될 tripScheduleDay로 
+        // 이전 날짜의 마지막 스케쥴의 끝 시간을 tripScheduleEdTime 구하고
+        // 이후 날짜의 첫시간을 구해준 tripScheduleEdTime값을 대입 해줌)
+        String tripScheduleEdTime = tripScheduleMapper.getBeforeDayEdTime(tripSchedule);
+        
+        returnNum = tripScheduleMapper.removeSchedule(tripSchedule);
 
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
@@ -413,9 +437,15 @@ public class TripScheduleService {
             */
             
             List<TripSchedule> scheduleList = tripScheduleMapper.getScheduleList(tripSchedule);
+            int scheduleListSize = scheduleList.size();
 
-            for(int k=0; k<scheduleList.size(); k++){
+            for(int k=0; k<scheduleListSize; k++){
                 tripSchedule = scheduleList.get(k);
+
+                if(k==0){       // 처음 스케쥴의 시작 시간을
+                    // 이전 일자의 마지막 스케쥴의 끝 시간과 같은 시간 삽입
+                    tripSchedule.setTripScheduleStTime(tripScheduleEdTime);
+                }
                 
                 // 현재 i = tripDelDay + 1 이므로
                 tripSchedule.setTripScheduleDay(i);
@@ -435,9 +465,6 @@ public class TripScheduleService {
                 edCalendar.setTime(tripScheduleEdDt);
                 edCalendar.add(Calendar.DATE,-1);
                 String strEdDt = sdf.format(edCalendar.getTime());
-
-                System.out.println("strStDt :: " + strStDt);
-                System.out.println("strEdDt :: " + strEdDt);
                 
                 // 변경 날짜 셋팅
                 tripSchedule.setTripScheduleStDt(strStDt);
@@ -450,8 +477,7 @@ public class TripScheduleService {
             }
         }
 
-
-        return 0;
+        return returnNum;
     }
 
 
