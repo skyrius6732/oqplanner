@@ -22,8 +22,6 @@ public class TripScheduleService {
     @Autowired
     private TripScheduleMapper tripScheduleMapper;
 
-    private TripPlanService tripPlanService;
-
     public int saveSchedule(TripProject tripProject, String type){
 
         // [여행 일정 생성]
@@ -200,8 +198,7 @@ public class TripScheduleService {
         Date currentStDt = dateFormat.parse(tripScheduleStDt+currentScheduleStTime);
         Date currentEdDt = dateFormat.parse(tripScheduleEdDt+currentScheduleEdTime);
 
-        if(tripScheduleDay == 1){
-            if(tripScheduleOrder == 0){
+        if(tripScheduleDay == 1 && tripScheduleOrder == 0){
                 int paramDay = tripScheduleDay;
                 int paramOrder = tripScheduleOrder+1;
 
@@ -214,9 +211,7 @@ public class TripScheduleService {
                 if(currentEdToOrderSt > 0){
                     result = -1;
                 }
-            }
-        }else if(tripScheduleDay == maxTripScheduleDay){
-            if(tripScheduleOrder == maxTripScheduleOrder){
+        }else if(tripScheduleDay == maxTripScheduleDay && tripScheduleOrder == maxTripScheduleOrder){
                 int paramDay = tripScheduleDay;
                 int paramOrder = tripScheduleOrder-1;
 
@@ -228,10 +223,9 @@ public class TripScheduleService {
                 Date orderEdDt = dateFormat.parse(tripScheduleMapper.getOrderEdDt(param));
                 int orderEdTocurrentSt = orderEdDt.compareTo(currentStDt);
 
-                if(orderEdTocurrentSt > 0){
+                if(orderEdTocurrentSt > 0) {
                     result = -1;
                 }
-            }
         }else{
 
 
@@ -398,10 +392,6 @@ public class TripScheduleService {
         tripProject = tripScheduleMapper.getPlanInfoBytripProjectNo(tripProject);
         int planNum = tripProject.getTripPlan().getTripPlanAllNum();
 
-        
-
-        
-
 
         // 삭제 파라미터(projectNo과 삭제될 tripScheduleDay로 삭제 진행)
         TripSchedule tripSchedule = TripSchedule.builder()
@@ -476,6 +466,8 @@ public class TripScheduleService {
                 tripScheduleMapper.modifySchedule(tripSchedule);
             }
         }
+
+
 
         return returnNum;
     }

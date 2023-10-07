@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.oqplanner.tripcompanion.mapper.TripCompanionMapper">
+
+    <insert id="saveCompanion" parameterType="java.util.List">
+        SET @max_order = (SELECT IFNULL(MAX(TRIP_COMPANION_ORDER), 0) + 1 FROM TRIP_COMPANION);
+        INSERT INTO TRIP_COMPANION(
+            TRIP_PROJECT_NO,
+            TRIP_COMPANION_NM,
+            TRIP_COMPANION_ORDER,
+            TRIP_COMPANION_REG_DT,
+            TRIP_COMPANION_MOD_DT
+        )VALUES
+        <foreach item="item" index="index" collection="list" separator=",">
+        (#{item.tripProjectNo},
+         #{item.tripCompanionNm},
+         @max_order := @max_order + 1,
+         sysdate(),
+         sysdate()
+        )
+        </foreach>
+    </insert>
+
+    <select id="getCompanionList" parameterType="TripCompanion">
+        SELECT
+            TRIP_COMPANION_NO,
+            TRIP_PROJECT_NO,
+            TRIP_COMPANION_NM,
+            TRIP_COMPANION_ORDER,
+            TRIP_COMPANION_REG_DT,
+            TRIP_COMPANION_MOD_DT
+          FROM TRIP_COMPANION
+        <where>
+            <if test='tripProjectNo != null and tripProjectNo != ""'>
+                AND TRIP_PROJECT_NO = #{tripProjectNo}
+            </if>
+            <if test='tripCompanionOrder != null and tripCompanionOrder != ""'>
+                AND TRIP_COMPANION_ORDER = #{tripCompanionOrder}
+            </if>
+        </where>
+    </select>
+
+    <update id="modifyCompanionList" parameterType="java.util.List">
+        <foreach item="item" index="index" collection="list" separator=";">
+        UPDATE TRIP_COMPANION
+           SET
+               TRIP_COMPANION_NM = #{item.tripCompanionNm},
+               TRIP_COMPANION_ORDER = #{item.tripCompanionOrder},
+               TRIP_COMPANION_REG_DT = sysdate(),
+               TRIP_COMPANION_MOD_DT = sysdate()
+        <where>
+            <if test='item.tripProjectNo != null and item.tripProjectNo != ""'>
+                AND TRIP_PROJECT_NO = #{item.tripProjectNo}
+            </if>
+            <if test='item.tripCompanionOrder != null and item.tripCompanionOrder != ""'>
+                AND TRIP_COMPANION_ORDER = #{item.tripCompanionOrder}
+            </if>
+        </where>
+        </foreach>
+    </update>
+
+    <delete id="removeCompanion" parameterType="TripCompanion">
+        DELETE
+          FROM TRIP_COMPANION
+         WHERE TRIP_PROJECT_NO = #{tripProjectNo}
+            <if test='tripCompanionOrder != null and tripCompanionOrder != ""'>
+            AND TRIP_COMPANION_ORDER = #{tripCompanionOrder}
+            </if>
+    </delete>
+
+</mapper>
