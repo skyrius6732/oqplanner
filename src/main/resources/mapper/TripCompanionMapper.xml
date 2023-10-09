@@ -48,7 +48,6 @@
            SET
                TRIP_COMPANION_NM = #{item.tripCompanionNm},
                TRIP_COMPANION_ORDER = #{item.tripCompanionOrder},
-               TRIP_COMPANION_REG_DT = sysdate(),
                TRIP_COMPANION_MOD_DT = sysdate()
         <where>
             <if test='item.tripProjectNo != null and item.tripProjectNo != ""'>

@@ -40,16 +40,16 @@ public class TripCostController {
     }
 
     @GetMapping("/private/info/list")
-    public List<TripCost> getPrivateCostList(@RequestBody TripCost tripCost){
-        return tripCostService.getPrivateCostList(tripCost);
+    public List<TripCost> getPrivateCostList(@RequestBody TripCost.TripCostRequest request){
+        return tripCostService.getPrivateCostList(request);
     }
 
-    @PutMapping("/public/info")
+    @PutMapping("/public/info/list")
     public int modifyPublicCost(@RequestBody List<TripCost> tripCostList){
         return tripCostService.modifyPublicCost(tripCostList);
     }
 
-    @PutMapping("/private/info")
+    @PutMapping("/private/info/list")
     public int modifyPrivateCost(@RequestBody List<TripCost> tripCostList){
         return tripCostService.modifyPrivateCost(tripCostList);
     }

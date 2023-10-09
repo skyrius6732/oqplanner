@@ -24,9 +24,7 @@ public class TripCostService {
             tripCostMapper.saveCost(tripCost);
         }
         return listSize;
-
     }
-
     public int savePublicCost(List<TripCost> tripCostList){
 
         int listSize = tripCostList.size();
@@ -37,7 +35,6 @@ public class TripCostService {
         }
         return listSize;
     }
-
     public int saveCost(TripCost tripCost){
         return tripCostMapper.saveCost(tripCost);
     }
@@ -46,16 +43,29 @@ public class TripCostService {
         return tripCostMapper.getPublicCostList(tripCost);
     }
 
-    public List<TripCost> getPrivateCostList(TripCost tripCost){
-        return tripCostMapper.getPrivateCostList(tripCost);
+    public List<TripCost> getPrivateCostList(TripCost.TripCostRequest request){
+        return tripCostMapper.getPrivateCostList(request);
     }
 
     public int modifyPublicCost(List<TripCost> tripCostList){
-        return tripCostMapper.modifyPublicCost(tripCostList);
+
+        int listSize = tripCostList.size();
+
+        for(TripCost tripCost : tripCostList){
+            tripCostMapper.modifyPublicCost(tripCost);
+        }
+
+        return listSize;
     }
 
     public int modifyPrivateCost(List<TripCost> tripCostList){
-        return tripCostMapper.modifyPrivateCost(tripCostList);
+        int listSize = tripCostList.size();
+
+        for(TripCost tripCost : tripCostList){
+            tripCostMapper.modifyPrivateCost(tripCost);
+        }
+
+        return listSize;
     }
 
     public int removePublicCost(TripCost tripCost){

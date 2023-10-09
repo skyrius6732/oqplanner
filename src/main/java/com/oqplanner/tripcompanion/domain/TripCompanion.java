@@ -1,6 +1,9 @@
 package com.oqplanner.tripcompanion.domain;
 
+import com.oqplanner.tripcost.domain.TripCost;
 import lombok.*;
+
+import java.util.List;
 
 @Builder
 @Getter
@@ -15,5 +18,7 @@ public class TripCompanion {
     private String tripCompanionOrder;
     private String tripCompanionRegDt;
     private String tripCompanionModDt;
+
+    private List<TripCost.TripPrivateCost> tripPrivateCostList;
 
 }

@@ -1,5 +1,6 @@
 package com.oqplanner.tripcost.domain;
 
+import com.oqplanner.tripcompanion.domain.TripCompanion;
 import lombok.*;
 @Builder
 @Data
@@ -9,8 +10,10 @@ public class TripCost {
 
     private int tripCostNo;
     private String tripProjectNo;
+
     private String tripPrivateCostNo;
     private String tripPublicCostNo;
+
     private TripPrivateCost tripPrivateCost;
     private TripPublicCost tripPublicCost;
 
@@ -22,6 +25,7 @@ public class TripCost {
         private String tripPrivateCostNo;
         private String tripCompanionNo;
         private String tripPrivateCostUse;
+        private String tripPrivateCostOrder;
         private int tripPrivateCost;
         private String tripPrivateCostNote;
         private String tripPrivateCostRegDt;
@@ -44,5 +48,16 @@ public class TripCost {
         private String tripPublicCostModDt;
 //        private List<Cost> costList;
 
+    }
+
+    @Builder
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TripCostRequest{
+        private String tripProjectNo;
+        private String tripCompanionNo;
+        private String tripPublicCostNo;
+        private String tripPrivateCostNo;
     }
 }

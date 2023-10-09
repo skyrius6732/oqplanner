@@ -13,10 +13,10 @@ public interface TripCostMapper {
     int saveCost(TripCost tripCost);
 
     List<TripCost> getPublicCostList(TripCost tripCost);
-    List<TripCost> getPrivateCostList (TripCost tripCost);
+    List<TripCost> getPrivateCostList (TripCost.TripCostRequest request);
 
-    int modifyPublicCost(List<TripCost> tripCostList);
-    int modifyPrivateCost(List<TripCost> tripCostList);
+    int modifyPublicCost(TripCost tripCost);
+    int modifyPrivateCost(TripCost tripCost);
 
     int removePublicCost(TripCost tripCost);
     int removePrivateCost(TripCost tripCost);
