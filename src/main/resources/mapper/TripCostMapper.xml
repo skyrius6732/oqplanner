@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.oqplanner.tripcost.mapper.TripCostMapper">
+    <insert id="savePublicCost" parameterType="com.oqplanner.tripcost.domain.TripCost">
+        SET @max_order = COALESCE((SELECT MAX(TRIP_PUBLIC_COST_ORDER) FROM TRIP_PUBLIC_COST), 0);
+        INSERT INTO TRIP_PUBLIC_COST(
+            TRIP_PUBLIC_COST_USE,
+            TRIP_PUBLIC_COST_ORDER,
+            TRIP_PUBLIC_COST,
+            TRIP_PUBLIC_COST_NOTE,
+            TRIP_PUBLIC_COST_REG_DT,
+            TRIP_PUBLIC_COST_MOD_DT
+        )
+        VALUES
+            (
+                #{tripPublicCost.tripPublicCostUse},
+                @max_order := @max_order + 1,
+                #{tripPublicCost.tripPublicCost},
+                #{tripPublicCost.tripPublicCostNote},
+                sysdate(),
+                sysdate()
+            )
+        <selectKey keyProperty="tripPublicCostNo" resultType="String">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+
+    <insert id="savePrivateCost" parameterType="com.oqplanner.tripcost.domain.TripCost">
+        SET @max_order = COALESCE((SELECT MAX(TRIP_PRIVATE_COST_ORDER) FROM TRIP_PRIVATE_COST), 0);
+        INSERT INTO TRIP_PRIVATE_COST(
+        TRIP_COMPANION_NO,
+        TRIP_PRIVATE_COST_USE,
+        TRIP_PRIVATE_COST_ORDER,
+        TRIP_PRIVATE_COST,
+        TRIP_PRIVATE_COST_NOTE,
+        TRIP_PRIVATE_COST_REG_DT,
+        TRIP_PRIVATE_COST_MOD_DT
+        )
+        VALUES
+        (
+        #{tripPrivateCost.tripCompanionNo},
+        #{tripPrivateCost.tripPrivateCostUse},
+        @max_order := @max_order + 1,
+        #{tripPrivateCost.tripPrivateCost},
+        #{tripPrivateCost.tripPrivateCostNote},
+        sysdate(),
+        sysdate()
+        )
+        <selectKey keyProperty="tripPrivateCostNo" resultType="String">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <insert id="saveCost" parameterType="TripCost">
+        INSERT INTO TRIP_COST(
+            TRIP_PROJECT_NO,
+            TRIP_PRIVATE_COST_NO,
+            TRIP_PUBLIC_COST_NO
+        )
+        VALUES (
+            #{tripProjectNo},
+            #{tripPrivateCostNo},
+            #{tripPublicCostNo}
+        )
+    </insert>
+
+
+
+
+
+</mapper>

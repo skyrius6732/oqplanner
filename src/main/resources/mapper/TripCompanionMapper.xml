@@ -5,7 +5,7 @@
 <mapper namespace="com.oqplanner.tripcompanion.mapper.TripCompanionMapper">
 
     <insert id="saveCompanion" parameterType="java.util.List">
-        SET @max_order = (SELECT IFNULL(MAX(TRIP_COMPANION_ORDER), 0) + 1 FROM TRIP_COMPANION);
+        SET @max_order = COALESCE((SELECT MAX(TRIP_COMPANION_ORDER) FROM TRIP_COMPANION), 0);
         INSERT INTO TRIP_COMPANION(
             TRIP_PROJECT_NO,
             TRIP_COMPANION_NM,

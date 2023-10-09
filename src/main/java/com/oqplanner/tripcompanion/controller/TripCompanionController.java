@@ -2,13 +2,12 @@ package com.oqplanner.tripcompanion.controller;
 
 import com.oqplanner.tripcompanion.domain.TripCompanion;
 import com.oqplanner.tripcompanion.service.TripCompanionService;
-import com.oqplanner.tripschedule.domain.TripSchedule;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.ParseException;
+
 import java.util.List;
-import java.util.Map;
+
 
 @Tag(name="trip-companion-controller",  description = "여행 동행자 Controller 입니다.")
 @RestController
