@@ -55,13 +55,18 @@ public class TripCostController {
     }
 
     @DeleteMapping("/public/info")
-    public int removePublicCost(@RequestBody TripCost tripCost){
-        return tripCostService.removePublicCost(tripCost);
+    public int removePublicCost(@RequestBody List<TripCost.TripCostRequest> tripCostList){
+        return tripCostService.removePublicCost(tripCostList);
     }
 
     @DeleteMapping("/private/info")
-    public int removePrivateCost(@RequestBody TripCost tripCost){
-        return tripCostService.removePrivateCost(tripCost);
+    public int removePrivateCost(@RequestBody List<TripCost.TripCostRequest> tripCostList){
+        return tripCostService.removePrivateCost(tripCostList);
+    }
+
+    @DeleteMapping("/info/all")
+    public void removePrivateCost(@RequestBody TripCost.TripCostRequest request){
+        tripCostService.removeCostAll(request);
     }
 
 

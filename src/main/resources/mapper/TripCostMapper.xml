@@ -191,7 +191,57 @@
         </where>
     </update>
 
+    <delete id="removePublicCost" parameterType="com.oqplanner.tripcost.domain.TripCost$TripCostRequest">
+        DELETE
+          FROM TRIP_PUBLIC_COST
+        <where>
+            <if test='tripPublicCostNo != null and tripPublicCostNo != ""'>
+                AND TRIP_PUBLIC_COST_NO = #{tripPublicCostNo}
+            </if>
+            <if test='tripProjectNo != null and tripProjectNo != ""'>
+                TRIP_PUBLIC_COST_NO IN(
+                SELECT TRIP_PUBLIC_COST_NO
+                FROM TRIP_COST
+                WHERE TRIP_PROJECT_NO = #{tripProjectNo}
+                AND TRIP_PUBLIC_COST_NO IS NOT NULL
+                )
+            </if>
+        </where>
+    </delete>
 
+    <delete id="removePrivateCost" parameterType="com.oqplanner.tripcost.domain.TripCost$TripCostRequest">
+        DELETE
+        FROM TRIP_PRIVATE_COST
+        <where>
+            <if test='tripPrivateCostNo != null and tripPrivateCostNo != ""'>
+                AND TRIP_PRIVATE_COST_NO = #{tripPrivateCostNo}
+            </if>
+            <if test='tripProjectNo != null and tripProjectNo != ""'>
+                TRIP_PRIVATE_COST_NO IN(
+                    SELECT TRIP_PRIVATE_COST_NO
+                    FROM TRIP_COST
+                    WHERE TRIP_PROJECT_NO = #{tripProjectNo}
+                    AND TRIP_PRIVATE_COST_NO IS NOT NULL
+                )
+            </if>
+        </where>
+    </delete>
+
+    <delete id="removeCost" parameterType="com.oqplanner.tripcost.domain.TripCost$TripCostRequest">
+        DELETE
+        FROM TRIP_COST
+        <where>
+            <if test='tripProjectNo != null and tripProjectNo != ""'>
+                AND TRIP_Project_NO = #{tripProjectNo}
+            </if>
+            <if test='tripPublicCostNo != null and tripPublicCostNo != ""'>
+                AND TRIP_PUBLIC_COST_NO = #{tripPublicCostNo}
+            </if>
+            <if test='tripPrivateCostNo != null and tripPrivateCostNo != ""'>
+                AND TRIP_PRIVATE_COST_NO = #{tripPrivateCostNo}
+            </if>
+        </where>
+    </delete>
 
 
 </mapper>

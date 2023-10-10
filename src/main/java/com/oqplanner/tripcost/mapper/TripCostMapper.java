@@ -18,6 +18,9 @@ public interface TripCostMapper {
     int modifyPublicCost(TripCost tripCost);
     int modifyPrivateCost(TripCost tripCost);
 
-    int removePublicCost(TripCost tripCost);
-    int removePrivateCost(TripCost tripCost);
+    int removePublicCost(TripCost.TripCostRequest request);
+    int removePrivateCost(TripCost.TripCostRequest request);
+
+    int removeCost(TripCost.TripCostRequest request);
+
 }
