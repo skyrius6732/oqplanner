@@ -1,9 +1,5 @@
 <template>
     <v-toolbar app>
-      <span class="hidden-sm-and-up">
-        <v-toolbar-side-icon @click="sidebar = !sidebar">
-        </v-toolbar-side-icon>
-      </span>
       <v-toolbar-title>
         <router-link to="/" style="cursor: pointer">
           {{ appTitle }}
@@ -14,7 +10,7 @@
 </template>
 <script>
 export default {
-  name: "App",
+  name: "AppHeader",
   data(){
     return {
       appTitle: 'OQPlanner',

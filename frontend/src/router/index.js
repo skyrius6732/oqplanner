@@ -2,13 +2,18 @@ import { createRouter, createWebHistory } from "vue-router";
 // import TripSelect from "@/components/TripSelect.vue";
 
 const routerOptions = [
-  { path: "/select", name: "TripSelect", component: "TripSelect" },
+  { path: "/", name: "", component: "", menu: "" },
+  { path: "/select", name: "TripSelect", component: "TripSelect", menu: "tripSelect" },
+  { path: "/schedule", name: "", component: "", menu: "" },
+  { path: "/cost", name: "", component: "", menu: "" },
+  { path: "/favorits", name: "", component: "", menu: "" },
+  { path: "/share", name: "", component: "", menu: "" },
 ];
 
 const routes = routerOptions.map(route => {
   return {
     ...route,
-    component: () => import(`../components/${route.component}.vue`)
+    component: () => import(`../components/${route.menu}/${route.component}.vue`)
   };
 });
 

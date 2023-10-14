@@ -5,6 +5,7 @@
         :key="menu.title"
         :to="menu.path"
         @click="openDialog(menu.title)"
+        :disabled="menu.title != 'Select' && isSelecting"
       >
        <v-icon>{{menu.icon}}</v-icon>
        <span>{{menu.text}}</span>
@@ -25,14 +26,23 @@ export default {
         { title: 'Favorits', path: '/favorits', icon: 'mdi-star-box', text: '여행 즐찾' },
         { title: 'Share', path: '/share', icon: 'mdi-share-variant', text: '여행 추천' },
       ],
+
+      //선택 중인지 여부를 나타내는 상태
+      isSelecting: false,
     };
   },
   methods: {
     openDialog(title) {
       if(title == 'Select'){
+         // 여행 선택 시 true
+        this.isSelecting = true;
+
+        // 여행 선택 버튼 클릭 시 TripSelect.vue의 openDialog 메서드 호출
         this.emitter.emit('openDialog', true);
+      }else{
+        // this.isSelecting = false;
       }
-      // 여행 선택 버튼 클릭 시 TripSelect.vue의 openDialog 메서드 호출
+      
     },
   }
 };
