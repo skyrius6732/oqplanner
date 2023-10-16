@@ -12,7 +12,7 @@
         class="gray-text-field no-cursor "
         disabled></v-text-field>
       <v-text-field label="여행자 이름" 
-        v-model="tripName" 
+        v-model="tripUserName" 
         placeholder="여행자 본인 이름을 입력해 주세요."
         class="gray-text-field no-cursor"
         disabled></v-text-field>
@@ -89,11 +89,11 @@ export default {
   data(){
     return {
       tripPlanName: "",
-      tripName: "",
+      tripUserName: "",
       companionName: "",
       tripYear: new Date().getFullYear(),
       tripYears: [],
-      tripStartTime: {string: "09시00분", value: "0900"},
+      tripStartTime: "0900",
       tripStartTimes: [
         {string: "00시00분", value: "0000"}, {string: "01시00분", value: "0100"}, {string: "02시00분", value: "0200"},
         {string: "03시00분", value: "0300"}, {string: "04시00분", value: "0400"}, {string: "05시00분", value: "0500"},
@@ -104,15 +104,13 @@ export default {
         {string: "18시00분", value: "1800"}, {string: "19시00분", value: "1900"}, {string: "20시00분", value: "2000"},
         {string: "21시00분", value: "2100"}, {string: "22시00분", value: "2200"}, {string: "23시00분", value: "2300"},
       ],
-      tripPlanUnit: {string: "1시간", value: 60},
+      tripPlanUnit: 60,
       tripPlanUnits: [
         {string : "20분", value: 20},{string : "30분", value: 30},
         {string : "1시간", value: 60},{string : "2시간", value: 120},
         {string : "3시간", value: 180},{string : "4시간", value: 240},
         {string : "6시간", value: 360},
       ],
-
-      tripDate: "",
       showDetailFields: false,  // v-checkbox 상태를 추적하는 변수 추가
       tripPlanNameRules: [
           v => !!v || '여행 이름은 필수사항 입니다.',
@@ -148,10 +146,10 @@ export default {
   },
   mounted(){
      this.emitter.on('submitDetail', (data)=>{
-        this.tripName = data.tripName;
+        this.tripUserName = data.tripUserName;
         this.tripPlanName = data.tripPlanName;
 
-        console.log("data.tripName :: " + data.tripName)
+        console.log("data.tripUserName :: " + data.tripUserName)
         console.log("data.companionName :: " + data.companionName)
      });
 
@@ -181,7 +179,20 @@ export default {
     },
     makeTrip(){
         const moment = require('moment');
-        const compareFlag = moment(this.tripStartDate).isBefore(this.tripEndDate);
+        const startDateString = this.tripYear+this.tripStartDate;
+        const endDateString = this.tripYear+this.tripEndDate;
+        console.log("startDateString : " + startDateString);
+        console.log("endDateString : " + endDateString);
+
+        const formattedStartDate = startDateString.substring(0, 4)+"-"+parseInt(startDateString.substring(4, 6))+"-"+ startDateString.substring(6, 8);
+        const formattedEndDate = endDateString.substring(0, 4)+"-"+parseInt(endDateString.substring(4, 6))+"-"+ endDateString.substring(6, 8);
+        
+        const startDateMoment = moment(formattedStartDate);
+        const endDateMoment = moment(formattedEndDate);
+
+        const planAllNum = endDateMoment.diff(startDateMoment, 'days')+1;
+        const compareFlag = moment(startDateMoment).isBefore(endDateMoment);
+
         console.log(compareFlag);
         if(!compareFlag){
           this.alertMessage = "여행시작 날짜는 여행종료 날짜 보다 작아야합니다."
@@ -189,8 +200,43 @@ export default {
         }else{  
           this.alertMessage = ""; // 에러 메시지 초기화
           this.alert = false;
-          
+          const tripUser = {
+            tripUserName: this.tripUserName,
+            tripProjYn: "Y",
+          };
 
+        
+          const tripPlan = {
+            tripPlanNm: this.tripPlanName,
+            tripPlannerNm: this.tripUserName,
+            tripPlanStDt: formattedStartDate,
+            tripPlanEdDt: formattedEndDate,
+            tripPlanDefaultYn : "Y",
+            tripPlanStTime: this.tripStartTime,
+            tripPlanTimeUnit: this.tripPlanUnit,
+            tripPlanAllNum: planAllNum,
+          }
+
+            console.log(this.tripPlanName);
+            console.log(this.tripUserName); 
+            console.log(formattedStartDate); 
+            console.log(formattedEndDate); 
+            console.log(planAllNum); 
+
+
+          this.$axios.post('/trip/user/info', tripUser)
+           .then(userResponse => {
+              // 성공적으로 전송된 경우의 처리
+              console.log(userResponse.data);
+              return this.$axios.post(`/trip/plan/info`, tripPlan);
+            })
+            .then(planResponse => {
+               console.log(planResponse.data);
+            })
+            .catch(error => {
+              // 전송 중 오류가 발생한 경우의 처리
+              console.error(error);
+          });
 
         }
     },

@@ -19,9 +19,9 @@
           </v-text-field>
           <v-text-field 
             label="여행자 이름" 
-            v-model="tripName" 
+            v-model="tripUserName" 
             placeholder="여행자 본인 이름을 입력해 주세요."
-            :rules="tripNameRules"
+            :rules="tripUserNameRules"
             class="name-input no-cursor">
           </v-text-field>
           <!-- <v-text-field 
@@ -46,14 +46,14 @@ export default {
     return {
         inputs: {},
         tripPlanName: "", //여행 이름 데이터
-        tripName: "", // 여행자 이름 데이터
+        tripUserName: "", // 여행자 이름 데이터
         companionName: "", // 동행자 이름 데이터
         flag: true,
         tripPlanNameRules: [
           v => !!v || '여행 이름은 필수사항 입니다.',
           v => !( v && v.length > 8) || '여행 이름은 8자 이상 입력할 수 없습니다.'
         ],
-        tripNameRules: [
+        tripUserNameRules: [
           v => !!v || '여행자 이름은 필수사항 입니다.',
           v => /^[가-힣a-zA-Z\s]*$/.test(v) || '여행자 이름은 한글/영어만 입력 가능합니다.',
           v => !( v && v.length > 15) || '여행자 이름은 8자 이상 입력할 수 없습니다.',
@@ -83,10 +83,10 @@ export default {
             //   flags.overlay = true;
             
             console.log("여행 이름:", this.tripPlanName);
-            console.log("여행자 이름:", this.tripName);
+            console.log("여행자 이름:", this.tripUserName);
 
             this.inputs.tripPlanName = this.tripPlanName;
-            this.inputs.tripName = this.tripName;
+            this.inputs.tripUserName = this.tripUserName;
             
 
             // submitTrip의 이름으로 이벤트로 걸어
