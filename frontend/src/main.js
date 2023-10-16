@@ -15,6 +15,6 @@ let emitter = mitt();
 let app = createApp(App);
 
 app.config.globalProperties.emitter = emitter;
-app.config.compilerOptions.isCustomElement = (tag) => tag.startsWith('v-');
+// app.config.compilerOptions.isCustomElement = (tag) => tag.startsWith('v-');
 
 app.use(router).use(vuetify).mount('#app')
