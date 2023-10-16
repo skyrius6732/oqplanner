@@ -1,0 +1,2 @@
+"use strict";(self["webpackChunkfrontend"]=self["webpackChunkfrontend"]||[]).push([[244],{4244:function(n,e,r){r.r(e),r.d(e,{default:function(){return o}});var t=r(3396);function a(n,e,r,a,u,d){const l=(0,t.up)("v-date-picker");return(0,t.wg)(),(0,t.iD)("div",null,[(0,t.Wm)(l,{"v-model":u.range},null,8,["v-model"])])}var u={name:"TripCalendar",data(){return{range:""}},props:{}},d=r(89);const l=(0,d.Z)(u,[["render",a]]);var o=l}}]);
+//# sourceMappingURL=244.23cc828e.js.map
