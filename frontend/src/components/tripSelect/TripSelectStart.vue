@@ -31,11 +31,21 @@
             placeholder="여행 동행자 이름을 입력해 주세요." 
             class="no-cursor"></v-text-field> -->
         </v-form>
-        <v-card-actions>
+        <v-card-actions class="button-container">
           <!-- 확인 및 취소 버튼 -->
-          <v-btn @click="submitCompanion" color="primary">동행하기</v-btn>
-          <v-btn @click="submitTrip(this.flag)" color="primary">여행하기</v-btn>
+          <v-btn @click="submitCompanion" color="black" class="action-button">동행하기</v-btn>
+          <v-btn @click="submitTrip(this.flag)" color="black" class="action-button">여행하기</v-btn>
         </v-card-actions>
+          <v-alert 
+          v-model="alert"
+          type="warning"
+          class="disabled-alert"
+          transition="scale-transition"
+          closable
+          prominent
+          >
+          {{ alertMessage }}
+        </v-alert>
       </v-card>
     </div>
 </template>
@@ -63,7 +73,9 @@ export default {
           v => /^[가-힣a-zA-Z\s]*$/.test(v) || '동행자 이름은 한글/영어만 입력 가능합니다.',
           v => !( v && v.length > 15) || '동행자 이름은 8자 이상 입력할 수 없습니다.',
           // v => this.checkCompanion(v)
-        ]
+        ],
+        alertMessage: "", // v-alert에 표시할 메시지
+        alert: false,
     }
   },
   methods: {
@@ -77,24 +89,52 @@ export default {
     async submitTrip(flag){
       await this.$refs.form.validate().then(result => {
           if (result.valid) {
-            console.log('validate pass');
+            // const tripPlannerNmEncoded = encodeURIComponent(this.tripUserName);
+            // const tripPlanNmEncoded = encodeURIComponent(this.tripPlanName);
 
-            //   flags.startFlag = true;
-            //   flags.overlay = true;
+            // const tripPlan ={
+            //   tripPlannerNm: tripPlannerNmEncoded,
+            //   tripPlanNm: tripPlanNmEncoded,
+            // }
+
+            const tripPlan ={
+              tripPlannerNm: this.tripUserName,
+              tripPlanNm: this.tripPlanName,
+            }
+
+            // console.log("tripPlannerNm", tripPlannerNmEncoded);
+            // console.log("tripPlanNm", tripPlanNmEncoded);
+
+            this.$axios.get('/trip/plan/info', { 
+              params: tripPlan 
+            }).then(planResponse => {
+                  const tripPlanNo = planResponse.data.tripPlanNo;
+
+                  if(tripPlanNo == undefined){
+                  console.log("planRes", planResponse.data.tripPlanNo);
+                  //   flags.startFlag = true;
+                  //   flags.overlay = true;
+
+                  this.inputs.tripPlanName = this.tripPlanName;
+                  this.inputs.tripUserName = this.tripUserName;
+                  
+
+                  // submitTrip의 이름으로 이벤트로 걸어
+                  // TripSelect.vue에서 @submitTrip=submitTrip 실행
+                  this.$emit("submitTrip", flag);
+                  this.emitter.emit('submitDetail', this.inputs);
+                  
+                  // this.$refs.form.reset();
+                }else{
+                  this.alertMessage = "이미 만들어진 여행 이름 입니다.";
+                  this.alert = true;
+                }
+            })
+            .catch(error => {
+              // 전송 중 오류가 발생한 경우의 처리
+              console.error(error);
+            });
             
-            console.log("여행 이름:", this.tripPlanName);
-            console.log("여행자 이름:", this.tripUserName);
-
-            this.inputs.tripPlanName = this.tripPlanName;
-            this.inputs.tripUserName = this.tripUserName;
-            
-
-            // submitTrip의 이름으로 이벤트로 걸어
-            // TripSelect.vue에서 @submitTrip=submitTrip 실행
-            this.$emit("submitTrip", flag);
-            this.emitter.emit('submitDetail', this.inputs);
-
-            // this.$refs.form.reset();
           }else{
             console.log('validate fail');
           }
@@ -173,6 +213,32 @@ export default {
 .v-card-actions {
   display: flex;
   justify-content: center;
+}
+
+.disabled-alert{
+  margin: auto;
+  text-align: center;
+  width: 100%; 
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.action-button {
+  flex: 1;
+  margin: 0 10px;
+  color: #fff;
+}
+
+.action-button.primary {
+  background-color: #333;
 }
 
 </style>

@@ -1,11 +1,17 @@
 <template>
   <v-bottom-navigation grow>
-    <v-btn
+    <!-- <v-btn
         v-for="menu in menus"
         :key="menu.title"
         :to="menu.path"
-        @click="openDialog(menu.title)"
+        @click="openPage(menu.title)"
         :disabled="menu.title != 'Select' && isSelecting"
+      > -->
+      <v-btn
+        v-for="menu in menus"
+        :key="menu.title"
+        :to="menu.path"
+        @click="openPage(menu.title)"
       >
        <v-icon>{{menu.icon}}</v-icon>
        <span>{{menu.text}}</span>
@@ -32,14 +38,18 @@ export default {
     };
   },
   methods: {
-    openDialog(title) {
+    openPage(title) {
       if(title == 'Select'){
          // 여행 선택 시 true
         this.isSelecting = true;
 
         // 여행 선택 버튼 클릭 시 TripSelect.vue의 openDialog 메서드 호출
-        this.emitter.emit('openDialog', true);
-      }else{
+        this.emitter.emit('openSelect', true);
+      }else if(title == 'Schedule'){
+        // this.isSelecting = true;
+        // this.emitter.emit('openSchedule', true);
+      }
+      else{
         // this.isSelecting = false;
       }
       

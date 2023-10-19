@@ -4,6 +4,7 @@
     <div @click="openStartDialog" class="close-button">
       <v-icon>mdi-close</v-icon>
     </div>
+    <v-form ref="form" lazy-validation>
     <v-card class="custom-card">
       <v-text-field label="여행 이름" 
         v-model="tripPlanName" 
@@ -78,6 +79,7 @@
         {{ alertMessage }}
       </v-alert>
     </v-card>
+    </v-form>
   </div>
 </template>
 <script>
@@ -177,68 +179,91 @@ export default {
         return "날짜 형식이 아닙니다.";
       }
     },
-    makeTrip(){
-        const moment = require('moment');
-        const startDateString = this.tripYear+this.tripStartDate;
-        const endDateString = this.tripYear+this.tripEndDate;
-        console.log("startDateString : " + startDateString);
-        console.log("endDateString : " + endDateString);
+    async makeTrip(){// form validate() 사용할것 해야함!
+      await this.$refs.form.validate().then(result => {
+        if (result.valid) {
+            const moment = require('moment');
+            const startDateString = this.tripYear+this.tripStartDate;
+            const endDateString = this.tripYear+this.tripEndDate;
+            const formattedStartDate = startDateString.substring(0, 4)+"-"+parseInt(startDateString.substring(4, 6))+"-"+ startDateString.substring(6, 8);
+            const formattedEndDate = endDateString.substring(0, 4)+"-"+parseInt(endDateString.substring(4, 6))+"-"+ endDateString.substring(6, 8);
+            const startDateMoment = moment(formattedStartDate);
+            const endDateMoment = moment(formattedEndDate);
 
-        const formattedStartDate = startDateString.substring(0, 4)+"-"+parseInt(startDateString.substring(4, 6))+"-"+ startDateString.substring(6, 8);
-        const formattedEndDate = endDateString.substring(0, 4)+"-"+parseInt(endDateString.substring(4, 6))+"-"+ endDateString.substring(6, 8);
-        
-        const startDateMoment = moment(formattedStartDate);
-        const endDateMoment = moment(formattedEndDate);
+            const planAllNum = endDateMoment.diff(startDateMoment, 'days')+1;
+            const compareFlag = moment(startDateMoment).isBefore(endDateMoment);
 
-        const planAllNum = endDateMoment.diff(startDateMoment, 'days')+1;
-        const compareFlag = moment(startDateMoment).isBefore(endDateMoment);
+            console.log(compareFlag);
+            if(!compareFlag){
+              this.alertMessage = "여행시작 날짜는 여행종료 날짜 보다 작아야합니다."
+              this.alert = true;
+            }else{  
+              this.alertMessage = ""; // 에러 메시지 초기화
+              this.alert = false;
+              const tripUser = {
+                tripUserName: this.tripUserName,
+                tripProjYn: "Y",
+              };
 
-        console.log(compareFlag);
-        if(!compareFlag){
-          this.alertMessage = "여행시작 날짜는 여행종료 날짜 보다 작아야합니다."
-          this.alert = true;
-        }else{  
-          this.alertMessage = ""; // 에러 메시지 초기화
-          this.alert = false;
-          const tripUser = {
-            tripUserName: this.tripUserName,
-            tripProjYn: "Y",
-          };
+            
+              const tripPlan = {
+                tripPlanNm: this.tripPlanName,
+                tripPlannerNm: this.tripUserName,
+                tripPlanStDt: formattedStartDate,
+                tripPlanEdDt: formattedEndDate,
+                tripPlanDefaultYn : "Y",
+                tripPlanStTime: this.tripStartTime,
+                tripPlanTimeUnit: this.tripPlanUnit,
+                tripPlanAllNum: planAllNum,
+              }
+              
+              this.$axios.post('/trip/user/info', tripUser)
+              .then(userResponse => {
+                  // 성공적으로 전송된 경우의 처리
+                  console.log(userResponse.data);
+                  // userResponse
 
-        
-          const tripPlan = {
-            tripPlanNm: this.tripPlanName,
-            tripPlannerNm: this.tripUserName,
-            tripPlanStDt: formattedStartDate,
-            tripPlanEdDt: formattedEndDate,
-            tripPlanDefaultYn : "Y",
-            tripPlanStTime: this.tripStartTime,
-            tripPlanTimeUnit: this.tripPlanUnit,
-            tripPlanAllNum: planAllNum,
-          }
+                  return this.$axios.post(`/trip/plan/info`, tripPlan);
+                })
+                .then(planResponse => {
+                  console.log("success planResponse");
+                  console.log(planResponse.data);
 
-            console.log(this.tripPlanName);
-            console.log(this.tripUserName); 
-            console.log(formattedStartDate); 
-            console.log(formattedEndDate); 
-            console.log(planAllNum); 
+                  // session값 호출
+                  return this.$axios.get('/common/api/getSessionValue')
+
+                }).then(sessionResponse => {
+                  console.log("success sessionResponse");
+                  console.log(sessionResponse.data);
+
+                  // 세션값 저장
+                  const projectNoSession = sessionResponse.data.projectNoSession;
+                  const userNoSession = sessionResponse.data.userNoSession;
+
+                  // vue-session 모듈 인식을 못함..
+                  // this.$session.set('projectNoSession', projectNoSession);
+                  // this.$session.set('userNoSession', userNoSession);
+
+                  // sessionStorage 사용
+                  sessionStorage.setItem('projectNoSession', projectNoSession);
+                  sessionStorage.setItem('userNoSession', userNoSession);
 
 
-          this.$axios.post('/trip/user/info', tripUser)
-           .then(userResponse => {
-              // 성공적으로 전송된 경우의 처리
-              console.log(userResponse.data);
-              return this.$axios.post(`/trip/plan/info`, tripPlan);
-            })
-            .then(planResponse => {
-               console.log(planResponse.data);
-            })
-            .catch(error => {
-              // 전송 중 오류가 발생한 경우의 처리
-              console.error(error);
-          });
+                  // 팝업창 클로징 부모 컴포넌트 closeDialog 등록 하여 이벤트 호출
+                  this.$emit("closeDialog");
 
+                  // router 이동
+                  this.$router.push('/schedule');
+                  
+
+                }).catch(error => {
+                  // 전송 중 오류가 발생한 경우의 처리
+                  console.error(error);
+                });
+              
+            }
         }
+      })
     },
   }
 };
@@ -305,7 +330,6 @@ export default {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-
 }
 
 .scale-transition {

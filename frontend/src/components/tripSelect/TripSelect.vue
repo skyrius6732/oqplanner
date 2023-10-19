@@ -9,8 +9,9 @@
     :class="{'disabled-modal': this.startFlag}"/>
 
    <TripSelectDetail
-   @openStartDialog="openStartDialog(true)"
-   :class="{'disabled-modal': this.detailFlag}"/>
+    @closeDialog="closeDialog"
+    @openStartDialog="openStartDialog(true)"
+    :class="{'disabled-modal': this.detailFlag}"/>
    
     
   </div>
@@ -41,7 +42,7 @@ export default {
   },
   mounted(){
     // Footer.vue에서 openDialog 이름으로 걸어준 메서드의 실체부
-     this.emitter.on('openDialog', (data)=>{
+     this.emitter.on('openSelect', (data)=>{
              this.overlay = data;
              this.startFlag = !data;
              this.detailFlag = data;
@@ -63,17 +64,7 @@ export default {
     },
 
     submitTrip(flag) {
-    
-      // this.overlay = flags.overlay;
-      // this.detailFlag = !flags.startFlag;
-      console.log("flag ::: " + flag);
       this.openDetailDialog(flag);
-
-
-      // 폼 닫기
-      // this.closeDialog();
-
-
     },
     closeOverlay() {
       // 투명한 배경 클릭 시 팝업 창 닫기

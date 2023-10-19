@@ -85,13 +85,15 @@ public class TripScheduleService {
                 } else {
                     int intNum = Integer.parseInt(frontSt);
                     if(timeUnit <= 60) {
-                        intNum = intNum + 1;
+                        intNum = intNum + 1;        // 1시간
                     }else if(60 < timeUnit && timeUnit <= 120){
-                        intNum = intNum + 2;
+                        intNum = intNum + 2;        // 2시간
                     }else if(120 < timeUnit && timeUnit <= 180){
-                        intNum = intNum + 3;
+                        intNum = intNum + 3;        // 3시간
                     }else if(180 < timeUnit && timeUnit <= 240){
-                        intNum = intNum + 4;
+                        intNum = intNum + 4;        // 4시간
+                    }else if(240 < timeUnit && timeUnit <= 360){
+                        intNum = intNum + 6;        // 6시간
                     }
 
                     if (intNum < 10) {
@@ -153,12 +155,12 @@ public class TripScheduleService {
         // saveSchedule의 파라미터로 전달
 
         // 추후에 앞단에서 session 통해 tripProjectNo 가져 와야함
-        // 현재는 포스트맨에서 전달
 
         // 추후에 saveSchedule 메서드 태우기전에
         // 예를들어 여행일자가 4일 일때 추가적으로 5일째 schedule 등록방지를 위해
         // 체크로직이 필요함(해당 사항은 백단보다 프론트단에서 4일이 등록이 되어있다면
         // UI 적으로 + 버튼을 없애 진행하는것이 좋겠음)
+        // 4일로 정했으면 추가적으로 안넣겠다는거구나..? (2023-10-18) 알겟슴
         tripProject = tripScheduleMapper.getPlanInfoBytripProjectNo(tripProject);
 
         return saveSchedule(tripProject,"add");
@@ -356,6 +358,7 @@ public class TripScheduleService {
         int planNum = tripProject.getTripPlan().getTripPlanAllNum();
         returnMap.put("TRIP_PLAN_ST_DT", tripProject.getTripPlan().getTripPlanStDt());
         returnMap.put("TRIP_PLAN_ED_DT", tripProject.getTripPlan().getTripPlanEdDt());
+        returnMap.put("TRIP_PLAN_ALL_NUM", planNum);
 
         // String to Date 후 형식변환 하여 select 태움
         Date date = tripProject.getTripPlan().getTripPlanStDt();
@@ -371,9 +374,16 @@ public class TripScheduleService {
                     .tripProjectNo(tripProjectNo)
                     .tripScheduleDay(i).build();
             Map map = tripScheduleMapper.getScheduleListByDate(tripSchedule);
-            String currentDay = sdf.format(calendar.getTime());
-            map.put("TRIP_CURRENT_DAY", currentDay);
-            calendar.add(Calendar.DATE, 1);
+
+            if(map == null){
+                map = new HashMap();
+                map.put("deletedDate",true);
+            }else{
+                String currentDay = sdf.format(calendar.getTime());
+                map.put("TRIP_CURRENT_DAY", currentDay);
+                calendar.add(Calendar.DATE, 1); // 일 증가
+                map.put("deletedDate",false);
+            }
             scheduleList.add(map);
         }
         returnMap.put("scheduleList", scheduleList);
@@ -382,11 +392,13 @@ public class TripScheduleService {
         return returnMap;
     }
 
-    public int removeSchedule(Map<String,String> paramMap) throws ParseException {
+    public int removeSchedule(Map<String,Object> paramMap) throws ParseException {
 
         int returnNum = 0;
-        String tripProjectNo = paramMap.get("tripProjectNo");
-        int tripDelDay = Integer.parseInt(paramMap.get("tripScheduleDay"));
+        String tripProjectNo = (String)paramMap.get("tripProjectNo");
+        int tripDelDay = (Integer) paramMap.get("tripScheduleDay");
+
+
 
         TripProject tripProject = TripProject.builder().tripProjectNo(tripProjectNo).build();
         tripProject = tripScheduleMapper.getPlanInfoBytripProjectNo(tripProject);

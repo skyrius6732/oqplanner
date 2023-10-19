@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpSession;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +45,7 @@ public class TripPlanController {
             @ApiResponse(responseCode = "200", description = "여행계획 리스트 조회 성공", content = @Content(schema = @Schema(implementation = User.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = Error.class)))
     })
-    @GetMapping("/info/list")
+    @PostMapping("/info/list")
     public List<TripPlan> getPlanInfoList(@RequestBody TripPlan tripPlan) {
         return tripPlanService.getPlanInfoList(tripPlan);
     }
@@ -55,7 +56,11 @@ public class TripPlanController {
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @GetMapping("/info")
-    public TripPlan getPlanInfo(@RequestBody TripPlan tripPlan) {
+    public TripPlan getPlanInfo(@RequestParam String tripPlanNm, @RequestParam String tripPlannerNm) {
+        TripPlan tripPlan = TripPlan.builder()
+                .tripPlanNm(tripPlanNm)
+                .tripPlannerNm(tripPlannerNm)
+                .build();
         return tripPlanService.getPlanInfo(tripPlan);
     }
 

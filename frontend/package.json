@@ -13,10 +13,13 @@
     "core-js": "^3.8.3",
     "mitt": "^3.0.1",
     "moment": "^2.29.4",
+    "qs": "^6.11.2",
     "roboto-fontface": "*",
     "vue": "^3.2.13",
     "vue-router": "^4.2.5",
+    "vue-session": "^1.0.0",
     "vuetify": "^3.3.21",
+    "vuetify3-time-range-picker": "^1.0.2",
     "webfontloader": "^1.0.0"
   },
   "devDependencies": {

@@ -182,13 +182,13 @@
 
     <select id="getScheduleListByDate" parameterType="TripSchedule" resultType="map">
         SELECT ts.TRIP_SCHEDULE_DAY ,
-               GROUP_CONCAT(ts.TRIP_SCHEDULE_DEPART ORDER BY ts.TRIP_SCHEDULE_ORDER asc SEPARATOR '/') AS TRIP_ROOT,
-               (ts.TRIP_SCHEDULE_COST) AS COST,
+               GROUP_CONCAT(ts.TRIP_SCHEDULE_DEPART ORDER BY ts.TRIP_SCHEDULE_ORDER asc SEPARATOR '/') AS TRIP_ROUTE,
+               SUM(ts.TRIP_SCHEDULE_COST) AS TRIP_COST,
                GROUP_CONCAT(ts.TRIP_SCHEDULE_NOTE ORDER BY ts.TRIP_SCHEDULE_ORDER asc SEPARATOR '/') AS TRIP_NOTE
         FROM TRIP_SCHEDULE ts
         WHERE ts.TRIP_PROJECT_NO = #{tripProjectNo}
           AND ts.TRIP_SCHEDULE_DAY = #{tripScheduleDay}
-        GROUP BY ts.TRIP_SCHEDULE_DAY;
+        GROUP BY ts.TRIP_SCHEDULE_DAY
     </select>
 
     <delete id="removeSchedule" parameterType="TripSchedule">
