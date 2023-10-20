@@ -1,5 +1,10 @@
 <template>
   <v-container class="custom-container">
+    <div class="d-flex justify-space-between mb-2">
+          <div>
+           <span class="subtitle-detail">일정 간략히 보기</span>
+          </div>
+    </div>
     <v-row>
       <v-col v-for="(schedule, index) in schedules" :key="index" :cols="4">
         <v-card class="custom-card">
@@ -83,15 +88,16 @@
             </template>
               </div>
         </div>
+        <!-- height selectedScheduleDetails 개수에 따라 동적변경 진행 -->
         <v-data-table
         :headers="tableHeaders"
         :items="selectedScheduleDetails"
         class="elevation-1"
-        height="400"
+        height="1000px"   
         item-value=""
         >
         <template v-slot:body="{ items }">
-            <tr v-for="(schedule, index) in items" :key="index">
+            <tr v-for="(schedule, index) in items" :key="index" class="tr-style">
               <!-- 편집 모드 -->
               <template v-if="isEditing">
                 <td
@@ -99,19 +105,51 @@
                   :key="key"
                   :class="{}"
                 >
+                  <!-- 시간 형식 time-range-picker로 보여주기 -->
                   <template v-if="key == 'time'">
-                  <time-range-picker
-                    :modelValue="times[index]"
-                    @update:modelValue="val => times[key] = val"
-                    :hide-whole-day-checkbox="hideWholeDayCheckbox"
-                    input-label=""
-                    step="30"
-                    class="margin"
-                  />
+                      <div>
+                        <vue-timepicker 
+                          v-model="value[index].start" 
+                          class="start-timpicker" 
+                          @change="checkTimes(value,index,items,'startTime')"/>
+                        <vue-timepicker 
+                          v-model="value[index].end" 
+                          class="end-timpicker"
+                          @change="checkTimes(value,index,items,'endTime')" />
+                      
+                      <v-row 
+                        v-show="value[index].alertFlag"
+                        class="alert-message"
+                      > {{ value[index].alertMessage }}</v-row>
+                      </div>
+                  </template>
+                  <template v-else-if="key == 'transportation'">
+                    <v-select
+                      v-model="schedule.columns[key]"
+                      :items="transPortations"
+                      item-title="value"
+                      class="margin"
+                    ></v-select>
+                  </template>
+                  <template v-else-if="key == 'cost'">
+                    <v-text-field 
+                      v-model="schedule.columns[key]" 
+                      @update:modelValue="val => schedule.columns[key] = val"
+                      :rules="costRules"
+                      class="margin">
+                    </v-text-field>
+                  </template>
+                  <template v-else-if="key == 'remarks'">
+                    <v-text-field 
+                      v-model="schedule.columns[key]" 
+                      @update:modelValue="val => schedule.columns[key] = val"
+                      :rules="remarkRules"
+                      class="margin">
+                    </v-text-field>
                   </template>
                   <template v-else>
                     <v-text-field 
-                      :modelValue="schedule.columns[key]" 
+                      v-model="schedule.columns[key]" 
                       @update:modelValue="val => schedule.columns[key] = val"
                       class="margin">
                     </v-text-field>
@@ -127,7 +165,15 @@
                   :key="key"
                   :class="{ 'left-align': key === 'remarks', 'center-align': key !== 'remarks' || value === '' }"
                 >
-                <template v-if="value != ''">
+                
+                <template v-if="value != '' && key === 'time'">
+                  <!-- {{ index }} -->
+                  {{ value[index].start }} ~ {{ value[index].end }}
+                </template>
+                <template v-else-if="key == 'transportation'">
+                  {{ value }}
+                </template>
+                <template v-else-if="value != ''">
                   {{ value }}
                 </template>
                 <template v-else>
@@ -137,14 +183,6 @@
                 </td>
               </template>
             </tr>
-            <!-- <time-range-picker
-            v-model="time"
-            variant="underlined"
-            step="60"
-            :max-duration="120"
-            :hide-whole-day-checkbox="hideWholeDayCheckbox"
-            color="blue"
-          /> -->
         </template>
         </v-data-table>
 
@@ -162,11 +200,14 @@
 </template>
 
 <script>
+// import TimeRangePicker from 'vuetify3-time-range-picker';
 
-// import { reactive, toRaw  } from 'vue';
-import {  toRaw  } from 'vue';
-import TimeRangePicker from 'vuetify3-time-range-picker';
-import 'vuetify3-time-range-picker/dist/style.css'
+
+// import { toRaw  } from 'vue';
+// import { ref, onMounted  } from 'vue';
+import VueTimepicker from 'vue3-timepicker'
+import 'vue3-timepicker/dist/VueTimepicker.css'
+// import 'vuetify3-time-range-picker/dist/style.css'
 import {
   VDataTable,
   // VDataTableServer,
@@ -178,7 +219,8 @@ export default {
   
   components: {
     VDataTable,
-    TimeRangePicker,
+    VueTimepicker,
+    // TimeRangePicker,
     // VDataTableServer,
     // VDataTableVirtual,
   },
@@ -205,6 +247,9 @@ export default {
     
     
   },
+ 
+  watch: {
+  },
   data() {
     return {
       schedules: [],
@@ -216,30 +261,106 @@ export default {
       // selectedScheduleDetails: reactive({}),
       // 표 헤더
       tableHeaders: [
-        {title: '시간', align: "center", sortable: false, key: 'time',  width: '14%'},
+        {title: '시간', align: "center", sortable: false, key: 'time',  width: '8%'},
         {title: '장소(출발지)', align: "center", sortable: false, key: 'departure',  width: '12%'},
         {title: '장소(목적지)', align: "center", sortable: false, key: 'destination', width: '12%'},
-        {title: '이동수단', align: "center", sortable: false, key: 'transportation',  width: '6%'},
-        {title: '비용', align: "center", sortable: false, key: 'cost', width: '10%'},
-        {title: '비고', align: "center", sortable: false, key: 'remarks',  width: '35%'},
+        {title: '이동수단', align: "center", sortable: false, key: 'transportation',  width: '8%'},
+        {title: '비용', align: "center", sortable: false, key: 'cost', width: '12%'},
+        {title: '메모', align: "center", sortable: false, key: 'remarks',  width: '35%'},
       ],
 
       isEditing: false, // 수정 중인지 여부를 나타내는 플래그
       editedSchedule: [], // 수정 중인 일정의 데이터를 담을 객체
       times: [
         // { start: '00:00', end: '05:00', duration: '1439' },
-        // { start: '05:00', end: '13:00', duration: '1439' },
-        // { start: '13:00', end: '23:00', duration: '1439' },
-        // { start: '13:00', end: '23:00', duration: '1439' },
-      ],        
-      
-      
-       // { start: '00:00', end: '23:59', duration: 1439 } (duration is in minutes)
-      hideWholeDayCheckbox: true,
+      ],
+      transPortation: "",
+      transPortations: [
+        {value : "기차"},
+        {value : "도보"},
+        {value : "배"},
+        {value : "버스"},
+        {value : "비행기"},
+        {value : "자가용"},
+        {value : "지하철"},
+        {value : "택시"},
+      ],
+      // hideWholeDayCheckbox: true,
+      selectedIndex: "",
+      alertMessage: "",
+      alertFlag: false,
+      costRules: [
+        v => /^[0-9]*$/.test(v) || '숫자만 입력 가능합니다.',
+      ],
+      remarkRules: [
+        v => !( v && v.length > 30 ) || '메모란은 최대 30글자까지 가능합니다.( ' + v.length + '글자 )',
+      ]
 
     };
   },
   methods: {
+    checkTimes(value, index, items, flag){
+
+      const arrayLength = items.length;
+      const regex = /[a-zA-Z]/;
+
+      
+       const currentStartDate = items[index].raw.startDate;
+       const currentEndDate = items[index].raw.endDate;
+
+       const currnetStartTime = value[index].start.replace(':','');
+       const currnetEndTime = value[index].end.replace(':','');
+      
+      // const nextStartDate = items[index+1].raw.startDate;
+      // const nextEndDate = items[index+1].raw.endDate;
+
+      // const nextStartTime = value[index+1].start.replace(':','');
+      // const nextEndTime = value[index+1].end.replace(':','');
+      
+
+       const currentStartFullStr = currentStartDate + currnetStartTime;
+       const currentEndFullStr = currentEndDate + currnetEndTime;
+      // const currentEndFullStr = currentEndDate + currnetEndTime;
+      // const nextStartFullStr = nextStartDate + nextStartTime;
+      // const nextEndFullStr = nextEndDate + nextEndTime;
+
+
+
+      // 정규식 이용하여 HH:mm 있거나 ''인 경우 return
+      if(regex.test(currentStartFullStr) || regex.test(currentEndFullStr) 
+          || currnetStartTime == '' || currnetEndTime == ''){
+        value[index].alertFlag = true;
+        value[index].alertMessage = "시간 선택은 필수 입니다.";
+      }else{
+         value[index].alertFlag = true;
+         value[index].alertMessage = "";
+      }
+
+      // startTime과 endTime비교하여 startTime이 큰 경우 제외
+
+      // if(flag === "startTime"){
+
+      // }
+      
+      console.log(value)
+      console.log(value[index+1]);
+      console.log(flag);
+      console.log(arrayLength)
+    
+
+
+  
+    },
+    // updateScheduleTime(index, updatedValue) {
+    //   // Vue 3에서는 $set을 사용하지 않고 직접 프로퍼티에 접근하여 업데이트
+    //   console.log("updatedValue", updatedValue);
+    //   this.selectedScheduleDetails[index].time = updatedValue;
+    // },
+    // handleTimeRangeUpdate(index){
+    //   console.log("handleTimeRangeUpdate", index);
+    //   // value[index]의 새로운 복사본을 만들어서 변경
+    // // this.$set(this.value, index, Object.assign({}, updatedValue));
+    // },
     modifySchedule(){
 
     },
@@ -247,37 +368,38 @@ export default {
 
       // 선택한 일정의 상세 정보 가져오기
       this.selectedSchedule = this.schedules[index];
-      this.getDetailSchedule(index + 1);
+      this.selectedIndex = index+1
+      this.getDetailSchedule(this.selectedIndex);
     },
     startEditing() {
       // 수정 상태로 전환
       this.isEditing = true;
 
-      this.editedSchedule = [];
-      // this.$set을 사용하지 않고 각 인덱스에 해당하는 항목을 추가
-      this.selectedScheduleDetails.forEach((schedule) => {
+      // // this.editedSchedule = [];
+      // // this.$set을 사용하지 않고 각 인덱스에 해당하는 항목을 추가
+      // this.selectedScheduleDetails.forEach((schedule) => {
         
-        console.log(toRaw(schedule));
-        this.editedSchedule.push(toRaw(schedule));
-        // this.editedSchedule = toRaw(schedule);
-        // schedule은 proxy객체로 일반객체로 변환하기 위한 코드
+      //   console.log(toRaw(schedule));
+      //   this.editedSchedule.push(toRaw(schedule));
+      //   // this.editedSchedule = toRaw(schedule);
+      //   // schedule은 proxy객체로 일반객체로 변환하기 위한 코드
         
-        // this.editedSchedule[index] = { ...schedule };
-        // this.editedSchedule = { ...this.editedSchedule }; // schedule은 proxy객체로 일반객체로 변환하기 위한 코드
+      //   // this.editedSchedule[index] = { ...schedule };
+      //   // this.editedSchedule = { ...this.editedSchedule }; // schedule은 proxy객체로 일반객체로 변환하기 위한 코드
 
-        // console.log(this.editedSchedule);
-        // console.log(this.isEditing);
+      //   // console.log(this.editedSchedule);
+      //   // console.log(this.isEditing);
         
-        // schedule을 일반 객체로 변환
-        // const scheduleObject = { ...schedule };
-        // Vue.set을 사용해 직접적인 할당
-        // Vue.set(this.editedSchedule, index, scheduleObject);
+      //   // schedule을 일반 객체로 변환
+      //   // const scheduleObject = { ...schedule };
+      //   // Vue.set을 사용해 직접적인 할당
+      //   // Vue.set(this.editedSchedule, index, scheduleObject);
 
-      });
+      // });
     
 
-      console.log("editedSchedule", this.editedSchedule);
-      console.log("schedules", this.schedules);
+      // // console.log("editedSchedule", this.editedSchedule);
+      // // console.log("schedules", this.schedules);
     },
     saveSchedule() {
       // 수정된 일정을 서버에 전송하는 로직을 추가하세요.
@@ -286,6 +408,13 @@ export default {
 
        // 서버 전송 후 수정 상태 종료
       this.isEditing = false;
+    },
+    getTransportationString(transportationValue) {
+
+      const transportationObject = this.transPortations.find(
+        (item) => item.value === transportationValue
+      );
+      return transportationObject ? transportationObject.string : "";
     },
     getDetailSchedule(scheduleDay){
 
@@ -296,46 +425,26 @@ export default {
         tripScheduleDay: scheduleDay,
       }
 
+      // const time = "";
       this.$axios.get('/trip/schedule/info',{
         params: tripProject 
       }).then(response => {
 
         const detailScheduleList = response.data;
 
-        // detailScheduleList.forEach(e=>{
-
-        //   const time= e.tripScheduleStTime.slice(0,2) + ':' + e.tripScheduleStTime.slice(2,4)
-        //               + "~" + 
-        //               e.tripScheduleEdTime.slice(0,2) + ':' + e.tripScheduleEdTime.slice(2,4);
-        
-        //   const departure = e.tripScheduleArrive ? e.tripScheduleArrive : "-";
-        //   const destination = e.tripScheduleDepart ? e.tripScheduleDepart : "-";
-        //   const transportation = e.tripScheduleTransport ? e.tripScheduleTransport : "-";
-        //   const cost = e.tripScheduleCost ? e.tripScheduleCost+"원" : "-";
-
-        //   let remarks = e.tripScheduleNote ? e.tripScheduleNote : "-";
-        //   remarks = remarks != '-' && remarks.length > 80 ? remarks.slice(0, 80) + ' ...' : remarks.trim();
-          
-
-        //   this.selectedScheduleDetails.push({ 
-        //       time: time, 
-        //       departure: departure, 
-        //       destination: destination,
-        //       transportation: transportation,
-        //       cost: cost,
-        //       remarks: remarks,
-        //   })
-        // })
 
          this.selectedScheduleDetails = detailScheduleList.map(e => {
 
           const startTime = e.tripScheduleStTime.slice(0, 2) + ':' + e.tripScheduleStTime.slice(2, 4);
           const endTime =  e.tripScheduleEdTime.slice(0, 2) + ':' + e.tripScheduleEdTime.slice(2, 4);
-          const time = startTime + '~' + endTime;
+          
+
+          // const transportation = e.tripScheduleTransport? this.getTransportationString(e.tripScheduleTransport): "";
 
           const departure = e.tripScheduleArrive ? e.tripScheduleArrive : "";
           const destination = e.tripScheduleDepart ? e.tripScheduleDepart : "";
-          const transportation = e.tripScheduleTransport ? e.tripScheduleTransport : "";
+          const transportation = e.tripScheduleTransport? e.tripScheduleTransport : "";
+
           const cost = e.tripScheduleCost ? e.tripScheduleCost : "";
 
           let remarks = e.tripScheduleNote ? e.tripScheduleNote : "";
@@ -344,15 +453,26 @@ export default {
           this.times.push({
             start: startTime,
             end: endTime,
+            // displayTime: displayTime,
           })
+          
+          // 스케쥴 한 행의 시작날짜
+          const startDate = e.tripScheduleStDt;
+
+          // 스케쥴 한 행의 종료날짜
+          const endDate = e.tripScheduleEdDt;
 
           return {
-            time: time,
+            time: this.times,
             departure: departure,
             destination: destination,
             transportation: transportation,
             cost: cost,
             remarks: remarks,
+            startDate: startDate,
+            endDate: endDate,
+            alertFlag: false,
+            alertMessage: "",
           };
         });
 
@@ -371,6 +491,11 @@ export default {
         console.log(error);
       }).finally(()=>{
             // this.editedSchedule = { ...this.selectedScheduleDetails }; // 수정 중인 일정 초기화
+            console.log("this.times", this.times);
+            
+            
+            console.log("this.selectedScheduleDetails", this.selectedScheduleDetails);
+            
       })
     },
 
@@ -477,6 +602,11 @@ export default {
   height: 100%;
 }
 
+.no-cursor {
+  caret-color: transparent; /* 커서를 투명하게 설정하여 감춤 */
+}
+
+
 .title {
   background-color: #333;
   color: #fff;
@@ -546,6 +676,51 @@ export default {
   margin-bottom: -10px;
   margin-left: -10px;
   margin-right: -10px;
+}
+
+/* .timepicker-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.timepicker-container p {
+    margin-bottom: 0;
+} */
+
+.start-timpicker {
+    margin-top: 10px;
+    margin-bottom: 3px;
+}
+
+.end-timpicker {
+    margin-bottom: 10px;
+}
+
+.alert-message {
+   color:#b00020;
+   height: 12px;
+   font-size: 10px;
+   margin-top: -6px;
+   margin-left: 25px;
+   text-align: center;
+   line-height: 12px;
+   vertical-align: baseline;
+   letter-spacing: 0.4px;
+   word-spacing: 0px;
+   font-family: Roboto, sans-serif;
+   font-weight: 400;
+   font-style: normal;
+   font-variant: normal;
+   text-transform: none;
+   text-decoration: none solid rgb(176, 0, 32);
+   text-align: start;
+   text-indent: 0px;
+
+}
+
+.tr-style{
+  height: 110px;
 }
 
 /* .plus-button-card{

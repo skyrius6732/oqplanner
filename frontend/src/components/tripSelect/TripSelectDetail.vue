@@ -10,7 +10,7 @@
         v-model="tripPlanName" 
         placeholder="최대 8글자 까지만 입력해 주세요."
         :rules="tripPlanNameRules"
-        class="gray-text-field no-cursor "
+        class="gray-text-field no-cursor"
         disabled></v-text-field>
       <v-text-field label="여행자 이름" 
         v-model="tripUserName" 
