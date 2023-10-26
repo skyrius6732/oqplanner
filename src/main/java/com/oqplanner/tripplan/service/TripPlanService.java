@@ -2,6 +2,7 @@ package com.oqplanner.tripplan.service;
 
 
 import com.oqplanner.common.SessionConst;
+import com.oqplanner.common.controller.SessionController;
 import com.oqplanner.tripplan.domain.TripPlan;
 import com.oqplanner.tripplan.mapper.TripPlanMapper;
 import com.oqplanner.tripproject.domain.TripProject;
@@ -34,8 +35,6 @@ public class TripPlanService {
     private final HttpServletRequest request; // HttpServletRequest 주입
 
 
-
-
     public int savePlanInfo(TripPlan tripPlan) {
 
         // [여행 계획 생성]
@@ -48,6 +47,7 @@ public class TripPlanService {
 
 
         HttpSession session = request.getSession();
+
         // 여행 프로젝트 tripProjectNo 값 세션에 넣기
         session.setAttribute(SessionConst.TRIP_PROJECT_NO, tripProjectNo);
 
@@ -61,7 +61,7 @@ public class TripPlanService {
         // tripPlanNo : 여행 계획 추가시 증가된 ID 값
         TripProject tripProject = TripProject.builder()
                 .tripProjectNo(tripProjectNo)
-                .tripUserNo(session.getAttribute(SessionConst.TRIP_USER_NO).toString()) // 여행 유저 tripUserNo 값 세션에서 가져오기
+                .tripUserNo((String)session.getAttribute(SessionConst.TRIP_USER_NO)) // 여행 유저 tripUserNo 값 세션에서 가져오기
                 .tripPlan(tripPlan)
                 .build();
 

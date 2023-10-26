@@ -16,6 +16,18 @@ public class TripCompanionService {
     private TripCompanionMapper tripCompanionMapper;
 
     public int saveCompanion(List<TripCompanion> tripCompanionList){
+
+//        List<TripCompanion> list = null;
+//        // 동행자가 있는지 체크
+//        for(TripCompanion tripCompanion :  tripCompanionList){
+//            list = tripCompanionMapper.getCompanionList(tripCompanion);
+//        }
+//
+//        if(list.size() > 0){
+//            return -1;
+//        }
+
+
         return tripCompanionMapper.saveCompanion(tripCompanionList);
     }
     public List<TripCompanion> getCompanionList(TripCompanion tripCompanion){

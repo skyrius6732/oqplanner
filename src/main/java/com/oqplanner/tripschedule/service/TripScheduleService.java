@@ -200,7 +200,7 @@ public class TripScheduleService {
         Date currentStDt = dateFormat.parse(tripScheduleStDt+currentScheduleStTime);
         Date currentEdDt = dateFormat.parse(tripScheduleEdDt+currentScheduleEdTime);
 
-        if(tripScheduleDay == 1 && tripScheduleOrder == 0){
+        /*if(tripScheduleDay == 1 && tripScheduleOrder == 0){
                 int paramDay = tripScheduleDay;
                 int paramOrder = tripScheduleOrder+1;
 
@@ -321,7 +321,7 @@ public class TripScheduleService {
                     result = -1;
                 }
             }
-        }
+        }*/
 
         return result;
     }

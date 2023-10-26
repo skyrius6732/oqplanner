@@ -27,7 +27,7 @@
           <!-- <v-text-field 
             label="동행자 이름" 
             v-model="companionName" 
-            :rules="CompanionNameRules"
+            :rules="companionNameRules"
             placeholder="여행 동행자 이름을 입력해 주세요." 
             class="no-cursor"></v-text-field> -->
         </v-form>
@@ -68,7 +68,7 @@ export default {
           v => /^[가-힣a-zA-Z\s]*$/.test(v) || '여행자 이름은 한글/영어만 입력 가능합니다.',
           v => !( v && v.length > 15) || '여행자 이름은 8자 이상 입력할 수 없습니다.',
         ],
-        CompanionNameRules:[
+        companionNameRules:[
           v => !!v || '동행자 이름은 필수사항 입니다.',
           v => /^[가-힣a-zA-Z\s]*$/.test(v) || '동행자 이름은 한글/영어만 입력 가능합니다.',
           v => !( v && v.length > 15) || '동행자 이름은 8자 이상 입력할 수 없습니다.',

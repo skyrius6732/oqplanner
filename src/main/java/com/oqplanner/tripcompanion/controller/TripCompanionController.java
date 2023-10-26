@@ -26,7 +26,9 @@ public class TripCompanionController {
     }
 
     @GetMapping("/info/list")
-    public List<TripCompanion> getCompanionList(@RequestBody TripCompanion tripCompanion){
+    public List<TripCompanion> getCompanionList(@RequestParam String tripProjectNo){
+        TripCompanion tripCompanion = TripCompanion.builder()
+                .tripProjectNo(tripProjectNo).build();
         return tripCompanionService.getCompanionList(tripCompanion);
     }
 

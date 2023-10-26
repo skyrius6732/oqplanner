@@ -206,22 +206,24 @@ export default {
               };
 
             
-              const tripPlan = {
-                tripPlanNm: this.tripPlanName,
-                tripPlannerNm: this.tripUserName,
-                tripPlanStDt: formattedStartDate,
-                tripPlanEdDt: formattedEndDate,
-                tripPlanDefaultYn : "Y",
-                tripPlanStTime: this.tripStartTime,
-                tripPlanTimeUnit: this.tripPlanUnit,
-                tripPlanAllNum: planAllNum,
-              }
+              
               
               this.$axios.post('/trip/user/info', tripUser)
               .then(userResponse => {
                   // 성공적으로 전송된 경우의 처리
                   console.log(userResponse.data);
                   // userResponse
+
+                const tripPlan = {
+                  tripPlanNm: this.tripPlanName,
+                  tripPlannerNm: this.tripUserName,
+                  tripPlanStDt: formattedStartDate,
+                  tripPlanEdDt: formattedEndDate,
+                  tripPlanDefaultYn : "Y",
+                  tripPlanStTime: this.tripStartTime,
+                  tripPlanTimeUnit: this.tripPlanUnit,
+                  tripPlanAllNum: planAllNum,
+                }
 
                   return this.$axios.post(`/trip/plan/info`, tripPlan);
                 })

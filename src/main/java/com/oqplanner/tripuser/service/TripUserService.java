@@ -1,6 +1,7 @@
 package com.oqplanner.tripuser.service;
 
 import com.oqplanner.common.SessionConst;
+import com.oqplanner.common.controller.SessionController;
 import com.oqplanner.tripuser.domain.TripUser;
 import com.oqplanner.tripuser.mapper.TripUserMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,10 +30,9 @@ public class TripUserService {
         tripUser.setTripUserNo(tripUserNo);
 
         HttpSession session = request.getSession();
+
         // 세션에 UUID 저장
         session.setAttribute(SessionConst.TRIP_USER_NO, tripUserNo);
-
-
 
         return tripUserMapper.saveUserInfo(tripUser);
     }
