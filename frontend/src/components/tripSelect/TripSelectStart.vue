@@ -122,6 +122,8 @@ export default {
                   // submitTrip의 이름으로 이벤트로 걸어
                   // TripSelect.vue에서 @submitTrip=submitTrip 실행
                   this.$emit("submitTrip", flag);
+                  console.log(flag);
+
                   this.emitter.emit('submitDetail', this.inputs);
                   
                   // this.$refs.form.reset();

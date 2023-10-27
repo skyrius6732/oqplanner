@@ -1,210 +1,261 @@
 <template>
-    <v-dialog class="custom-dialog">
-    <v-container class="custom-container">
-        <v-row>
-            <div class="close-button" @click="closeDialog"><v-icon>mdi-close</v-icon></div>
-        </v-row>
-        <v-row>
-            <v-col>
-                <div>
-                    <span class="subtitle-detail">개인 비용</span>
-                </div>
-            </v-col>
-            <v-col style="width: 80px; text-align: right;" v-if="!isEditing">
-            <v-btn @click="costModify" class="button-style">비용 수정</v-btn>
-            </v-col>
-            <v-col style="width: 80px; text-align: right;" v-if="isEditing">
-            <v-btn @click="addRow" class="button-style"><v-icon>mdi-plus</v-icon></v-btn>
-            <v-btn @click="removeRow" class="button-style"><v-icon>mdi-minus</v-icon></v-btn>
-            <v-btn @click="costReset" class="button-style">비용 초기화</v-btn>
-            <v-btn @click="costSave" class="button-style">비용 저장</v-btn>
-            </v-col>
+    <v-row>
+        <v-col>
+          <div>
+            <span class="subtitle-detail">개인 비용</span>
+          </div>
+        </v-col>
+      </v-row>
 
-            <!-- 행의 높이를 50px로 가정 -->
-            <v-table
-                fixed-header
-                :height="550"
-                style="width: 100%"
-                class="custom-table"
-            >
-                <thead>
-                    <tr>
-                        <th class="text-center">NO.</th>
-                        <th class="text-center">사용처</th>
-                        <th class="text-center">비용(원)</th>
-                        <th class="text-center">메모</th>
-                    </tr>
-                </thead>
-                <tbody>
-                <tr
-                    v-for="(item, index) in privateCosts"
-                    :key="item.name"
-                >
-                <template v-if="!isEditing">
-                    <td class="text-center">{{ item.costOrder }}</td>
-                    <td class="text-center">{{ item.costUse }}</td>
-                    <td class="text-center">{{ item.cost }}</td>
-                    <td>{{ item.costNote }}</td>
-                </template>
-                <template v-else>
-                <td>
-                    {{ index+1 }}
-                </td>
-                <td>
-                    <v-text-field 
-                    outlined class="gray-text-field"
-                    :rules="costUseRules"
-                    v-model="item.costUse" >
-                    </v-text-field>
-                </td>
-                <td>
-                    <v-text-field 
-                    outlined class="gray-text-field"
-                    :rules="costRules">
-                    </v-text-field>
-                </td>
-                <td>
-                    <v-text-field 
-                    outlined class="gray-text-field"
-                    :rules="costNoteRules">
-                    </v-text-field>
-                </td>
-                </template>   
-                </tr>
-                <tr>
-                    <td>합계</td>
-                    <td></td>
-                    <td>
-                        <strong> 123,123</strong>
-                    </td>
-                </tr>
-                </tbody>
-            </v-table>
-        </v-row>
-        </v-container>
-    </v-dialog>
+      <v-row>
+        <v-col v-for="(costs, index) in privateCosts" :key="index" :cols="4">
+          <v-card class="custom-card">
+            <v-card-title class="title margin-bottom">
+              동행자 {{ index+1 }}
+              ( {{ costs.companionNm }} )
+            </v-card-title>
+            <v-card-text class="schedule-contents">
+              <v-row class="icon-row">
+                <v-col :cols="1">
+                  <v-icon class="icon">mdi-currency-krw</v-icon>
+                </v-col>
+                <v-col :cols="11">
+                  <h3 class="subtitle">여행 비용</h3>
+                    <!-- <template v-for="(info, index) in privateCosts[index].tripPrivatCostList" :key="index"> -->
+                    {{ getTotalCost(privateCosts[index].tripPrivatCostList) }}
+                    <!-- </template> -->
+                </v-col>
+              </v-row>
+
+              <v-row class="icon-row">
+                <v-col :cols="1">
+                  <v-icon class="icon">mdi-comment-outline</v-icon>
+                </v-col>
+                <v-col :cols="11">
+                  <h3 class="subtitle">여행 비용 리스트</h3>
+                    <ul>
+                        <li v-for="(info, index) in privateCosts[index].tripPrivatCostList.filter((e) => e.costNote != '')" :key="index">
+                            {{ info.costNote }}
+                        </li>
+                        <!-- <li v-for="(note, index) in costs.costNote.split('/').filter(value => value.trim() !== '').slice(0,6)" :key="index">
+                            {{ note.length > 20 ? note.slice(0, 20) + ' ...' : note.trim() }}
+                        </li> -->
+                    </ul>
+                </v-col>
+              </v-row>
+            </v-card-text>
+            <v-row class="icon-row">
+              <v-col :cols="12" class="d-flex justify-end">
+                  <v-btn class="button-margin button-style" @click="viewCost(privateCosts[index])">비용 보기</v-btn>
+              </v-col>
+            </v-row>
+          </v-card>
+        </v-col>
+      </v-row>    
 </template>
 
 <script>
 export default {
-  components: {
-
-  },
-  //   props: ['isModalVisible'],
-  created(){
-    console.log("create privateCost", this.isModalVisible);
-  },
-  mounted(){
-    console.log("mounted privateCost", this.isModalVisible);
-  },
-  data(){
-    return {
-        // modalVisible: this.isModalVisible,
-        isEditing: false, // 수정 중인지 여부를 나타내는 플래그
-        privateCosts: [
-          { costOrder: '1', companionNo: '33', costUse: '해운대개미집', cost: 30000, costNote: '서비스왕창집/왕창왕창서비스왕창집/왕창왕창서비스왕창집/왕창왕창서비스왕창집/왕창왕창서비스왕창집/왕창왕창서비스왕창집/왕창왕창서비스왕창집/왕창왕창서비스왕창집/왕창왕창서비스왕창집/왕창왕창서비스왕창집/왕창왕창서비스왕창집/왕창왕창서비스왕창집/왕창왕창', companionName: "홍길동"/*임시 값임*/},
-          { costOrder: '1', companionNo: '33', costUse: '해운대개미집', cost: 30000, costNote: '서비스왕창집/맛있엉', companionName: "박길동"/*임시 값임*/},
-          { costOrder: '1', companionNo: '33', costUse: '해운대개미집', cost: 30000, costNote: '서비스왕창집/숙소가는데왤케멀어', companionName: "이길동"/*임시 값임*/},
-          { costOrder: '1', companionNo: '33', costUse: '해운대개미집', cost: 30000, costNote: '서비스왕창집/아몰라몰라집갈래몰라몰라몰라아서비스왕창집/아몰라몰라집갈래몰라몰라몰라아/서비스왕창집/아몰라몰라집갈래몰라몰라몰라아서비스왕창집/아몰라몰라집갈래몰라몰라몰라아', companionName: "황길동"/*임시 값임*/},
-          { costOrder: '1', companionNo: '33', costUse: '해운대개미집', cost: 30000, costNote: '서비스왕창집', companionName: "최길동"/*임시 값임*/},
-          { costOrder: '1', companionNo: '33', costUse: '해운대개미집', cost: 30000, costNote: '서비스왕창집', companionName: "고길동"/*임시 값임*/},
-        ],
-    }
-  },
-  methods:{
-    costModify(){
-      this.isEditing = true;
-    },
-    costSave(){
-      this.isEditing = false;
-    },
-    costReset(){
-      this.privateCosts = [
-      ];
-    },
-    addRow() {
-      // + 버튼 클릭 시 행 추가 로직
-      this.privateCosts.push({
-        costOrder: this.privateCosts.length + 1,
-        costUse: '',
-        cost: '',
-        costNote: '',
-      });
-    },
-    removeRow() {
-      // - 버튼 클릭 시 행 삭제 로직
-      if (this.privateCosts.length > 1) {
-        this.privateCosts.pop();
-      }
-    },
-    // viewCost(){
-    //   // this.isModalVisible = true 모달 표시
-    //   console.log("viewCost isModalVisible", this.isModalVisible);
-    //   this.isModalVisible = true;
-    // },
-    allReset(){
+    components: {
 
     },
-    closeDialog(){
-        this.$emit("closeDialog");
+    props:{
+        companions: {
+            type: Array,
+            default: () => []
+        }
     },
-  },
+    created(){
+        
+        this.tripProjectNo = sessionStorage.getItem("projectNoSession");
+        this.tripUserNo = sessionStorage.getItem("userNoSession");
+
+     
+        // 임시코드 (빌드없이 프론트단 사용을 위한...)
+        // 추후에 지워야함
+        if(!sessionStorage.getItem("projectNoSession")){
+        this.tripProjectNo = "c5bf464bf576";
+        }else{
+        this.tripProjectNo = sessionStorage.getItem("projectNoSession")
+        }
+
+        if(!sessionStorage.getItem("userNoSession")){
+        this.tripUserNo = "3bb8aff388ab";
+        }else{
+        this.tripUserNo = sessionStorage.getItem("userNoSession")
+        }
+
+      this.privateCosts = this.companions.map( item => {
+            // this.tripCompanionNm = item.tripCompanionNm;
+            // this.tripCompanionNo = item.tripCompanionNo;
+            return {
+                companionNo: item.tripCompanionNo,
+                companionNm: item.tripCompanionNm,
+                tripPrivatCostList: [],
+            }
+        });
+
+
+    },
+    mounted(){
+       this.costShow();
+
+       // TripPrivateCostDetail.vue에서 TripPrivateCost.vue의 costShow() 호출을 위한
+       // 이벤트 구현부
+        //    this.emitter.on('callPrivateCostCostShow', this.handleCallPrivateCostCostShow);
+        //     this.emitter.on('callPrivateCostCostShow', ()=>{
+        //     console.log('callPrivateCostCostShow???');
+        //     this.costShow();
+        // });
+
+         this.$root.eventBus.on('data-updated', () => {
+            // 여기에서 조회 메서드 또는 원하는 동작을 수행합니다.
+            console.log('Data updated. Calling the query method.');
+            this.costShow();
+            });
+
+    },
+    data(){
+        return {
+            privateCosts: [{
+                companionNo: '',
+                companionNm: '',
+                tripPrivatCostList: [
+                    {
+                    costNo: '',
+                    costOrder: '',
+                    costUse: '',
+                    cost: 0,
+                    costNote: '',
+                    }
+                ],  
+            }],
+        }
+    },
+    methods:{
+        viewCost(privateCosts){
+            // console.log('selected privateCosts', privateCosts);
+
+            // 상위(부모) TripCost.vue의 viewCost 메서드 호출
+            this.$emit("viewCost");
+
+            // 다른 컴포넌트로 인자값 전달 (TripPrivateCostDetail.vue로 전달) 
+            this.emitter.emit('submitPrivateDetail', privateCosts);
+        },
+       async costShow(){
+
+           console.log('this.tripProjectNo', this.tripProjectNo);
+
+            // 모든 비용 정보를 담을 배열
+            const allCosts = await Promise.all(this.privateCosts.map(async (element) => {
+                console.log('element.companionNo', element.companionNo);
+
+                const tripCost = {
+                    tripProjectNo: this.tripProjectNo,
+                    tripCompanionNo: element.companionNo,
+                };
+
+                try {
+                    const response = await this.$axios.get('/trip/cost/private/info/list', {
+                        params: tripCost
+                    });
+
+                    if (response.data && response.data.length > 0 && response.data[0].tripPrivateCostList) {
+                        let CostSum = 0;
+                        element.tripPrivatCostList = response.data[0].tripPrivateCostList.map((item) => {
+                            CostSum += parseInt(item.tripPrivateCost);
+                            return{
+                                "costNo": item.tripPrivateCostNo,
+                                "costOrder": item.tripPrivateCostOrder,
+                                "costUse" : item.tripPrivateCostUse,
+                                "cost" : item.tripPrivateCost,
+                                "costNote" : item.tripPrivateCostNote,
+                            };
+                        });
+
+                        this.privateCostSum = CostSum.toLocaleString();
+                    } else {
+                        // console.error('Invalid response format:', response.data);
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+
+                return element;
+            }));
+
+            // 모든 비용 정보를 this.privateCosts에 할당
+            this.privateCosts = allCosts;
+
+            // 정보 재구성하기
+            // this.reConfig();
+
+            console.log('this.privateCosts', this.privateCosts);   
+        },
+        getTotalCost(costList) {
+            // reduce 함수를 사용하여 cost 합산
+            const totalCost = costList.reduce((sum, info) => sum + parseInt(info.cost), 0);
+            return totalCost.toLocaleString() + ' 원';
+        },
+        // reConfig(){
+        //     this.privateCosts.map((element)=>{
+
+        //     });
+        // }
+    },
 }
 </script>
 
 <style scoped>
-   /* .custom-container {
-         width: 80%; 
-    } */
 
-    .custom-dialog {
-        width: 70%;
-        height: 75%;
-        background: white;
-        background-color: rgba(0, 0, 0, 0.5);
-        border-radius: 20px; /* 모서리 둥글게 설정 */
-    }
-    .custom-table{
-        width: 100%;
-        border-radius: 20px; /* 모서리 둥글게 설정 */
+.subtitle-detail {
+  margin-top: -50px;
+  color: #333;
+  font-size: 17px;
+  font-weight: bold;
+}
 
-    }
-    
-    .subtitle-detail {
-        margin-top: -100px;
-        color: white;
-        font-size: 17px;
-        font-weight: bold;
-    }
+.custom-card {
+  height: 100%;
+}
 
-    .button-style{
-        background-color: #333;
-        color: white;
-        font-size: 13px;
-        margin-left: 5px;
-        margin-top: 10px; /* 적용 버튼을 조금 아래로 이동 */
-    }
+.margin-bottom{
+  margin-bottom: 20px;
+}
 
-    .close-button {
-        margin-left: auto; /* 오른쪽으로 이동 */
-        background: white;
-        color: #333;
-        margin-top: -10px;
-        margin-right: -15px;
-        width: 25px; /* 너비 조절 */
-        height: 25px; /* 높이 조절 */
-        border-radius: 4px; /* 모서리 둥글게 설정 */
-        cursor: pointer;
-        padding-left: 1px; /* 내부 여백 설정 */
-    }
+.schedule-contents{
+  height: 250px;
+}
 
-    /* .overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    } */
+.button-style{
+   background-color: #333;
+   color: #fff;
+   font-size: 13px;
+   margin-left: 5px;
+   margin-top: 10px; /* 적용 버튼을 조금 아래로 이동 */
+}
+
+.button-margin{
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.title {
+  background-color: #333;
+  color: #fff;
+  padding-left: 10px;
+  padding-right: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  font-size: 15px;
+}
+
+
 
 </style>

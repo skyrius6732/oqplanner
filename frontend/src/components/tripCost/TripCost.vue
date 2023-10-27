@@ -1,5 +1,6 @@
 <template>
   <v-container class="custom-container">
+    <v-form ref="form" lazy-validation>
     <v-row>
       <v-col class="m-1">
         <v-row>
@@ -8,10 +9,13 @@
           :items="[1, 2, 3, 4]"
           label="동행자 수"
           @update:modelValue="clickComNumber"
-          :disabled="textDisabled"
+          :disabled="companionNumDisabled"
           class="margin-right"
         ></v-select>
         </v-row>
+        <v-snackbar v-model="snackbar" timeout="3000" class="snackbar-center" flex>
+          동행자 수는 한번 적용 후 변경이 불가하오니 참고 부탁드립니다.
+        </v-snackbar>
       </v-col>
       <v-col v-for="(companion, index) in companions" :key="index" class="m-1">
         <v-row>
@@ -19,7 +23,7 @@
             outlined class="gray-text-field margin-right"
             :label="`동행자 ${index + 1}`"
             :rules="companionNameRules"
-            :disabled="textDisabled"
+            :disabled="companionNmDisabled"
             v-model="companion.tripCompanionNm">
         </v-text-field>
         </v-row>
@@ -39,6 +43,7 @@
       </v-col>
       <!-- <v-col class="m-7"></v-col> -->
     </v-row>
+    </v-form>
     
     <!-- 밑줄 -->
     <v-row class="underline-row">
@@ -50,64 +55,15 @@
         <!-- 불투명한 영역 -->
     </v-row>
     <TripPublicCost 
-      v-if="isPublicCostVisible"/>
+      v-if="isCostVisible"/>
 
-      <!-- 밑줄 -->
-      <!-- <v-row class="underline-row"  v-if="contentFlag">
-        <v-col>
-          <v-divider></v-divider>
-        </v-col>
-      </v-row> -->
+    <TripPrivateCost
+     v-if="isCostVisible"
+     :companions="companions"
+     :key="componentKey"
+     @viewCost="viewCost"/>
 
-      <v-row  v-if="contentFlag">
-        <v-col>
-          <div>
-            <span class="subtitle-detail">개인 비용</span>
-          </div>
-        </v-col>
-      </v-row>
-
-      <v-row  v-if="contentFlag">
-        <v-col v-for="(costs, index) in privateCosts" :key="index" :cols="4">
-          <v-card class="custom-card">
-            <v-card-title class="title margin-bottom">
-              동행자 {{ index+1 }}
-              ( {{ costs.companionName }} )
-            </v-card-title>
-            <v-card-text class="schedule-contents">
-              <v-row class="icon-row">
-                <v-col :cols="1">
-                  <v-icon class="icon">mdi-currency-krw</v-icon>
-                </v-col>
-                <v-col :cols="11">
-                  <h3 class="subtitle">여행 비용</h3>
-                    {{ costs.cost.toLocaleString() }} 원
-                </v-col>
-              </v-row>
-
-              <v-row class="icon-row">
-                <v-col :cols="1">
-                  <v-icon class="icon">mdi-comment-outline</v-icon>
-                </v-col>
-                <v-col :cols="11">
-                  <h3 class="subtitle">여행 비용 리스트</h3>
-                  <ul v-if="costs.costNote">
-                      <li v-for="(note, index) in costs.costNote.split('/').filter(value => value.trim() !== '').slice(0,6)" :key="index">
-                        {{ note.length > 20 ? note.slice(0, 20) + ' ...' : note.trim() }}
-                      </li>
-                  </ul>
-                </v-col>
-              </v-row>
-            </v-card-text>
-            <v-row class="icon-row">
-              <v-col :cols="12" class="d-flex justify-end">
-                  <v-btn class="button-margin button-style" @click="viewCost(index)">비용 보기</v-btn>
-              </v-col>
-            </v-row>
-          </v-card>
-        </v-col>
-      </v-row>
-      <TripPrivateCost 
+    <TripPrivateCostDetail 
         v-model="isModalVisible"
         @closeDialog="closeDialog"/>
 
@@ -116,13 +72,15 @@
 
 
 <script>
-import TripPrivateCost from './TripPrivateCost.vue';
+import TripPrivateCostDetail from './TripPrivateCostDetail.vue';
 import TripPublicCost from './TripPublicCost.vue';
+import TripPrivateCost from './TripPrivateCost.vue';
 
 export default {
   components: {
-    TripPrivateCost,
-    TripPublicCost
+    TripPrivateCostDetail,
+    TripPublicCost,
+    TripPrivateCost
   },
   created(){
     this.tripProjectNo = sessionStorage.getItem("projectNoSession");
@@ -154,12 +112,13 @@ export default {
   },
   data() {
     return {
+        snackbar: false, // snackbar를 숨기기 위한 상태 변수
         companionExistFlag: false,
         isModalVisible: false,
-        isPublicCostVisible: false,
+        isCostVisible: false,
         tripProjectNo: "",
         tripUserNo: "",
-        numberOfCompanions: 3, // 동행자 수
+        numberOfCompanions: 1, // 동행자 수
         companions: Array.from({ length:3 }, () =>({
            tripProjectNo: "",
            tripCompanionNm: "",
@@ -167,26 +126,24 @@ export default {
         })),
         // 각 동행자의 이름을 담을 배열
         isOverlayVisible: true, // 불투명한 영역의 표시 여부
-        textDisabled: false,
+        companionNmDisabled: false,
+        companionNumDisabled: false,
         companionEdit: true,
         contentFlag: false,
         companionNameRules:[
           v => !!v || '동행자 이름은 필수사항 입니다.',
           v => /^[가-힣a-zA-Z\s]*$/.test(v) || '동행자 이름은 한글/영어만 입력 가능합니다.',
-          v => !( v && v.length > 15) || '동행자 이름은 8자 이상 입력할 수 없습니다.',
+          v => !( v && v.length > 8) || '동행자 이름은 8자 이상 입력할 수 없습니다.',
           // v => this.checkCompanion(v)
-        ],
-        privateCosts: [
-          { costOrder: '1', companionNo: '33', costUse: '해운대개미집', cost: 30000, costNote: '서비스왕창집' },
-          { costOrder: '1', companionNo: '33', costUse: '해운대개미집', cost: 30000, costNote: '서비스왕창집/맛있엉', },
-          { costOrder: '1', companionNo: '33', costUse: '해운대개미집', cost: 30000, costNote: '서비스왕창집/숙소가는데왤케멀어', },
-          { costOrder: '1', companionNo: '33', costUse: '해운대개미집', cost: 30000, costNote: '서비스왕창집/', },
-          { costOrder: '1', companionNo: '33', costUse: '해운대개미집', cost: 30000, costNote: '서비스왕창집', },
-          { costOrder: '1', companionNo: '33', costUse: '해운대개미집', cost: 30000, costNote: '서비스왕창집', },
         ],
     };
   },
   methods: {
+    // checkCompanion(v){
+    //   // if(v){
+
+    //   // }
+    // },
     companionSelect(){
       
       const tripCompanion = {
@@ -201,50 +158,69 @@ export default {
         let arrayLength = response.data.length;
         this.companionExistFlag = arrayLength > 0 ? true : false; 
         this.companions = response.data;
+        this.numberOfCompanions = arrayLength;
+
+
 
         console.log(response);
 
       }).catch(error => {
         console.log(error);
+      }).finally(()=>{
+        if(this.companionExistFlag){
+          this.companionNumDisabled = true;
+        }else{
+          this.companionNumDisabled = false;
+        }
       }) 
     },
 
-    companionApply() {
-      const tripCompanion = this.companions.map(item=> {
-          console.log("item", item);
-          return {
-            tripProjectNo: this.tripProjectNo,
-            tripCompanionNm: item.tripCompanionNm,
-            tripCompanionOrder: item.tripCompanionOrder,
+    async companionApply() {
+      await this.$refs.form.validate().then(result => {
+        if (result.valid) {
+              const tripCompanion = this.companions.map(item=> {
+              console.log("item", item);
+              return {
+                tripProjectNo: this.tripProjectNo,
+                tripCompanionNm: item.tripCompanionNm,
+                tripCompanionOrder: item.tripCompanionOrder,
+              }
+          });
+
+          if(this.companionExistFlag == false){  // 동행자 신규 저장
+            this.$axios.post('/trip/companion/info', tripCompanion)
+            .then(response=>{
+              console.log(response);
+            }).catch(error => {
+              console.log(error);
+            }).finally(()=>{
+
+            }) 
+          }else{  // 동행자 수정
+            this.$axios.put('/trip/companion/info/list', tripCompanion)
+            .then(response=>{
+              console.log(response);
+            }).catch(error => {
+              console.log(error);
+            }).finally(()=>{ 
+              
+            }) 
           }
-      });
-
-      if(this.companionExistFlag == false){  // 동행자 신규 저장
-        this.$axios.post('/trip/companion/info', tripCompanion)
-        .then(response=>{
-          console.log(response);
-        }).catch(error => {
-          console.log(error);
-        }) 
-      }else{  // 동행자 수정
-         this.$axios.put('/trip/companion/info/list', tripCompanion)
-        .then(response=>{
-          console.log(response);
-        }).catch(error => {
-          console.log(error);
-        }) 
-      }
-
-      this.textDisabled = true;       // 동행자 입력란
-      this.contentFlag = true;        // 임시 지워야할듯
-      this.isOverlayVisible = false;  // 오버레이(불투명창)
-      this.companionEdit= false;      // 동행자 입력란
-      this.isPublicCostVisible=true;  // 공통 비용 부분
-      
+          this.isCostVisible=true;  // 공통 비용 부분
+          this.companionNumDisabled=true; // 동행자 수 입력란
+          this.companionNmDisabled = true; // 동행자 입력란      
+          this.contentFlag = true;        // 임시 지워야할듯
+          this.isOverlayVisible = false;  // 오버레이(불투명창)
+          this.companionEdit= false;      // 동행자 입력란
+              
+        }
+      })
     },
+  
 
     companionModify(){
-      this.textDisabled = false;
+      this.isCostVisible = false;  // 공통 비용 부분
+      this.companionNmDisabled = false;
       this.contentFlag = false;
       this.isOverlayVisible = true;
       this.companionEdit= true;
@@ -252,6 +228,7 @@ export default {
 
     clickComNumber(){
         // this.companions = Array(this.numberOfCompanions).fill('');
+        this.snackbar = true;
         this.companions = Array.from({ length:this.numberOfCompanions }, () =>({
            tripProjectNo: "",
            tripCompanionNm: "",
@@ -262,7 +239,9 @@ export default {
       // 불투명한 영역을 감추는 메서드
       // this.isOverlayVisible = false;
     },
-    viewCost(){
+    viewCost(index){
+      // 이 부분에서 index 값을 사용할 수 있습니다.
+      console.log('Received index from TripPrivateCost:', index);
       // this.isModalVisible = true 모달 표시
       console.log("viewCost isModalVisible", this.isModalVisible);
       this.isModalVisible = true;
@@ -271,8 +250,13 @@ export default {
 
     },
     closeDialog(){
+      // this.$ref.privateCostMethod.costShow();
+      // this.$forceUpdate();
       this.isModalVisible = false;
-    }
+    },
+     forceRerender() {
+      this.componentKey += 1;
+    },
   },
 };
 </script>
@@ -283,16 +267,6 @@ export default {
   width: 80%;
 }
 
-.custom-card {
-  height: 100%;
-}
-
-.subtitle-detail {
-  margin-top: -50px;
-  color: #333;
-  font-size: 17px;
-  font-weight: bold;
-}
 
 .button-style{
    background-color: #333;
@@ -328,11 +302,7 @@ export default {
   margin-top: 10px;
 }
 
-.button-margin{
-    margin-left: 10px;
-    margin-right: 10px;
-    margin-bottom: 10px;
-}
+
 
 .center-button {
   display: flex;
@@ -344,27 +314,12 @@ export default {
   margin-right: 10px;
 }
 
-.schedule-contents{
-  height: 250px;
-}
 
-.subtitle {
-  color: #333;
-  margin-bottom: 10px;
-}
-
-.title {
-  background-color: #333;
-  color: #fff;
-  padding-left: 10px;
-  padding-right: 0px;
-  padding-top: 0px;
-  padding-bottom: 0px;
-  font-size: 15px;
-}
-
-.margin-bottom{
-  margin-bottom: 20px;
-}
+  .snackbar-center {
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
 
 </style>

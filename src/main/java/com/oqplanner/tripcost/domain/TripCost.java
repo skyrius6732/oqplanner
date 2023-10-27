@@ -58,6 +58,8 @@ public class TripCost {
         private String tripProjectNo;
         private String tripCompanionNo;
         private String tripPublicCostNo;
+        private String tripPublicCostOrder;
         private String tripPrivateCostNo;
+        private String tripPrivateCostOrder;
     }
 }

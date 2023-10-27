@@ -1,11 +1,13 @@
 package com.oqplanner.tripcost.controller;
 
 
+import com.oqplanner.tripcompanion.domain.TripCompanion;
 import com.oqplanner.tripcost.domain.TripCost;
 import com.oqplanner.tripcost.service.TripCostService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedList;
 import java.util.List;
 
 @Tag(name="trip-cost-controller",  description = "여행 비용 Controller 입니다.")
@@ -35,12 +37,18 @@ public class TripCostController {
     }
 
     @GetMapping("/public/info/list")
-    public List<TripCost> getPublicCostList(@RequestBody TripCost tripCost){
+    public List<TripCost> getPublicCostList(@RequestParam String tripProjectNo){
+        TripCost tripCost = TripCost.builder()
+                .tripProjectNo(tripProjectNo).build();
         return tripCostService.getPublicCostList(tripCost);
     }
 
     @GetMapping("/private/info/list")
-    public List<TripCost> getPrivateCostList(@RequestBody TripCost.TripCostRequest request){
+    public List<TripCost> getPrivateCostList(@RequestParam String tripProjectNo, @RequestParam String tripCompanionNo){
+                TripCost.TripCostRequest request = TripCost.TripCostRequest.builder()
+                .tripProjectNo(tripProjectNo)
+                .tripCompanionNo(tripCompanionNo)
+                .build();
         return tripCostService.getPrivateCostList(request);
     }
 
@@ -65,7 +73,7 @@ public class TripCostController {
     }
 
     @DeleteMapping("/info/all")
-    public void removePrivateCost(@RequestBody TripCost.TripCostRequest request){
+    public void removeCostAll(@RequestBody TripCost.TripCostRequest request){
         tripCostService.removeCostAll(request);
     }
 
