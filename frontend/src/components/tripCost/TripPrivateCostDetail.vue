@@ -43,7 +43,7 @@
                 <template v-if="!isEditing">
                     <td class="text-center">{{ item.costOrder }}</td>
                     <td class="text-center">{{ item.costUse }}</td>
-                    <td class="text-center">{{ item.cost }}</td>
+                    <td class="text-center">{{ item.cost.toLocaleString() }}</td>
                     <td>{{ item.costNote }}</td>
                 </template>
                 <template v-else>
@@ -92,6 +92,7 @@ export default {
   components: {
 
   },
+  name: 'TripPrivateCostDetail',
   //   props: ['isModalVisible'],
   created(){
     this.tripProjectNo = sessionStorage.getItem("projectNoSession");
@@ -248,6 +249,10 @@ export default {
       
       // 마지막으로 save 요청 수행
       await this.saveCost();
+
+       // 다른 컴포넌트의 메서드 호출을 위한 이벤트 호출부 
+      // (TripPrivateCostDetail.vue로 전달) 
+      this.emitter.emit('callPrivateCostCostShow');
     },
 
     costSave(){
@@ -290,6 +295,9 @@ export default {
 
       this.executeRequests();
       
+      // this.$refs.privateCostMethod.costShow();
+
+
       this.isEditing = false;
     },
     costReset(){
@@ -300,13 +308,6 @@ export default {
             tripPrivateCostOrder: e.costOrder,
         });
       });
-
-
-      this.$root.eventBus.emit('data-updated');
-
-      // 다른 컴포넌트의 메서드 호출을 위한 이벤트 호출부 
-      // (TripPrivateCostDetail.vue로 전달) 
-      this.emitter.emit('callPrivateCostCostShow');
 
       this.privateCosts = [];
 

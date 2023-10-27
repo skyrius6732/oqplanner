@@ -60,7 +60,7 @@
     <TripPrivateCost
      v-if="isCostVisible"
      :companions="companions"
-     :key="componentKey"
+     ref="privateCostMethod"
      @viewCost="viewCost"/>
 
     <TripPrivateCostDetail 
@@ -250,13 +250,10 @@ export default {
 
     },
     closeDialog(){
-      // this.$ref.privateCostMethod.costShow();
-      // this.$forceUpdate();
+      this.$refs.privateCostMethod.costShow();
       this.isModalVisible = false;
     },
-     forceRerender() {
-      this.componentKey += 1;
-    },
+
   },
 };
 </script>

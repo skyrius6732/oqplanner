@@ -34,12 +34,9 @@
                 <v-col :cols="11">
                   <h3 class="subtitle">여행 비용 리스트</h3>
                     <ul>
-                        <li v-for="(info, index) in privateCosts[index].tripPrivatCostList.filter((e) => e.costNote != '')" :key="index">
+                        <li v-for="(info, index) in privateCosts[index].tripPrivatCostList.filter((e) => e.costNote != '').slice(0,7)" :key="index">
                             {{ info.costNote }}
                         </li>
-                        <!-- <li v-for="(note, index) in costs.costNote.split('/').filter(value => value.trim() !== '').slice(0,6)" :key="index">
-                            {{ note.length > 20 ? note.slice(0, 20) + ' ...' : note.trim() }}
-                        </li> -->
                     </ul>
                 </v-col>
               </v-row>
@@ -59,6 +56,7 @@ export default {
     components: {
 
     },
+    name: 'TripPrivateCost',
     props:{
         companions: {
             type: Array,
@@ -98,21 +96,23 @@ export default {
 
     },
     mounted(){
+        // TripPrivateCostDetail.vue에서 TripPrivateCost.vue의 costShow() 호출을 위한
+       // 이벤트 구현부
+       this.emitter.on('callPrivateCostCostShow', this.handleCallPrivateCostCostShow);
+       
        this.costShow();
 
-       // TripPrivateCostDetail.vue에서 TripPrivateCost.vue의 costShow() 호출을 위한
-       // 이벤트 구현부
-        //    this.emitter.on('callPrivateCostCostShow', this.handleCallPrivateCostCostShow);
+       
         //     this.emitter.on('callPrivateCostCostShow', ()=>{
         //     console.log('callPrivateCostCostShow???');
         //     this.costShow();
         // });
 
-         this.$root.eventBus.on('data-updated', () => {
-            // 여기에서 조회 메서드 또는 원하는 동작을 수행합니다.
-            console.log('Data updated. Calling the query method.');
-            this.costShow();
-            });
+        //  this.$root.eventBus.on('data-updated', () => {
+        //     // 여기에서 조회 메서드 또는 원하는 동작을 수행합니다.
+        //     console.log('Data updated. Calling the query method.');
+        //     this.costShow();
+        //     });
 
     },
     data(){
@@ -133,6 +133,10 @@ export default {
         }
     },
     methods:{
+        handleCallPrivateCostCostShow() {
+            this.costShow();
+        },
+        
         viewCost(privateCosts){
             // console.log('selected privateCosts', privateCosts);
 
