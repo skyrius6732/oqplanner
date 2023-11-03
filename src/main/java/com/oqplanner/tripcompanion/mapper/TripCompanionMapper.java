@@ -8,7 +8,7 @@ import java.util.List;
 @Mapper
 public interface TripCompanionMapper {
 
-    int saveCompanion(List<TripCompanion> tripCompanionList);
+    int saveCompanion(TripCompanion tripCompanion);
     List<TripCompanion> getCompanionList(TripCompanion tripCompanion);
     int modifyCompanionList(List<TripCompanion> tripCompanionList);
     int removeCompanion(TripCompanion tripCompainion);

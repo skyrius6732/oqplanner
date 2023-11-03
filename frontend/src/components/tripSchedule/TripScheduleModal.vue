@@ -50,7 +50,8 @@
           <v-text-field 
             v-model="searchKeyword" 
             label="검색어"
-            :rules="keywordRules"></v-text-field>
+            :rules="keywordRules"
+             @keyup.enter="search(searchKeyword)"></v-text-field>
         </v-col>
         <v-col cols="1"> 
           <v-btn @click="search(searchKeyword)"  size="x-large" class="button-style center-button">검색</v-btn>
@@ -100,7 +101,7 @@
         <div v-else class="no-results-container">
             <div class="no-results-overlay">
                  <span v-if="!isLoading && enterFavorits" class="no-results-text">검색 결과가 없습니다.</span>
-                 <span v-if="!isLoading && !enterFavorits" class="no-results-text">검색 결과를 클릭하여 선택 하실 수 있습니다.</span>
+                 <span v-if="!isLoading && !enterFavorits" class="no-results-text">검색 결과를 클릭하여 장소를 선택 해주세요.</span>
                  <span v-if="isLoading">
                       <!-- 로딩 중일 때 보여질 내용 -->
                       <v-progress-circular
@@ -140,19 +141,19 @@ export default {
       this.tripUserNo = sessionStorage.getItem("userNoSession");
 
      
-      // 임시코드 (빌드없이 프론트단 사용을 위한...)
-      // 추후에 지워야함
-      if(!sessionStorage.getItem("projectNoSession")){
-        this.tripProjectNo = "c5bf464bf576";
-      }else{
-        this.tripProjectNo = sessionStorage.getItem("projectNoSession")
-      }
+      // // 임시코드 (빌드없이 프론트단 사용을 위한...)
+      // // 추후에 지워야함
+      // if(!sessionStorage.getItem("projectNoSession")){
+      //   this.tripProjectNo = "c5bf464bf576";
+      // }else{
+      //   this.tripProjectNo = sessionStorage.getItem("projectNoSession")
+      // }
 
-      if(!sessionStorage.getItem("userNoSession")){
-        this.tripUserNo = "3bb8aff388ab";
-      }else{
-        this.tripUserNo = sessionStorage.getItem("userNoSession")
-      }
+      // if(!sessionStorage.getItem("userNoSession")){
+      //   this.tripUserNo = "3bb8aff388ab";
+      // }else{
+      //   this.tripUserNo = sessionStorage.getItem("userNoSession")
+      // }
 
     },
     mounted(){

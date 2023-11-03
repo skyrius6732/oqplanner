@@ -45,7 +45,8 @@
           <v-text-field 
             v-model="searchKeyword" 
             label="검색어"
-            :rules="keywordRules"></v-text-field>
+            :rules="keywordRules"
+            @keyup.enter="search(searchKeyword)"></v-text-field>
         </v-col>
         <v-col cols="1"> 
           <v-btn @click="search(searchKeyword)" size="x-large" class="button-style center-button">검색</v-btn>
@@ -125,6 +126,10 @@
                       @error="replaceImg"
                       cover
                       ></v-img></row>
+                       <!-- 북마크 아이콘 추가 -->
+                      <v-icon @click="toggleBookmark(favorit, index)" :color="favorit.bookmarked ? 'yellow' : 'grey'">
+                                {{ favorit.bookmarked ? 'mdi-star' : 'mdi-star-outline' }}
+                      </v-icon>
                      <row class="favorit-title-text">
                       [{{ favorit.searchTitle }}]
                      </row>
@@ -159,19 +164,19 @@ export default {
       this.tripUserNo = sessionStorage.getItem("userNoSession");
 
      
-      // 임시코드 (빌드없이 프론트단 사용을 위한...)
-      // 추후에 지워야함
-      if(!sessionStorage.getItem("projectNoSession")){
-        this.tripProjectNo = "c5bf464bf576";
-      }else{
-        this.tripProjectNo = sessionStorage.getItem("projectNoSession")
-      }
+      // // 임시코드 (빌드없이 프론트단 사용을 위한...)
+      // // 추후에 지워야함
+      // if(!sessionStorage.getItem("projectNoSession")){
+      //   this.tripProjectNo = "c5bf464bf576";
+      // }else{
+      //   this.tripProjectNo = sessionStorage.getItem("projectNoSession")
+      // }
 
-      if(!sessionStorage.getItem("userNoSession")){
-        this.tripUserNo = "3bb8aff388ab";
-      }else{
-        this.tripUserNo = sessionStorage.getItem("userNoSession")
-      }
+      // if(!sessionStorage.getItem("userNoSession")){
+      //   this.tripUserNo = "3bb8aff388ab";
+      // }else{
+      //   this.tripUserNo = sessionStorage.getItem("userNoSession")
+      // }
 
     },
     mounted(){
@@ -473,6 +478,7 @@ export default {
                   console.log('response', response)
                   response.data.forEach((e) =>
                             this.favorits.push({
+                              bookmarked: true,
                               contentid: e.tripFavoritesOutId,
                               imageUrl: e.tripFavoritesImgUrl || 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbnOSHZ%2FbtrLTB8V5DQ%2FnlaUCKg7kzbp7PbVKy63Qk%2Fimg.png',
                               searchTitle: e.tripFavoritesNm,

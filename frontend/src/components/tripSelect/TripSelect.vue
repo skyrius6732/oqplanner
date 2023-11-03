@@ -68,7 +68,8 @@ export default {
     },
     closeOverlay() {
       // 투명한 배경 클릭 시 팝업 창 닫기
-      this.closeDialog();
+      // 해당 기능 작동하나 필요 없을것 같아 주석 처리함
+      // this.closeDialog(); 
     },
   },
 };

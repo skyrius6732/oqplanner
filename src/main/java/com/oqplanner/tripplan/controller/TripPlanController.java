@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Tag(name="trip-plan-controller",  description = "여행 계획 Controller 입니다.")
 @RestController
@@ -57,12 +58,12 @@ public class TripPlanController {
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @GetMapping("/info")
-    public TripPlan getPlanInfo(@RequestParam String tripPlanNm, @RequestParam String tripPlannerNm) {
+    public Map getPlanInfo(@RequestParam String tripPlanNm, @RequestParam String tripPlannerNm, @RequestParam String tripFlag) {
         TripPlan tripPlan = TripPlan.builder()
                 .tripPlanNm(tripPlanNm)
                 .tripPlannerNm(tripPlannerNm)
                 .build();
-        return tripPlanService.getPlanInfo(tripPlan);
+        return tripPlanService.getPlanInfo(tripPlan, tripFlag);
     }
 
 

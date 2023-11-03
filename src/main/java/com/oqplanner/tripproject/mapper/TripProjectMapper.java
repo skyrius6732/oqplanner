@@ -9,6 +9,8 @@ import java.util.Map;
 
 @Mapper
 public interface TripProjectMapper {
+
+    TripProject getProject(TripPlan tripPlan);
     int saveProject(TripProject tripProject);
     int removeProject(Map paramMap);
 

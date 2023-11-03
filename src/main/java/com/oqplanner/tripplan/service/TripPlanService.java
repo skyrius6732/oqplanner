@@ -80,8 +80,24 @@ public class TripPlanService {
         return tripPlanMapper.getPlanInfoList(tripPlan);
     }
 
-    public TripPlan getPlanInfo(TripPlan tripPlan){
-        return tripPlanMapper.getPlanInfo(tripPlan);
+    public Map getPlanInfo(TripPlan tripPlan, String tripFlag){
+
+        TripPlan resultPlan = tripPlanMapper.getPlanInfo(tripPlan);
+        Map resultMap = new HashMap();
+
+        if(resultPlan != null){
+            resultMap.put("tripPlanNo",resultPlan.getTripPlanNo());
+            if (tripFlag.equals("oldFlag")) { // 기존 여행 비교 로직
+                TripProject tripProject = tripProjectMapper.getProject(resultPlan);
+                HttpSession session = request.getSession();
+                // 여행 프로젝트 tripProjectNo 값 세션에 넣기
+                session.setAttribute(SessionConst.TRIP_PROJECT_NO, tripProject.getTripProjectNo());
+                session.setAttribute(SessionConst.TRIP_USER_NO, tripProject.getTripUserNo());
+            }
+        }else{
+            resultMap.put("tripPlanNo", null);
+        }
+        return resultMap;
     }
 
     public Map<String,String> getTripPlanStTimeLength(TripPlan tripPlan){

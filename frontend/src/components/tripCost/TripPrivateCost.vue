@@ -2,7 +2,7 @@
     <v-row>
         <v-col>
           <div>
-            <span class="subtitle-detail">개인 비용</span>
+            <span v-if="privateCosts.length > 0" class="subtitle-detail">개인 비용</span>
           </div>
         </v-col>
       </v-row>
@@ -11,7 +11,7 @@
         <v-col v-for="(costs, index) in privateCosts" :key="index" :cols="4">
           <v-card class="custom-card">
             <v-card-title class="title margin-bottom">
-              동행자 {{ index+1 }}
+              여행자 {{ index+1 }}
               ( {{ costs.companionNm }} )
             </v-card-title>
             <v-card-text class="schedule-contents">
@@ -69,19 +69,29 @@ export default {
         this.tripUserNo = sessionStorage.getItem("userNoSession");
 
      
-        // 임시코드 (빌드없이 프론트단 사용을 위한...)
-        // 추후에 지워야함
-        if(!sessionStorage.getItem("projectNoSession")){
-        this.tripProjectNo = "c5bf464bf576";
-        }else{
-        this.tripProjectNo = sessionStorage.getItem("projectNoSession")
-        }
+      //   // 임시코드 (빌드없이 프론트단 사용을 위한...)
+      //   // 추후에 지워야함
+      //   if(!sessionStorage.getItem("projectNoSession")){
+      //   this.tripProjectNo = "c5bf464bf576";
+      //   }else{
+      //   this.tripProjectNo = sessionStorage.getItem("projectNoSession")
+      //   }
 
-        if(!sessionStorage.getItem("userNoSession")){
-        this.tripUserNo = "3bb8aff388ab";
-        }else{
-        this.tripUserNo = sessionStorage.getItem("userNoSession")
-        }
+      //   if(!sessionStorage.getItem("userNoSession")){
+      //   this.tripUserNo = "3bb8aff388ab";
+      //   }else{
+      //   this.tripUserNo = sessionStorage.getItem("userNoSession")
+      //   }
+      // console.log('created');
+
+      // // this.$emit("companionSelect");
+
+      // console.log('created this.companions',this.companions)
+
+      console.log('projectNoSession', sessionStorage.getItem("projectNoSession"));
+      console.log('userNoSession',sessionStorage.getItem("userNoSession"));
+
+
 
       this.privateCosts = this.companions.map( item => {
             // this.tripCompanionNm = item.tripCompanionNm;
@@ -95,11 +105,19 @@ export default {
 
 
     },
+    beforeMount(){
+      // TripCost.vue의 companionSelect()먼저 호출해야함
+      console.log('beforeMount')
+           
+    },
     mounted(){
-        // TripPrivateCostDetail.vue에서 TripPrivateCost.vue의 costShow() 호출을 위한
+      // TripPrivateCostDetail.vue에서 TripPrivateCost.vue의 costShow() 호출을 위한
        // 이벤트 구현부
        this.emitter.on('callPrivateCostCostShow', this.handleCallPrivateCostCostShow);
-       
+       console.log('Mount')
+      //  console.log('TripPrivateCost mounted this.companions', this.companions);
+
+      
        this.costShow();
 
        
@@ -115,6 +133,7 @@ export default {
         //     });
 
     },
+
     data(){
         return {
             privateCosts: [{
@@ -148,6 +167,7 @@ export default {
         },
        async costShow(){
 
+            console.log('costShow privateCosts', this.privateCosts);
             // 모든 비용 정보를 담을 배열
             const allCosts = await Promise.all(this.privateCosts.map(async (element) => {
                 console.log('element.companionNo', element.companionNo);

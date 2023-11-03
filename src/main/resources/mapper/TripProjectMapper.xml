@@ -4,6 +4,19 @@
 
 <mapper namespace="com.oqplanner.tripproject.mapper.TripProjectMapper">
 
+
+    <select id="getProject" parameterType="TripPlan">
+        SELECT TRIP_PROJECT_NO
+              ,TRIP_PLAN_NO
+              ,TRIP_USER_NO
+          FROM TRIP_PROJECT
+        <where>
+            <if test='tripPlanNo != null and tripPlanNo != ""'>
+                AND TRIP_PLAN_NO = #{tripPlanNo}
+            </if>
+        </where>
+    </select>
+
     <insert id="saveProject" parameterType="TripProject">
         INSERT INTO TRIP_PROJECT(TRIP_PROJECT_NO,
                                  TRIP_PLAN_NO,

@@ -15,7 +15,7 @@ public class TripCompanionService {
     @Autowired
     private TripCompanionMapper tripCompanionMapper;
 
-    public int saveCompanion(List<TripCompanion> tripCompanionList){
+    public int saveCompanion(TripCompanion tripCompanion){
 
 //        List<TripCompanion> list = null;
 //        // 동행자가 있는지 체크
@@ -26,9 +26,11 @@ public class TripCompanionService {
 //        if(list.size() > 0){
 //            return -1;
 //        }
+        tripCompanionMapper.saveCompanion(tripCompanion);
+        int companionNo = Integer.parseInt(tripCompanion.getTripCompanionNo());
+        System.out.println("companionNo :: " + companionNo);
 
-
-        return tripCompanionMapper.saveCompanion(tripCompanionList);
+        return companionNo;
     }
     public List<TripCompanion> getCompanionList(TripCompanion tripCompanion){
         return tripCompanionMapper.getCompanionList(tripCompanion);

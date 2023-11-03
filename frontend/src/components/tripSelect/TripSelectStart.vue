@@ -1,8 +1,8 @@
 <template>
    <div class="modal-start">
-      <div @click="closeDialog" class="close-button">
+      <!-- <div @click="closeDialog" class="close-button">
         <v-icon>mdi-close</v-icon>
-      </div>
+      </div> -->
         <v-card class="custom-card">
          <div class="welcome-message">
             <p class="welcome-text">환영합니다</p>
@@ -31,15 +31,17 @@
             placeholder="여행 동행자 이름을 입력해 주세요." 
             class="no-cursor"></v-text-field> -->
         </v-form>
+        <v-snackbar v-model="snackbar" timeout="3000" class="snackbar-center" flex>
+          {{ tripPlanName }}, 여행자님 이용해 주셔서 감사합니다.
+        </v-snackbar>
         <v-card-actions class="button-container">
           <!-- 확인 및 취소 버튼 -->
-          <v-btn @click="submitCompanion" color="black" class="action-button">동행하기</v-btn>
-          <v-btn @click="submitTrip(this.flag)" color="black" class="action-button">여행하기</v-btn>
+          <v-btn @click="submitCompanion" class="action-button button-style">같이가기</v-btn>
+          <v-btn @click="submitTrip(this.flag)" class="action-button button-style">여행하기</v-btn>
         </v-card-actions>
           <v-alert 
           v-model="alert"
-          type="warning"
-          class="disabled-alert"
+          class="disabled-alert  black-and-white"
           transition="scale-transition"
           closable
           prominent
@@ -54,6 +56,7 @@ export default {
   name: "TripSelectStart",
   data(){
     return {
+        snackbar: false, // snackbar를 숨기기 위한 상태 변수
         inputs: {},
         tripPlanName: "", //여행 이름 데이터
         tripUserName: "", // 여행자 이름 데이터
@@ -83,37 +86,91 @@ export default {
     closeDialog() {
       this.$emit("closeDialog");
     },
-    submitCompanion(){
+    async submitCompanion(){
+      await this.$refs.form.validate().then(result => {
+          if (result.valid) {
+            const tripPlan ={
+              tripPlannerNm: this.tripUserName,
+              tripPlanNm: this.tripPlanName,
+              tripFlag: 'oldFlag', 
+            }
 
+            this.$axios.get('/trip/plan/info', { 
+              params: tripPlan,
+            }).then(planResponse => {
+                const tripPlanNo = planResponse.data.tripPlanNo;
+
+                if(tripPlanNo == undefined){
+                  this.alertMessage = "존재하지 않는 여행 입니다.";
+                  this.alert = true;
+                }else{
+                  // 기존에 있을 시 세션값 호출
+                  this.snackbar = true;
+
+                   this.$axios.get('/common/api/getSessionValue')
+                   .then(sessionResponse => {
+                    console.log("success sessionResponse");
+                    console.log(sessionResponse.data);
+
+                    // 세션값 저장
+                    const projectNoSession = sessionResponse.data.projectNoSession;
+                    const userNoSession = sessionResponse.data.userNoSession;
+
+
+                    // sessionStorage 사용
+                    sessionStorage.setItem('projectNoSession', projectNoSession);
+                    sessionStorage.setItem('userNoSession', userNoSession);
+
+
+                   
+                    setTimeout(() => {
+                      // 팝업창 클로징 부모 컴포넌트 closeDialog 등록 하여 이벤트 호출
+                      this.$emit("closeDialog");
+                      this.$router.push('/schedule');
+                    }, 3000);
+
+         
+
+          
+                    
+                  }).catch(error => {
+                    // 전송 중 오류가 발생한 경우의 처리
+                    console.error(error);
+                  }).finally(()=>{
+                    // 메뉴 비활성화를 위한 Footer.vue에 이벤트 등록
+                    this.emitter.emit('accompanyTrip');
+                  })
+
+
+                }
+            })
+            .catch(error => {
+              // 전송 중 오류가 발생한 경우의 처리
+              console.error(error);
+            });
+            
+          }else{
+            console.log('validate fail');
+          }
+        })
     },
     async submitTrip(flag){
       await this.$refs.form.validate().then(result => {
           if (result.valid) {
-            // const tripPlannerNmEncoded = encodeURIComponent(this.tripUserName);
-            // const tripPlanNmEncoded = encodeURIComponent(this.tripPlanName);
-
-            // const tripPlan ={
-            //   tripPlannerNm: tripPlannerNmEncoded,
-            //   tripPlanNm: tripPlanNmEncoded,
-            // }
-
             const tripPlan ={
               tripPlannerNm: this.tripUserName,
               tripPlanNm: this.tripPlanName,
+              tripFlag: 'newFlag', 
             }
 
-            // console.log("tripPlannerNm", tripPlannerNmEncoded);
-            // console.log("tripPlanNm", tripPlanNmEncoded);
-
             this.$axios.get('/trip/plan/info', { 
-              params: tripPlan 
+              params: tripPlan,
             }).then(planResponse => {
                   const tripPlanNo = planResponse.data.tripPlanNo;
 
                   if(tripPlanNo == undefined){
                   console.log("planRes", planResponse.data.tripPlanNo);
-                  //   flags.startFlag = true;
-                  //   flags.overlay = true;
+
 
                   this.inputs.tripPlanName = this.tripPlanName;
                   this.inputs.tripUserName = this.tripUserName;
@@ -125,10 +182,9 @@ export default {
                   console.log(flag);
 
                   this.emitter.emit('submitDetail', this.inputs);
-                  
-                  // this.$refs.form.reset();
+
                 }else{
-                  this.alertMessage = "이미 만들어진 여행 이름 입니다.";
+                  this.alertMessage = "이미 생성된 여행 입니다.";
                   this.alert = true;
                 }
             })
@@ -148,6 +204,12 @@ export default {
 </script>
 
 <style scoped>
+
+.black-and-white {
+  background-color: #333;
+  color: #fff; /* White text */
+}
+
 .modal-start {
   background-color: white;
   padding: 20px;
@@ -237,5 +299,20 @@ export default {
 .action-button.primary {
   background-color: #333;
 }
+
+.button-style{
+   background-color: #333;
+   color: #fff;
+   font-size: 13px;
+   margin-left: 5px;
+   margin-top: 10px; /* 적용 버튼을 조금 아래로 이동 */
+}
+
+.snackbar-center {
+    position: fixed;
+    top: 27%;
+    left: 49.6%;
+    transform: translate(-50%, -50%);
+  }
 
 </style>

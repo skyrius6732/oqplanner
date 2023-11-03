@@ -7,6 +7,14 @@
         </router-link>
       </v-toolbar-title>
       <v-spacer></v-spacer>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn icon v-on="on" @click="exitTrip" class="exit-button">
+            <v-icon>mdi-exit-to-app</v-icon>
+          </v-btn>
+        </template>
+        <span>여행 나가기</span>
+      </v-tooltip>
     </v-toolbar>
 </template>
 <script>
@@ -17,6 +25,24 @@ export default {
       appTitle: 'OQPlanner',
       sidebar: false,
     }
+  },
+  methods: {
+    exitTrip() {
+      // 여행 나가기 버튼 클릭 시 동작
+
+       // 메뉴 비활성화를 위한 Footer.vue에 이벤트 등록
+      this.emitter.emit('exitTrip');
+      // sessionStorage.removeItem('projectNoSession');
+      // sessionStorage.removeItem('userNoSession');
+      sessionStorage.clear()
+
+      console.log('projectNoSession', sessionStorage.getItem("projectNoSession"));
+      console.log('userNoSession',sessionStorage.getItem("userNoSession"));
+
+      this.$router.push('/select'); 
+
+     
+    },
   },
 };
 </script>
@@ -34,5 +60,9 @@ export default {
 .logo-link v-icon {
   margin-right: 8px;
   font-size: 24px;
+}
+
+.exit-button {
+  margin-right: 16px;
 }
 </style>

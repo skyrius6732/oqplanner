@@ -21,8 +21,8 @@ public class TripCompanionController {
     }
 
     @PostMapping("/info")
-    public int saveCompanion (@RequestBody List<TripCompanion> tripCompanionList){
-        return tripCompanionService.saveCompanion(tripCompanionList);
+    public int saveCompanion (@RequestBody TripCompanion tripCompanion){
+        return tripCompanionService.saveCompanion(tripCompanion);
     }
 
     @GetMapping("/info/list")

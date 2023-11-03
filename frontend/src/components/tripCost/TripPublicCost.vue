@@ -15,13 +15,18 @@
             <v-btn @click="costShow" class="button-style">비용 보기</v-btn>
             <v-btn @click="costSave" class="button-style">비용 저장</v-btn>
           </v-col>
-
+        </v-row>
+          <v-row>
+          <v-form 
+            ref='publicForm'
+            style="width: 100%" 
+            lazy-validation>
           <!-- 행의 높이를 50px로 가정 -->
           <v-table
               fixed-header
               :height="'{{(publicCosts.length * 50) + 20}}px'"
-              style="width: 100%"
           >
+         
               <thead>
                   <tr>
                       <th class="text-center">NO.</th>
@@ -35,6 +40,7 @@
                   v-for="(item, index) in publicCosts"
                   :key="item.costOrder"
               >
+             
               <template v-if="!isEditing">
                   <td class="text-center">{{ item.costOrder }}</td>
                   <td class="text-center">{{ item.costUse }}</td>
@@ -66,7 +72,8 @@
                     v-model="publicCosts[index].costNote">
                   </v-text-field>
                 </td>
-              </template>   
+              </template>
+              
               </tr>
               <tr v-if='publicCosts.length > 0'>
                 <td class="text-center">합계</td>
@@ -76,8 +83,11 @@
                 </td>
               </tr>
               </tbody>
+
           </v-table>
-      </v-row>
+        </v-form>
+        </v-row>
+      
 </template>
 
 <script>
@@ -90,19 +100,19 @@ export default {
     this.tripUserNo = sessionStorage.getItem("userNoSession");
 
      
-    // 임시코드 (빌드없이 프론트단 사용을 위한...)
-    // 추후에 지워야함
-    if(!sessionStorage.getItem("projectNoSession")){
-      this.tripProjectNo = "c5bf464bf576";
-    }else{
-      this.tripProjectNo = sessionStorage.getItem("projectNoSession")
-    }
+    // // 임시코드 (빌드없이 프론트단 사용을 위한...)
+    // // 추후에 지워야함
+    // if(!sessionStorage.getItem("projectNoSession")){
+    //   this.tripProjectNo = "c5bf464bf576";
+    // }else{
+    //   this.tripProjectNo = sessionStorage.getItem("projectNoSession")
+    // }
 
-    if(!sessionStorage.getItem("userNoSession")){
-      this.tripUserNo = "3bb8aff388ab";
-    }else{
-      this.tripUserNo = sessionStorage.getItem("userNoSession")
-    }
+    // if(!sessionStorage.getItem("userNoSession")){
+    //   this.tripUserNo = "3bb8aff388ab";
+    // }else{
+    //   this.tripUserNo = sessionStorage.getItem("userNoSession")
+    // }
 
   },
   mounted(){
@@ -211,51 +221,56 @@ export default {
       await this.saveCost();
     },
 
-    costSave(){
+    async costSave(){
 
       let tripPublicCostOrder = '';
 
-      this.publicCosts.forEach(e => {
-      
-      tripPublicCostOrder = e.costOrder != '' ? e.costOrder : '' ; 
-      console.log('tripPublicCostOrder', tripPublicCostOrder);
-      console.log('e.cost', e.cost);
+      await this.$refs.publicForm.validate().then(result => {
+          if (result.valid) {
+              this.publicCosts.forEach(e => {
+              
+              tripPublicCostOrder = e.costOrder != '' ? e.costOrder : '' ; 
+              console.log('tripPublicCostOrder', tripPublicCostOrder);
+              console.log('e.cost', e.cost);
 
 
-        if(tripPublicCostOrder != ''){ // Update Cost
-          this.tripUdpateCost.push({
-            tripProjectNo: this.tripProjectNo,
-            tripPublicCost: {
-              tripPublicCostNo: e.costNo,
-              tripPublicCostOrder : tripPublicCostOrder,
-              tripPublicCostUse: e.costUse,
-              tripPublicCost: e.cost,
-              tripPublicCostNote: e.costNote,
-            },
-          });
-        }else{  // Save Cost
-          this.tripSaveCost.push({
-            tripProjectNo: this.tripProjectNo,
-            tripPublicCost: {
-              tripPublicCostNo: e.costNo,
-              tripPublicCostUse: e.costUse,
-              tripPublicCost: e.cost,
-              tripPublicCostNote: e.costNote,
-            },
-          });
-        }
+                if(tripPublicCostOrder != ''){ // Update Cost
+                  this.tripUdpateCost.push({
+                    tripProjectNo: this.tripProjectNo,
+                    tripPublicCost: {
+                      tripPublicCostNo: e.costNo,
+                      tripPublicCostOrder : tripPublicCostOrder,
+                      tripPublicCostUse: e.costUse,
+                      tripPublicCost: e.cost,
+                      tripPublicCostNote: e.costNote,
+                    },
+                  });
+                }else{  // Save Cost
+                  this.tripSaveCost.push({
+                    tripProjectNo: this.tripProjectNo,
+                    tripPublicCost: {
+                      tripPublicCostNo: e.costNo,
+                      tripPublicCostUse: e.costUse,
+                      tripPublicCost: e.cost,
+                      tripPublicCostNote: e.costNote,
+                    },
+                  });
+                }
 
-      });
+              });
 
 
-      this.executeRequests();
-      this.isEditing = false;
+              this.executeRequests();
+              this.isEditing = false;
+          }
+      })
     },
     costReset(){
       this.publicCosts = [
       ];
     },
     addRow() {
+      console.log('add row 왜 안보여?')
       // + 버튼 클릭 시 행 추가 로직
       this.publicCosts.push({
         costNo: '',
@@ -266,6 +281,7 @@ export default {
       });
     },
     removeRow() {
+      console.log('remove row 왜 안보여?')
       // - 버튼 클릭 시 행 삭제 로직
       if (this.publicCosts.length > 0) {
 

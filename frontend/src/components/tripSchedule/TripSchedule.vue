@@ -149,14 +149,17 @@
                     <v-text-field 
                       v-model="selectedScheduleDetails[index][key]" 
                       @update:modelValue="val => selectedScheduleDetails[index][key] = val"
+                      @keyup.enter="saveSchedule"
                       :rules="costRules"
-                      class="margin">
+                      class="margin"
+                      >
                     </v-text-field>
                   </template>
                   <template v-else-if="key == 'remarks'">
                     <v-text-field 
                       v-model="selectedScheduleDetails[index][key]" 
                       @update:modelValue="val => selectedScheduleDetails[index][key] = val"
+                       @keyup.enter="saveSchedule"
                       :rules="remarkRules"
                       class="margin">
                     </v-text-field>
@@ -327,22 +330,24 @@ export default {
     this.tripProjectNo = sessionStorage.getItem("projectNoSession");
     this.tripUserNo = sessionStorage.getItem("userNoSession");
 
-    console.log(sessionStorage.getItem("projectNoSession"));
-    console.log(sessionStorage.getItem("userNoSession"));
+     console.log('projectNoSession', sessionStorage.getItem("projectNoSession"));
+      console.log('userNoSession',sessionStorage.getItem("userNoSession"));
     
-    // 임시코드 (빌드없이 프론트단 사용을 위한...)
-    // 추후에 지워야함
-    if(!sessionStorage.getItem("projectNoSession")){
-      this.tripProjectNo = "c5bf464bf576";
-    }else{
-      this.tripProjectNo = sessionStorage.getItem("projectNoSession")
-    }
+    // // 임시코드 (빌드없이 프론트단 사용을 위한...)
+    // // 추후에 지워야함
+    // if(!sessionStorage.getItem("projectNoSession")){
+    //   this.tripProjectNo = "c5bf464bf576";
+    // }else{
+    //   this.tripProjectNo = sessionStorage.getItem("projectNoSession")
+    // }
 
-    if(!sessionStorage.getItem("userNoSession")){
-      this.tripUserNo = "3bb8aff388ab";
-    }else{
-      this.tripUserNo = sessionStorage.getItem("userNoSession")
-    }
+    // if(!sessionStorage.getItem("userNoSession")){
+    //   this.tripUserNo = "3bb8aff388ab";
+    // }else{
+    //   this.tripUserNo = sessionStorage.getItem("userNoSession")
+    // }
+
+    
 
     this.getSchedule();
   },

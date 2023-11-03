@@ -1,9 +1,9 @@
 <template>
    <!-- 팝업 창 -->
    <div class="modal-detail">
-    <div @click="openStartDialog" class="close-button">
+    <!-- <div @click="openStartDialog" class="close-button">
       <v-icon>mdi-close</v-icon>
-    </div>
+    </div> -->
     <v-form ref="form" lazy-validation>
     <v-card class="custom-card">
       <v-text-field label="여행 이름" 
@@ -64,14 +64,13 @@
       ></v-select>
       </div>
       <v-card-actions>
-        <v-btn @click="openStartDialog">이전으로</v-btn>
-        <v-btn @click="makeTrip" color="primary">여행 만들기</v-btn>
+        <v-btn @click="openStartDialog" class="button-style">이전으로</v-btn>
+        <v-btn @click="makeTrip" class="button-style">여행 만들기</v-btn>
       </v-card-actions>
       <!-- v-alert 추가 -->
       <v-alert 
         v-model="alert"
-        type="warning"
-        class="disabled-alert"
+        class="disabled-alert black-and-white"
         transition="scale-transition"
         closable
          prominent
@@ -144,7 +143,8 @@ export default {
     },
   },
   created(){
-   
+    this.tripProjectNo = sessionStorage.getItem("projectNoSession");
+    this.tripUserNo = sessionStorage.getItem("userNoSession");
   },
   mounted(){
      this.emitter.on('submitDetail', (data)=>{
@@ -261,7 +261,10 @@ export default {
                 }).catch(error => {
                   // 전송 중 오류가 발생한 경우의 처리
                   console.error(error);
-                });
+                }).finally(()=>{
+                  // 메뉴 비활성화를 위한 Footer.vue에 이벤트 등록
+                  this.emitter.emit('makeTrip');
+                })
               
             }
         }
@@ -272,6 +275,12 @@ export default {
 </script>
 
 <style scoped>
+
+.black-and-white {
+  background-color: #333;
+  color: #fff; /* White text */
+}
+
 .modal-detail {
   background-color: white;
   padding: 20px;
@@ -336,5 +345,13 @@ export default {
 
 .scale-transition {
   transition: transform 0.3s;
+}
+
+.button-style{
+   background-color: #333;
+   color: #fff;
+   font-size: 13px;
+   margin-left: 5px;
+   margin-top: 10px; /* 적용 버튼을 조금 아래로 이동 */
 }
 </style>
