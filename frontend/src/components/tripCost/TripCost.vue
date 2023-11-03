@@ -31,7 +31,7 @@
       <v-col class="m-4">
       <template v-if="companionEdit">
           <v-row>
-            <v-btn @click="companionApply" class="button-style center-button">적용</v-btn>
+            <v-btn @click="companionApply" size="x-large" class="apply-button-style center-button">적용</v-btn>
           </v-row>
       </template>
       <template v-else>
@@ -51,8 +51,11 @@
         <v-divider></v-divider>
       </v-col>
     </v-row>
-    <v-row class="overlay" v-if="isOverlayVisible" @click="hideOverlay">
+    <v-row v-if="isOverlayVisible" @click="hideOverlay">
+      <div class="overlay">
+        <span v-if="!isLoading" class="no-results-text">적용 버튼을 눌러 여행 비용을 등록 해주세요.</span>
         <!-- 불투명한 영역 -->
+      </div>
     </v-row>
     <TripPublicCost 
       v-if="isCostVisible"/>
@@ -273,6 +276,14 @@ export default {
    margin-top: 10px; /* 적용 버튼을 조금 아래로 이동 */
 }
 
+.apply-button-style{
+   background-color: #333;
+   color: #fff;
+   font-size: 15px;
+   margin-left: 5px;
+   font-weight: bold;
+}
+
 /* v-text-field의 간격을 좁게 조절하는 부분 */
 .v-text-field{
     width: 100%; /* 100%로 변경 */
@@ -283,15 +294,16 @@ export default {
 }
 
 .overlay {
-  position: fixed;
+  position: absolute;
   width: 78%;
-  height: 100%;
+  height: 70%;
   background-color: rgba(0, 0, 0, 0.5); /* 불투명한 배경 색상 */
   z-index: 999; /* 다른 컴포넌트 위에 표시되도록 설정 */
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: not-allowed; /* 클릭을 막음 */
+  border-radius: 10px;
 }
 
 .v-text-field {
@@ -299,12 +311,10 @@ export default {
   margin-top: 10px;
 }
 
-
-
 .center-button {
   display: flex;
   align-items: center;
-  margin-top: 20px; 
+  margin-top: 13px; 
 }
 
 .margin-right{
@@ -318,5 +328,11 @@ export default {
     left: 50%;
     transform: translate(-50%, -50%);
   }
+
+.no-results-text {
+    color: white; /* 흰색 글씨 */
+    font-size: 18px;
+    font-weight: bold;
+}
 
 </style>

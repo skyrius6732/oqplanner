@@ -148,8 +148,6 @@ export default {
         },
        async costShow(){
 
-           console.log('this.tripProjectNo', this.tripProjectNo);
-
             // 모든 비용 정보를 담을 배열
             const allCosts = await Promise.all(this.privateCosts.map(async (element) => {
                 console.log('element.companionNo', element.companionNo);
@@ -163,7 +161,7 @@ export default {
                     const response = await this.$axios.get('/trip/cost/private/info/list', {
                         params: tripCost
                     });
-
+                    console.log
                     if (response.data && response.data.length > 0 && response.data[0].tripPrivateCostList) {
                         let CostSum = 0;
                         element.tripPrivatCostList = response.data[0].tripPrivateCostList.map((item) => {
@@ -179,7 +177,7 @@ export default {
 
                         this.privateCostSum = CostSum.toLocaleString();
                     } else {
-                        // console.error('Invalid response format:', response.data);
+                        element.tripPrivatCostList = [];
                     }
                 } catch (error) {
                     console.log(error);
@@ -188,7 +186,6 @@ export default {
                 return element;
             }));
 
-            // 모든 비용 정보를 this.privateCosts에 할당
             this.privateCosts = allCosts;
 
             // 정보 재구성하기

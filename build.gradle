@@ -48,6 +48,16 @@ dependencies {
 	// logback
 //	implementation 'ch.qos.logback:logback-classic:1.2.6'
 
+	// Mono: 리액티브 프로그래밍에서 단일 결과 값을 나타내는 클래스로, 비동기 및 논블로킹 처리를 지원합니다.
+	implementation 'io.projectreactor:reactor-core:3.5.0'
+
+	// WebClient: 스프링에서 제공하는 비동기적인 웹 클라이언트로, HTTP 요청을 쉽게 만들고 응답을 비동기적으로 처리할 수 있도록 합니다.
+	implementation 'org.springframework.boot:spring-boot-starter-webflux:2.5.4'
+
+
+
+
+
 }
 
 tasks.named('test') {

@@ -178,7 +178,6 @@ export default {
         params: tripCost
       }).then(response=>{
          let CostSum = 0;
-          console.log('responsessssssssss', response);
           if (response.data && response.data.length > 0 && response.data[0].tripPrivateCostList) {
             this.privateCosts = response.data[0].tripPrivateCostList.map(item => {
               CostSum += parseInt(item.tripPrivateCost);

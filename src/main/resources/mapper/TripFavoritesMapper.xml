@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.oqplanner.tripfavorites.mapper.TripFavoritesMapper">
+
+    <select id="getTripFavorites" parameterType="TripFavorites">
+        SELECT  TRIP_FAVORITES_NO,
+            TRIP_PROJECT_NO,
+            TRIP_FAVORITES_NM,
+            TRIP_FAVORITES_EXPLAN,
+            TRIP_FAVORITES_ORDER,
+            TRIP_FAVORITES_OUT_ID,
+            TRIP_FAVORITES_IMG_URL
+        FROM  TRIP_FAVORITES
+        <where>
+            <if test='tripProjectNo != null and tripProjectNo != ""'>
+                AND TRIP_PROJECT_NO = #{tripProjectNo}
+            </if>
+            <if test='tripFavoritesOutId != null and tripFavoritesOutId != ""'>
+                AND TRIP_FAVORITES_OUT_ID = #{tripFavoritesOutId}
+            </if>
+        </where>
+    </select>
+
+    <insert id="saveTripFavorites" parameterType="TripFavorites">
+        SET @max_order = COALESCE((SELECT MAX(TRIP_FAVORITES_ORDER)
+                                     FROM TRIP_FAVORITES
+                                    WHERE TRIP_PROJECT_NO = #{tripProjectNo}), 0);
+        INSERT INTO TRIP_FAVORITES(
+            TRIP_PROJECT_NO,
+            TRIP_FAVORITES_NM,
+            TRIP_FAVORITES_EXPLAN,
+            TRIP_FAVORITES_ORDER,
+            TRIP_FAVORITES_OUT_ID,
+            TRIP_FAVORITES_IMG_URL
+        )VALUES(
+            #{tripProjectNo},
+            #{tripFavoritesNm},
+            #{tripFavoritesExplan},
+            @max_order := @max_order + 1,
+            #{tripFavoritesOutId},
+            #{tripFavoritesImgUrl}
+        )
+    </insert>
+
+    <delete id="removeTripFavorites">
+        DELETE FROM TRIP_FAVORITES
+        <where>
+            <if test='tripProjectNo != null and tripProjectNo != ""'>
+                AND TRIP_PROJECT_NO = #{tripProjectNo}
+            </if>
+            <if test='tripFavoritesOutId != null and tripFavoritesOutId != ""'>
+                AND TRIP_FAVORITES_OUT_ID = #{tripFavoritesOutId}
+            </if>
+        </where>
+    </delete>
+
+</mapper>

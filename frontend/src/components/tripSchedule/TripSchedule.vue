@@ -74,6 +74,7 @@
     </v-row>
 
      <!-- 일정 자세히 보기 -->
+    <v-form ref="form" lazy-validation>
     <v-row id="schedule-table" v-if="selectedSchedule">
       <v-col>
         <div class="d-flex justify-space-between mb-2">
@@ -161,18 +162,25 @@
                     </v-text-field>
                   </template>
                   <template v-else>
-                    <v-text-field 
-                      v-model="selectedScheduleDetails[index][key]" 
-                      @update:modelValue="val => selectedScheduleDetails[index][key] = val"
-                      class="margin">
-                    </v-text-field>
+                    <v-row>
+                      <v-col cols="7">
+                        <v-text-field 
+                          v-model="selectedScheduleDetails[index][key]" 
+                          @update:modelValue="val => selectedScheduleDetails[index][key] = val"
+                          class="margin"
+                          readonly>
+                        </v-text-field>
+                      </v-col>
+                      <v-col cols="3">  
+                        <v-btn class="spot-button-style" size="x-large" @click="showModal(index, key)">선택</v-btn>
+                      </v-col>
+                    </v-row>
                   </template>
 
                 </td>
               </template>
               <!-- 보기 모드 -->
               <template v-else>
-                <!-- <v-btn @click="toggleEditMode(index)">Edit</v-btn> -->
                 <td
                   v-for="(value, key) in schedule.columns"
                   :key="key"
@@ -180,7 +188,6 @@
                 >
                 
                 <template v-if="value != '' && key === 'time'">
-                  <!-- {{ index }} -->
                   <v-row 
                         class="show-schedule-date">  
                         {{ items[index].raw.startDate.slice(0,4) }}년 
@@ -207,12 +214,18 @@
                 </td>
               </template>
             </tr>
+            <TripScheduleModal 
+                        v-model="isModalVisible"
+                        @closeModal="closeModal"
+                        @submitTitle="submitTitle"
+                        ref="modal"/>
         </template>
         <template v-slot:bottom></template>
         </v-data-table>
 
       </v-col>
     </v-row>
+    </v-form>
   </v-container>
 
   <v-dialog
@@ -296,6 +309,7 @@ import {
 // import { VDataTableVirtual } 
 // from 'vuetify/labs/VDataTable/VDataTableVirtual';
 
+import TripScheduleModal from './TripScheduleModal.vue';
 
 export default {
   
@@ -306,6 +320,7 @@ export default {
     // TimeRangePicker,
     // VDataTableServer,
     // VDataTableVirtual,
+    TripScheduleModal,
   },
   created() {
 
@@ -390,11 +405,39 @@ export default {
       ],
       remarkRules: [
         v => !( v && v.length > 30 ) || '메모 입력은 최대 30글자까지 가능합니다.( ' + v.length + '글자 )',
-      ]
+      ],
+      isModalVisible: false,
 
     };
   },
   methods: {
+
+    submitTitle(value, currentIdx, currentKey){
+
+      console.log('submitTitle value', value);
+      console.log('submitTitle currentIdx', currentIdx);
+      console.log('submitTitle currentKey', currentKey);
+      this.selectedScheduleDetails[currentIdx][currentKey] = value;
+
+      this.closeModal();
+
+    },
+
+    showModal(index, key){
+      
+      console.log('this.isModalVisible', this.isModalVisible);
+       // 모달을 열 때 현재 행의 index를 함께 전달
+       console.log('this.$refs', this.$refs.modal); 
+
+      this.$refs.modal.showModal(index, key);
+
+        this.isModalVisible = true;
+      
+    },
+    closeModal(){
+      // this.$refs.privateCostMethod.costShow();
+      this.isModalVisible = false;
+    },
     checkTimes(value, index, items, flag){
 
       const arrayLength = items.length;
@@ -449,69 +492,93 @@ export default {
           || currnetStartTime == '' || currnetEndTime == ''){
         value[index].alertFlag = true;
         value[index].alertMessage = "시간 선택은 필수 입니다.";
-        this.saveFlag = true;
-        return;
-      }else{
-        value[index].alertFlag = false;
-        value[index].alertMessage = "";
         this.saveFlag = false;
-      }
-      
-      if(currentStartFullStr > currentEndFullStr){
+        return;
+      }else if(currentStartFullStr > currentEndFullStr){
         //startTime과 endTime비교하여 startTime이 큰 경우 제외
         value[index].alertFlag = true;
         value[index].alertMessage = "현재 종료시간 > 현재 시작시간";
         console.log("현재 스케쥴 비교");
-        this.saveFlag = true;
+        this.saveFlag = false;
         return;
   
-      }else{
-        value[index].alertFlag = false;
-        value[index].alertMessage = "";
-        this.saveFlag = false;
-      }
-      
-      if(nextIdx < arrayLength && currentEndFullStr > nextStartFullStr){
+      }else if(nextIdx < arrayLength && currentEndFullStr > nextStartFullStr){
         value[index].alertFlag = true;
         value[index].alertMessage = "현재 종료시간 < 다음 시작시간";
         console.log("after 비교")
-        this.saveFlag = true;
-        return;
-      }else{
-        value[index].alertFlag = false;
-        if(beforeIdx >= 0){
-          value[beforeIdx].alertFlag = false;
-        }
-        value[index].alertMessage = "";
         this.saveFlag = false;
-      }
-      
-      if(beforeIdx >= 0 && currentStartFullStr < beforeEndFullStr){
+        return;
+      }else if(beforeIdx >= 0 && currentStartFullStr < beforeEndFullStr){
         value[index].alertFlag = true;
         value[index].alertMessage = "현재 시작시간 > 이전 종료시간";
         console.log("before 비교")
-        this.saveFlag = true;
+        this.saveFlag = false;
         return;
       }else{
-         value[index].alertFlag = false;
-         if(nextIdx < arrayLength){
-            value[nextIdx].alertFlag = false;
-        }
-         value[index].alertMessage = "";
-         this.saveFlag = false;
+        value[index].alertFlag = false;
+        value[index].alertMessage = "";
+        this.saveFlag = true;
       }
+      
 
 
-    
+
+      // if(currentStartFullStr > currentEndFullStr){
+      //   //startTime과 endTime비교하여 startTime이 큰 경우 제외
+      //   value[index].alertFlag = true;
+      //   value[index].alertMessage = "현재 종료시간 > 현재 시작시간";
+      //   console.log("현재 스케쥴 비교");
+      //   this.saveFlag = false;
+      //   return;
+  
+      // }else{
+      //   value[index].alertFlag = false;
+      //   value[index].alertMessage = "";
+      //   this.saveFlag = true;
+      // }
+      
+
+
+
+
+      // if(nextIdx < arrayLength && currentEndFullStr > nextStartFullStr){
+      //   value[index].alertFlag = true;
+      //   value[index].alertMessage = "현재 종료시간 < 다음 시작시간";
+      //   console.log("after 비교")
+      //   this.saveFlag = false;
+      //   return;
+      // }else{
+      //   value[index].alertFlag = false;
+      //   if(beforeIdx >= 0){
+      //     value[beforeIdx].alertFlag = false;
+      //   }
+      //   value[index].alertMessage = "";
+      //   this.saveFlag = true;
+      // }
+      
+
+
+
+
+      // if(beforeIdx >= 0 && currentStartFullStr < beforeEndFullStr){
+      //   value[index].alertFlag = true;
+      //   value[index].alertMessage = "현재 시작시간 > 이전 종료시간";
+      //   console.log("before 비교")
+      //   this.saveFlag = false;
+      //   return;
+      // }else{
+      //   value[index].alertFlag = false;
+      //    if(nextIdx < arrayLength){
+      //       value[nextIdx].alertFlag = false;
+      //   }
+      //    value[index].alertMessage = "";
+      //    this.saveFlag = true;
+      // }
       
       console.log(value)
       console.log(value[index+1]);
       console.log(flag);
       console.log(arrayLength)
-    
-
-
-  
     },
     modifySchedule(){
 
@@ -549,61 +616,70 @@ export default {
       // this.selectedScheduleDetailsBak = [...this.selectedScheduleDetails];
       console.log("this.selectedScheduleDetailsBak", this.selectedScheduleDetailsBak);
     },
-    saveSchedule() {
+
+    async saveSchedule() {
       // 수정된 일정을 서버에 전송하는 로직을 추가하세요.
       // 성공적으로 서버에 전송하면 다시 일정 목록을 가져오는 등의 작업을 수행하세요.
 
-      console.log("saveSchedule", this.selectedScheduleDetails);
-      // 데이터 정제
-      console.log("tripUserNo", this.tripUserNo);
-      console.log("tripProjectNo", this.tripProjectNo);
+      if(this.saveFlag == true){
 
-      let tripProject = {}
-      const tripScheduleList = []
-      this.selectedScheduleDetails.forEach(e => {
+        await this.$refs.form.validate().then(async result => {
+          if (result.valid) {
+          console.log("saveSchedule", this.selectedScheduleDetails);
+          // 데이터 정제
+          console.log("tripUserNo", this.tripUserNo);
+          console.log("tripProjectNo", this.tripProjectNo);
 
-        const scheduleOrder = e.scheduleOrder;
-        
-        tripScheduleList.push({
-            tripProjectNo: this.tripProjectNo,
-            tripScheduleStDt: e.startDate,
-            tripScheduleEdDt: e.endDate,
-            tripScheduleStTime: e.time[scheduleOrder].start.replace(":",""),
-            tripScheduleEdTime: e.time[scheduleOrder].end.replace(":",""),
-            tripScheduleDepart: e.departure,
-            tripScheduleArrive: e.destination,
-            tripScheduleTransport: e.transportation,
-            tripScheduleCost: e.cost,
-            tripScheduleNote: e.remarks,
-            tripScheduleOrder: scheduleOrder,
-            tripScheduleDay: this.selectedIndex,  // 선택일자
-        })
-      });
+          let tripProject = {}
+          const tripScheduleList = []
+          this.selectedScheduleDetails.forEach(e => {
 
-      tripProject = {
-          tripProjectNo: this.tripProjectNo,
-          tripUserNo: this.tripUserNo,
-          tripScheduleList: tripScheduleList
-      }
-
-      console.log("tripProject", tripProject)
-      
-
-      this.$axios.put('/trip/schedule/info/list', tripProject).then(response => {
-                  // 성공적으로 전송된 경우의 처리
-                  console.log(response.data);
-                  // return this.$axios.post(`/trip/plan/info`, tripPlan);
-          })
-          .catch(error => {
-                  // 전송 중 오류가 발생한 경우의 처리
-                  console.error(error);
-          }).finally(()=>{
-            this.getSchedule();
-          });
+            const scheduleOrder = e.scheduleOrder;
             
-       // 서버 전송 후 수정 상태 종료
-      this.isEditing = false;
+            tripScheduleList.push({
+                tripProjectNo: this.tripProjectNo,
+                tripScheduleStDt: e.startDate,
+                tripScheduleEdDt: e.endDate,
+                tripScheduleStTime: e.time[scheduleOrder].start.replace(":",""),
+                tripScheduleEdTime: e.time[scheduleOrder].end.replace(":",""),
+                tripScheduleDepart: e.departure,
+                tripScheduleArrive: e.destination,
+                tripScheduleTransport: e.transportation,
+                tripScheduleCost: e.cost,
+                tripScheduleNote: e.remarks,
+                tripScheduleOrder: scheduleOrder,
+                tripScheduleDay: this.selectedIndex,  // 선택일자
+            })
+          });
+
+          tripProject = {
+              tripProjectNo: this.tripProjectNo,
+              tripUserNo: this.tripUserNo,
+              tripScheduleList: tripScheduleList
+          }
+
+          console.log("tripProject", tripProject)
+          
+
+          this.$axios.put('/trip/schedule/info/list', tripProject).then(response => {
+                      // 성공적으로 전송된 경우의 처리
+                      console.log(response.data);
+                      // return this.$axios.post(`/trip/plan/info`, tripPlan);
+              })
+              .catch(error => {
+                      // 전송 중 오류가 발생한 경우의 처리
+                      console.error(error);
+              }).finally(()=>{
+                this.getSchedule();
+              });
+                
+          // 서버 전송 후 수정 상태 종료
+          this.isEditing = false;
+          }
+        })
+      }
     },
+
     // getTransportationString(transportationValue) {
 
     //   const transportationObject = this.transPortations.find(
@@ -873,6 +949,11 @@ export default {
    margin-left: 5px;
 }
 
+.spot-button-style{
+   margin-left: -10px;
+   margin-top: 12px;
+}
+
 .schedule-contents{
   height: 250px;
 }
@@ -916,7 +997,7 @@ export default {
    color:#b00020;
    font-weight: bold;
    height: 12px;
-   font-size: 8px;
+   font-size: 9px;
    margin-top: -6px;
    margin-left: 5px;
    text-align: center;

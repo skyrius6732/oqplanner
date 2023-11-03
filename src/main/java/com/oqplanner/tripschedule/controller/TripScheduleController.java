@@ -26,7 +26,7 @@ public class TripScheduleController {
     }
 
     @GetMapping("/info")
-    public List<TripSchedule> getScheduleList  (@RequestParam String tripProjectNo, @RequestParam int tripScheduleDay){
+    public List<TripSchedule> getScheduleList (@RequestParam String tripProjectNo, @RequestParam int tripScheduleDay){
         TripSchedule tripSchedule = TripSchedule.builder()
                 .tripProjectNo(tripProjectNo)
                 .tripScheduleDay(tripScheduleDay)
