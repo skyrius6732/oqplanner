@@ -7,7 +7,9 @@
       </v-container>
     </v-main>
 
-    <Footer></Footer>
+    <Footer
+      ref="footer">
+    </Footer>
   </v-app>
 </template>
 

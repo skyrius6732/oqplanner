@@ -21,6 +21,9 @@ public class TripFavoritesService {
     }
 
     public int saveTripFavorites(TripFavorites tripFavorites){
+
+        tripFavoritesMapper.saveTripFavoritesHistory(tripFavorites);
+
         return tripFavoritesMapper.saveTripFavorites(tripFavorites);
     }
 

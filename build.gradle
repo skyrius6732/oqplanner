@@ -2,10 +2,15 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.1.3'
 	id 'io.spring.dependency-management' version '1.1.3'
+	id 'war'	// war build 추가
 }
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
+
+bootWar.enabled = false
+war.enabled = true
+war.archiveFileName = "oqplanner.war"
 
 java {
 	sourceCompatibility = '17'
@@ -54,8 +59,15 @@ dependencies {
 	// WebClient: 스프링에서 제공하는 비동기적인 웹 클라이언트로, HTTP 요청을 쉽게 만들고 응답을 비동기적으로 처리할 수 있도록 합니다.
 	implementation 'org.springframework.boot:spring-boot-starter-webflux:2.5.4'
 
+	implementation 'org.springframework.boot:spring-boot-starter-quartz'
 
-
+	
+//	애플리케이션의 내장 서블릿 컨테이너(내장톰캣)가 외부 서블릿컨테이너 작동에 영향을 주지 않도록 
+//	providedRuntime으로 명시해야 한다. 빌드 실행 시 providedRuntime로 지정된 의존성(dependency)은 
+//	의존성 jar파일이 lib-provided 디렉터리에 패키지 되어 WAR파일이 생성되므로, 
+//	내/외장 서블릿 컨테이너 모두에 사용 가능한 WAR파일이 될 수 있다.
+			
+	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 
 
 }
@@ -67,4 +79,20 @@ tasks.named('test') {
 // 테스트 코드를 제외한 빌드 수행
 tasks.withType(Test) {
 	enabled = false
+}
+
+ext.profile = (!project.hasProperty('profile') || !profile) ? 'local' : profile
+
+sourceSets {
+	main {
+		resources {
+			srcDirs "src/main/resources", "src/main/resources-env/${profile}"
+		}
+	}
+}
+
+tasks {
+	processResources {
+		duplicatesStrategy = org.gradle.api.file.DuplicatesStrategy.INCLUDE
+	}
 }

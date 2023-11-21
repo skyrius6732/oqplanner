@@ -7,7 +7,7 @@ const routerOptions = [
   { path: "/schedule", name: "TripSchedule", component: "TripSchedule", menu: "tripSchedule" },
   { path: "/cost", name: "TripCost", component: "TripCost", menu: "tripCost" },
   { path: "/favorits", name: "TripFavorits", component: "TripFavorits", menu: "tripFavorits" },
-  { path: "/share", name: "", component: "", menu: "" },
+  { path: "/share", name: "TripRanking", component: "TripRanking", menu: "tripRanking" },
 ];
 
 const routes = routerOptions.map(route => {
@@ -19,7 +19,8 @@ const routes = routerOptions.map(route => {
 
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory('/'),
+  mode: 'history', // 'history' 모드 명시적으로 설정
   routes
 });
 

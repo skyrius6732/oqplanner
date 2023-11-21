@@ -141,19 +141,19 @@ export default {
       this.tripUserNo = sessionStorage.getItem("userNoSession");
 
      
-      // // 임시코드 (빌드없이 프론트단 사용을 위한...)
-      // // 추후에 지워야함
-      // if(!sessionStorage.getItem("projectNoSession")){
-      //   this.tripProjectNo = "c5bf464bf576";
-      // }else{
-      //   this.tripProjectNo = sessionStorage.getItem("projectNoSession")
-      // }
+      // 임시코드 (빌드없이 프론트단 사용을 위한...)
+      // 추후에 지워야함
+      if(sessionStorage.getItem("projectNoSession")){
+        this.tripProjectNo = "c5bf464bf576";
+      }else{
+        this.tripProjectNo = sessionStorage.getItem("projectNoSession")
+      }
 
-      // if(!sessionStorage.getItem("userNoSession")){
-      //   this.tripUserNo = "3bb8aff388ab";
-      // }else{
-      //   this.tripUserNo = sessionStorage.getItem("userNoSession")
-      // }
+      if(sessionStorage.getItem("userNoSession")){
+        this.tripUserNo = "3bb8aff388ab";
+      }else{
+        this.tripUserNo = sessionStorage.getItem("userNoSession")
+      }
 
     },
     mounted(){
@@ -602,6 +602,18 @@ export default {
   cursor: pointer;
 }
 
+/* .search-item:hover::before {
+  content: "클릭 하여 장소를 선택할 수 있습니다.";
+  position: absolute;
+  background-color: #333;
+  color: #fff;
+  padding: 5px;
+  border-radius: 5px;
+  top: calc(50% - 10px);
+  left: calc(50% - 50px);
+  transform: translate(-50%, -50%);
+  z-index: 1;
+} */
 
 
 </style>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.oqplanner.tripranking.mapper.TripRankingMapper">
+
+
+    <select id="getTripRanking">
+        SELECT  TRIP_DAY_RANKING_NO AS TRIP_RANKING_NO
+            ,TRIP_FAVORITES_OUT_ID
+            ,TRIP_DAY_RANKING_FAVORITES_NUM AS TRIP_RANKING_FAVORITES_NUM
+            ,TRIP_DAY_RANKING_ORDER AS TRIP_RANKING_ORDER
+            ,TRIP_DAY_RANKING_REG_DT AS TRIP_RANKING_REG_DT
+            ,TRIP_FAVORITES_NM
+            ,TRIP_FAVORITES_IMG_URL
+            ,"DAY" AS TRIP_RANKING_FLAG
+        FROM TRIP_DAY_RANKING
+        WHERE
+            TRIP_DAY_RANKING_REG_DT >= date_sub(DATE_FORMAT(sysdate(), '%Y-%m-%d'), interval 1 day)
+            AND TRIP_DAY_RANKING_REG_DT <![CDATA[<]]> DATE_FORMAT(sysdate(), '%Y-%m-%d')
+        UNION
+        SELECT  TRIP_WEEK_RANKING_NO AS TRIP_RANKING_NO
+            ,TRIP_FAVORITES_OUT_ID
+            ,TRIP_WEEK_RANKING_FAVORITES_NUM AS TRIP_RANKING_FAVORITES_NUM
+            ,TRIP_WEEK_RANKING_ORDER AS TRIP_RANKING_ORDER
+            ,TRIP_WEEK_RANKING_REG_DT AS TRIP_RANKING_REG_DT
+            ,TRIP_FAVORITES_NM
+            ,TRIP_FAVORITES_IMG_URL
+            ,"WEEK" AS TRIP_RANKING_FLAG
+        FROM TRIP_WEEK_RANKING
+        WHERE
+            TRIP_WEEK_RANKING_REG_DT >= date_sub(DATE_FORMAT(sysdate(), '%Y-%m-%d'), interval 1 week)
+            AND TRIP_WEEK_RANKING_REG_DT <![CDATA[<]]> DATE_FORMAT(sysdate(), '%Y-%m-%d')
+        UNION
+            SELECT  TRIP_MONTH_RANKING_NO AS TRIP_RANKING_NO
+            ,TRIP_FAVORITES_OUT_ID
+            ,TRIP_MONTH_RANKING_FAVORITES_NUM AS TRIP_RANKING_FAVORITES_NUM
+            ,TRIP_MONTH_RANKING_ORDER AS TRIP_RANKING_ORDER
+            ,TRIP_MONTH_RANKING_REG_DT AS TRIP_RANKING_REG_DT
+            ,TRIP_FAVORITES_NM
+            ,TRIP_FAVORITES_IMG_URL
+            ,"MONTH" AS TRIP_RANKING_FLAG
+        FROM TRIP_MONTH_RANKING
+        WHERE
+            TRIP_MONTH_RANKING_REG_DT >= date_sub(DATE_FORMAT(sysdate(), '%Y-%m-%d'), interval 1 month)
+            AND TRIP_MONTH_RANKING_REG_DT <![CDATA[<]]> DATE_FORMAT(sysdate(), '%Y-%m-%d')
+    </select>
+    <insert id="saveTripDayRanking" parameterType="com.oqplanner.tripranking.domain.TripRanking">
+        INSERT INTO TRIP_DAY_RANKING(
+            TRIP_FAVORITES_OUT_ID,
+            TRIP_DAY_RANKING_FAVORITES_NUM,
+            TRIP_DAY_RANKING_ORDER,
+            TRIP_DAY_RANKING_REG_DT,
+            TRIP_FAVORITES_NM,
+            TRIP_FAVORITES_IMG_URL
+        )VALUES(
+                   #{tripFavoritesOutId},
+                   #{tripRankingFavoritesNum},
+                   #{tripRankingOrder},
+                   sysdate(),
+                   #{tripFavoritesNm},
+                   #{tripFavoritesImgUrl}
+               )
+    </insert>
+
+    <insert id="saveTripWeekRanking" parameterType="com.oqplanner.tripranking.domain.TripRanking">
+        INSERT INTO TRIP_WEEK_RANKING(
+            TRIP_FAVORITES_OUT_ID,
+            TRIP_WEEK_RANKING_FAVORITES_NUM,
+            TRIP_WEEK_RANKING_ORDER,
+            TRIP_WEEK_RANKING_REG_DT,
+            TRIP_FAVORITES_NM,
+            TRIP_FAVORITES_IMG_URL
+        )VALUES(
+                   #{tripFavoritesOutId},
+                   #{tripRankingFavoritesNum},
+                   #{tripRankingOrder},
+                   sysdate(),
+                   #{tripFavoritesNm},
+                   #{tripFavoritesImgUrl}
+               )
+    </insert>
+
+    <insert id="saveTripMonthRanking" parameterType="com.oqplanner.tripranking.domain.TripRanking">
+        INSERT INTO TRIP_MONTH_RANKING(
+            TRIP_FAVORITES_OUT_ID,
+            TRIP_MONTH_RANKING_FAVORITES_NUM,
+            TRIP_MONTH_RANKING_ORDER,
+            TRIP_MONTH_RANKING_REG_DT,
+            TRIP_FAVORITES_NM,
+            TRIP_FAVORITES_IMG_URL
+        )VALUES(
+                   #{tripFavoritesOutId},
+                   #{tripRankingFavoritesNum},
+                   #{tripRankingOrder},
+                   sysdate(),
+                   #{tripFavoritesNm},
+                   #{tripFavoritesImgUrl}
+               )
+    </insert>
+
+</mapper>

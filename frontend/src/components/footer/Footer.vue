@@ -27,33 +27,53 @@
 
 export default {
   name: 'AppFooter',
+  created(){
+  
+  },
   mounted(){
+
+  
     this.emitter.on('makeTrip', ()=>{
-      // 여행이 생성되면 isSelecting 값을 false로 변경
-      console.log('makeTrip emitter');
-      this.isSelecting = false;
+      this.$nextTick(() => {
+        // 여행이 생성되면 isSelecting 값을 false로 변경
+        console.log('makeTrip emitter');
+        this.isSelecting = false;
+
+        // 상태를 저장
+        localStorage.setItem('isSelecting', JSON.stringify(this.isSelecting));
+      });
      });
 
-     this.emitter.on('accompanyTrip', ()=>{
-      // 여행이 생성되면 isSelecting 값을 false로 변경
-      console.log('accompanyTrip emitter');
-      this.isSelecting = false;
-     });
+    this.emitter.on('accompanyTrip', () => {
+     this.$nextTick(() => {
+        // 여행이 적용되면 isSelecting 값을 false로 변경
+        console.log('accompanyTrip emitter');
+        this.isSelecting = false;
+
+         // 상태를 저장
+        localStorage.setItem('isSelecting', JSON.stringify(this.isSelecting));
+      });
+    });
 
      this.emitter.on('exitTrip', ()=>{
-      // 여행을 나가면 isSelecting 값을 false로 변경
-      console.log('exitTrip emitter');
-      this.isSelecting = true;
+       this.isSelecting = true;
+        this.$nextTick(() => {
+        // 여행을 나가면 isSelecting 값을 false로 변경
+        console.log('exitTrip emitter');
+
+        // 상태를 저장
+        localStorage.setItem('isSelecting', JSON.stringify(this.isSelecting));
+        });
      });
   },
   data() {
     return {
       menus: [
-        { title: 'Select', path: '/select', icon: 'mdi-home', text: '여행 선택' },
-        { title: 'Schedule', path: '/schedule', icon: 'mdi-text-box-search-outline', text: '여행 일정' },
-        { title: 'Cost', path: '/cost', icon: 'mdi-wallet', text: '여행 비용' },
-        { title: 'Favorits', path: '/favorits', icon: 'mdi-star-box', text: '여행 즐찾' },
-        { title: 'Share', path: '/share', icon: 'mdi-share-variant', text: '여행 추천' },
+        { title: 'Select', path: '/select', icon: 'mdi-home', text: '여행 선택', isActive: true},
+        { title: 'Schedule', path: '/schedule', icon: 'mdi-text-box-search-outline', text: '여행 일정', isActive: false },
+        { title: 'Cost', path: '/cost', icon: 'mdi-wallet', text: '여행 비용', isActive: false },
+        { title: 'Favorits', path: '/favorits', icon: 'mdi-star-box', text: '여행 즐찾', isActive: false },
+        { title: 'Share', path: '/share', icon: 'mdi-share-variant', text: '여행 추천', isActive: false },
       ],
 
       //선택 중인지 여부를 나타내는 상태
@@ -64,7 +84,9 @@ export default {
     openPage(title) {
       if(title == 'Select'){
          // 여행 선택 시 true
+        console.log('여행선택시');
         this.isSelecting = true;
+
 
         // 여행 선택 버튼 클릭 시 TripSelect.vue의 openDialog 메서드 호출
         this.emitter.emit('openSelect', true);

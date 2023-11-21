@@ -54,6 +54,10 @@
 <script>
 export default {
   name: "TripSelectStart",
+
+  mounted(){
+     
+  },
   data(){
     return {
         snackbar: false, // snackbar를 숨기기 위한 상태 변수
@@ -95,7 +99,11 @@ export default {
               tripFlag: 'oldFlag', 
             }
 
-            this.$axios.get('/trip/plan/info', { 
+            let awsUrl = '/trip/plan/info';
+            // let awsUrl = 'http://ec2-13-209-225-123.ap-northeast-2.compute.amazonaws.com:8080/oqplanner/trip/plan/info';
+            // let url = '/oqplanner/trip/plan/info';
+
+            this.$axios.get(awsUrl, { 
               params: tripPlan,
             }).then(planResponse => {
                 const tripPlanNo = planResponse.data.tripPlanNo;
@@ -137,8 +145,14 @@ export default {
                     // 전송 중 오류가 발생한 경우의 처리
                     console.error(error);
                   }).finally(()=>{
-                    // 메뉴 비활성화를 위한 Footer.vue에 이벤트 등록
-                    this.emitter.emit('accompanyTrip');
+                    console.log('this.$refs', this.$refs);
+                    
+                    setTimeout(() => {
+                       // 메뉴 비활성화를 위한 Footer.vue에 이벤트 등록
+                      //  this.$refs.footer.registerEventHandlers();
+                      this.emitter.emit('accompanyTrip');
+                    }, 3000);
+                   
                   })
 
 

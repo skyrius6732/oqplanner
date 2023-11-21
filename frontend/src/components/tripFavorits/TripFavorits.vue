@@ -5,7 +5,7 @@
     <v-col cols="10">
       <v-row>
         <v-col>
-          <div class="title">지역 선택</div>
+          <div class="subtitle-detail">지역 선택</div>
         </v-col>
       </v-row>
       
@@ -111,7 +111,7 @@
     <v-col cols="2">
       <v-row>
         <v-col>
-          <div class="title">즐겨찾기</div>
+          <div class="subtitle-detail">즐겨찾기</div>
         </v-col>
       </v-row>
 
@@ -119,17 +119,22 @@
           <v-col class="overlay-content">
             <v-list style="height: 675px; overflow-y: auto;">
                 <v-list-item v-for="(favorit, index) in favorits" :key="index" class="search-item">
-                    <row>
+                    <div style="position: relative;"> <!-- 새로운 div 추가 -->
                      <v-img :src="favorit.imageUrl" 
                       width="200px"
                       max-height="120px"
                       @error="replaceImg"
                       cover
-                      ></v-img></row>
-                       <!-- 북마크 아이콘 추가 -->
-                      <v-icon @click="toggleBookmark(favorit, index)" :color="favorit.bookmarked ? 'yellow' : 'grey'">
-                                {{ favorit.bookmarked ? 'mdi-star' : 'mdi-star-outline' }}
-                      </v-icon>
+                      >
+                        <!-- 북마크 아이콘 추가 -->
+                        <v-icon @click="toggleBookmark(favorit, index)" 
+                                :color="favorit.bookmarked ? 'yellow' : 'grey'"
+                                style="position: absolute; top: 0; left: 0;">
+                                  {{ favorit.bookmarked ? 'mdi-star' : 'mdi-star-outline' }}
+                        </v-icon>
+                      </v-img>
+                    </div>
+                     
                      <row class="favorit-title-text">
                       [{{ favorit.searchTitle }}]
                      </row>
@@ -160,23 +165,26 @@ export default {
       }
     },
     created(){
+
       this.tripProjectNo = sessionStorage.getItem("projectNoSession");
       this.tripUserNo = sessionStorage.getItem("userNoSession");
 
+      console.log('projectNoSession', sessionStorage.getItem("projectNoSession"));
+      console.log('userNoSession',sessionStorage.getItem("userNoSession"));
      
-      // // 임시코드 (빌드없이 프론트단 사용을 위한...)
-      // // 추후에 지워야함
-      // if(!sessionStorage.getItem("projectNoSession")){
-      //   this.tripProjectNo = "c5bf464bf576";
-      // }else{
-      //   this.tripProjectNo = sessionStorage.getItem("projectNoSession")
-      // }
+      // 임시코드 (빌드없이 프론트단 사용을 위한...)
+      // 추후에 지워야함
+      if(sessionStorage.getItem("projectNoSession")){
+        this.tripProjectNo = "c5bf464bf576";
+      }else{
+        this.tripProjectNo = sessionStorage.getItem("projectNoSession")
+      }
 
-      // if(!sessionStorage.getItem("userNoSession")){
-      //   this.tripUserNo = "3bb8aff388ab";
-      // }else{
-      //   this.tripUserNo = sessionStorage.getItem("userNoSession")
-      // }
+      if(sessionStorage.getItem("userNoSession")){
+        this.tripUserNo = "3bb8aff388ab";
+      }else{
+        this.tripUserNo = sessionStorage.getItem("userNoSession")
+      }
 
     },
     mounted(){
@@ -647,5 +655,12 @@ export default {
     font-size: 18px;
     font-weight: bold;
 }
+
+  .subtitle-detail {
+        color: #333;
+        font-size: 17px;
+        font-weight: bold;
+  }
+
 
 </style>

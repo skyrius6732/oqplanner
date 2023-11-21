@@ -19,7 +19,8 @@ public class ApiController {
     @Autowired
     private ApiService apiService;
 
-
+    // API 호출시 파라미터 값의 String 부분에 인식이 안되는것 같음
+    // 현재는 프론트단에서 전체 url 호출하여 진행(Front단에서만 호출 - Back단 로직 타지 않음)
     @GetMapping("/getLocationBasedTouristInfo")
     public Mono<String> getLocationBasedTouristInfo(
             @RequestParam String appName,

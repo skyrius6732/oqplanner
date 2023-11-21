@@ -56,4 +56,39 @@
         </where>
     </delete>
 
+
+    <insert id="saveTripFavoritesHistory" parameterType="TripFavorites">
+        INSERT INTO TRIP_FAVORITES_HISTORY(
+            TRIP_FAVORITES_OUT_ID,
+            TRIP_FAVORITES_NM,
+            TRIP_FAVORITES_IMG_URL,
+            TRIP_FAVORITES_HISTORY_REG_DT
+        )VALUES(
+            #{tripFavoritesOutId},
+            #{tripFavoritesNm},
+            #{tripFavoritesImgUrl},
+            sysdate()
+        )
+    </insert>
+
+    <select id="getTripFavoritesHistory" parameterType="TripRanking">
+            SELECT
+                ROW_NUMBER() OVER(ORDER BY COUNT(TRIP_FAVORITES_OUT_ID) DESC, TRIP_FAVORITES_OUT_ID ASC) AS TRIP_RANKING_ORDER,
+                COUNT(TRIP_FAVORITES_OUT_ID) AS TRIP_RANKING_FAVORITES_NUM,
+                TRIP_FAVORITES_OUT_ID,
+                TRIP_FAVORITES_NM,
+                TRIP_FAVORITES_IMG_URL
+            FROM TRIP_FAVORITES_HISTORY
+<!--            <where>-->
+<!--                <if test='tripFavoritesHistoryRegDt != null and tripFavoritesHistoryRegDt != ""'>-->
+            WHERE
+                    TRIP_FAVORITES_HISTORY_REG_DT >= date_sub(DATE_FORMAT(sysdate(), '%Y-%m-%d'), interval 1 ${period})
+                    AND TRIP_FAVORITES_HISTORY_REG_DT <![CDATA[<]]> DATE_FORMAT(sysdate(), '%Y-%m-%d')
+<!--                </if>-->
+<!--            </where>-->
+            GROUP BY TRIP_FAVORITES_OUT_ID, TRIP_FAVORITES_IMG_URL, TRIP_FAVORITES_NM
+            ORDER BY COUNT(TRIP_FAVORITES_OUT_ID) DESC, TRIP_FAVORITES_OUT_ID ASC
+            LIMIT 4
+    </select>
+
 </mapper>

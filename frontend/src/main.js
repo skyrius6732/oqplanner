@@ -20,7 +20,9 @@ import mitt from 'mitt'
 let emitter = mitt();
 let app = createApp(App);
 
-axios.defaults.baseURL = 'http://localhost:8080';
+axios.defaults.baseURL = 'http://localhost:8080/oqplanner';
+// axios.defaults.baseURL = 'http://ec2-43-201-198-72.ap-northeast-2.compute.amazonaws.com:8080';
+
 
 // axios 설정
 let instance = axios.create({
