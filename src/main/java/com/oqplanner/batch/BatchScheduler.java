@@ -25,7 +25,10 @@ public class BatchScheduler {
     PlatformTransactionManager platformTransactionManager;
 
     @Scheduled(cron = "0 50 23 * * ?") // 매일 11시 50분에 실행
-//    @Scheduled(cron = "0,30 * * * * ?")
+//    @Scheduled(cron = "0,30 * * * * ?") // 매분 0,30초에 실행
+    // 혹시 배치 스케쥴러가 writer가 안돈다면 데이터 문제이다.
+    // 일배치 기준으로 어제 날짜의 TRIP_FAVORITES_HISTORY의 데이터를 가져와서
+    // INSERT 해주는데 오늘 기준으로 어제 날짜 데이터가 없으면 아무것도 안써주는게 맞다..
     public void runDayJob() throws Exception {
 
         System.out.println("Scheduled day job is running at: " + new Date());

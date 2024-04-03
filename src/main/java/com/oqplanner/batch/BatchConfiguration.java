@@ -10,6 +10,7 @@ import org.mybatis.spring.batch.MyBatisBatchItemWriter;
 import org.mybatis.spring.batch.MyBatisPagingItemReader;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
@@ -30,6 +31,7 @@ import java.util.Date;
 
 @Configuration
 @Component
+@EnableBatchProcessing
 public class BatchConfiguration extends DefaultBatchConfiguration {
 
 
@@ -41,13 +43,13 @@ public class BatchConfiguration extends DefaultBatchConfiguration {
 
     @Autowired PlatformTransactionManager platformTransactionManager;
 
-
     @Bean
     public Job job(JobRepository jobRepository, Step dayStep) throws Exception{
         return new JobBuilder("myJob", jobRepository)
                 .start(dayStep(jobRepository, null, null))
                 .build();
     }
+
 
     @Bean
     @JobScope
@@ -58,7 +60,7 @@ public class BatchConfiguration extends DefaultBatchConfiguration {
         return new StepBuilder("dayStep",jobRepository)
                 .<TripRanking, TripRanking>chunk(10, platformTransactionManager)
                 .reader(reader(period, tripFavoritesHistoryRegDt))
-                .processor(processor())
+//                .processor(processor())
                 .writer(writer(period))
                 .build();
     }
@@ -82,16 +84,13 @@ public class BatchConfiguration extends DefaultBatchConfiguration {
         reader.setQueryId("getTripFavoritesHistory");
         reader.setParameterValues(Collections.singletonMap("tripFavoritesHistoryRegDt",tripFavoritesHistoryRegDt));
         reader.setParameterValues(Collections.singletonMap("period", period));
-
-
-
         return reader;
     }
 
 
 
     @Bean
-    public ItemProcessor<TripRanking, TripRanking> processor(){
+    public ItemProcessor<TripRanking, TripRanking> processor() throws Exception {
         return new ItemProcessor<TripRanking, TripRanking>() {
             @Override
             public TripRanking process(TripRanking model) throws Exception {
@@ -110,14 +109,17 @@ public class BatchConfiguration extends DefaultBatchConfiguration {
     @Bean
     @StepScope
     public MyBatisBatchItemWriter<TripRanking> writer(@Value("#{jobParameters[period]}") String period) throws Exception{
+        System.out.println("call writer");
         MyBatisBatchItemWriter<TripRanking> writer = new MyBatisBatchItemWriter<>();
         writer.setSqlSessionFactory(sqlSessionFactory);
+
+
         if(period.equals("day")) {
-            writer.setStatementId("saveTripDayRanking");
+            writer.setStatementId("com.oqplanner.tripranking.mapper.TripRankingMapper.saveTripDayRanking");
         }else if(period.equals("week")) {
-            writer.setStatementId("saveTripWeekRanking");
+            writer.setStatementId("com.oqplanner.tripranking.mapper.TripRankingMapper.saveTripWeekRanking");
         }else if(period.equals("month")) {
-            writer.setStatementId("saveTripMonthRanking");
+            writer.setStatementId("com.oqplanner.tripranking.mapper.TripRankingMapper.saveTripMonthRanking");
         }
         return writer;
     }

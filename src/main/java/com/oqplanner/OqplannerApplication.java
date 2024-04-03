@@ -11,6 +11,8 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+
+
 @EnableBatchProcessing
 @EnableScheduling
 @SpringBootApplication
@@ -23,6 +25,7 @@ public class OqplannerApplication extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {
 		SpringApplication.run(OqplannerApplication.class, args);
+
 	}
 
 }
