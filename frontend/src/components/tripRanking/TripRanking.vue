@@ -1,5 +1,19 @@
 <template>
   <v-container class="custom-container">
+
+     <v-row>
+        <v-col cols="11">
+          <v-text-field 
+            v-model="searchKeyword" 
+            label="검색어"
+            :rules="keywordRules"
+            @keyup.enter="search(searchKeyword)"></v-text-field>
+        </v-col>
+        <v-col cols="1"> 
+          <v-btn @click="search(searchKeyword)" size="x-large" class="button-style center-button">검색</v-btn>
+        </v-col>
+      </v-row>
+
     <v-row>
         <v-col>
           <div class="subtitle-detail">일간 여행지 추천</div>
@@ -60,6 +74,11 @@
 
     </v-row>
   </v-container>
+  <TripScheduleModal 
+                        v-model="isModalVisible"
+                        @closeModal="closeModal"
+                        @submitTitle="submitTitle"
+                        ref="modal"/>
 </template>
 
 <script>
@@ -79,10 +98,59 @@ export default{
             dayDestinations: [],
             weekDestinations: [],
             monthDestinations: [],
+            searchKeyword: "",
+            keywordRules: [
+              v => !!v || '검색어를 입력해 주시길 바랍니다.',
+            ],
+            isModalVisible: false,
         } 
     },
     methods:{
-        getDayRanking(){
+      search(searchKeyword) {
+        // let searchKeyword = searchKeyword;
+        
+        console.log('searchKeyword',searchKeyword);
+        const keyword = {
+          keyword: searchKeyword,
+        };
+        this.$axios.get('/trip/rank/search', {
+            params: keyword
+        }).then(response => {
+                  // 구글링 검색
+                  console.log('response', response)
+
+
+                  // response.data.forEach((e) =>
+                  //           this.favorits.push({
+                  //             bookmarked: true,
+                  //             contentid: e.tripFavoritesOutId,
+                  //             imageUrl: e.tripFavoritesImgUrl || 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbnOSHZ%2FbtrLTB8V5DQ%2FnlaUCKg7kzbp7PbVKy63Qk%2Fimg.png',
+                  //             searchTitle: e.tripFavoritesNm,
+                  //           }))
+
+
+            }).catch(error => {
+                  console.error(error);
+            })
+      },
+
+      // showModal(index, key){
+      // console.log('this.isModalVisible', this.isModalVisible);
+
+      //  // 모달을 열 때 현재 행의 index를 함께 전달
+      //  console.log('this.$refs', this.$refs.modal); 
+
+      // this.$refs.modal.showModal(index, key);
+
+      // this.isModalVisible = true;
+      
+      // },
+      // closeModal(){
+      // // this.$refs.privateCostMethod.costShow();
+      // this.isModalVisible = false;
+      // },
+
+      getDayRanking(){
             this.$axios.get('/trip/rank/info',{
             }).then(response=>{
                 const data = response.data;
@@ -136,7 +204,17 @@ export default{
         width: 80%;
     }
 
+    .button-style{
+      background-color: #333;
+      color: #fff;
+      font-size: 15px;
+      margin-left: 5px;
+      margin-top: 3px; /* 적용 버튼을 조금 아래로 이동 */
+    }
 
+    .center-button {
+      margin-left: -10px; 
+    }
     .subtitle-week-detail, .subtitle-month-detail{
         margin-top: 20px;
         color: #333;
@@ -161,6 +239,7 @@ export default{
         color: black; /* 예시 색상, 원하는 색상으로 변경하세요 */
         font-weight: bold;
     }
+  
 
    
 </style>

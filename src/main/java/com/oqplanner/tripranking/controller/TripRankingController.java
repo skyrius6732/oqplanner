@@ -1,6 +1,7 @@
 package com.oqplanner.tripranking.controller;
 
 import com.oqplanner.tripranking.domain.TripRanking;
+import com.oqplanner.tripranking.domain.TripSearch;
 import com.oqplanner.tripranking.service.TripRankingService;
 import com.oqplanner.tripschedule.domain.TripSchedule;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -38,4 +39,9 @@ public class TripRankingController {
 //    public List<TripRanking> getTripMonthRanking(){
 //        return tripRankingService.getTripMonthRanking();
 //    }
+
+    @GetMapping("/search")
+    public List<TripSearch> getTripSearch(@RequestParam String keyword){
+        return tripRankingService.getTripSearch(keyword);
+    }
 }

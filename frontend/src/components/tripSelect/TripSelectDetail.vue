@@ -185,15 +185,21 @@ export default {
             const moment = require('moment');
             const startDateString = this.tripYear+this.tripStartDate;
             const endDateString = this.tripYear+this.tripEndDate;
-            const formattedStartDate = startDateString.substring(0, 4)+"-"+parseInt(startDateString.substring(4, 6))+"-"+ startDateString.substring(6, 8);
-            const formattedEndDate = endDateString.substring(0, 4)+"-"+parseInt(endDateString.substring(4, 6))+"-"+ endDateString.substring(6, 8);
+            const formattedStartDate = startDateString.substring(0, 4)+"-"+startDateString.substring(4, 6)+"-"+ startDateString.substring(6, 8);
+            const formattedEndDate = endDateString.substring(0, 4)+"-"+endDateString.substring(4, 6)+"-"+ endDateString.substring(6, 8);
             const startDateMoment = moment(formattedStartDate);
             const endDateMoment = moment(formattedEndDate);
 
             const planAllNum = endDateMoment.diff(startDateMoment, 'days')+1;
             const compareFlag = moment(startDateMoment).isBefore(endDateMoment);
 
-            console.log(compareFlag);
+            console.log("startDateString :: " + startDateString);
+            console.log("endDateString :: " + endDateString);
+            console.log("formattedStartDate :: " + formattedStartDate);
+            console.log("formattedEndDate :: " + formattedEndDate);
+            console.log("startDateMoment :: " + startDateMoment);
+            console.log("endDateMoment :: " + endDateMoment);
+            console.log("compareFlag :: " + compareFlag);
             if(!compareFlag){
               this.alertMessage = "여행시작 날짜는 여행종료 날짜 보다 작아야합니다."
               this.alert = true;

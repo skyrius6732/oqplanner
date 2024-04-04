@@ -36,4 +36,6 @@ public class TripFavoritesController {
     public int removeTripFavorites (@RequestBody TripFavorites tripFavorites){
         return tripFavoritesService.removeTripFavorites(tripFavorites);
     }
+
+
 }

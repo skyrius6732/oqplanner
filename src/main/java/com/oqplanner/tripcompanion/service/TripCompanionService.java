@@ -3,6 +3,7 @@ package com.oqplanner.tripcompanion.service;
 
 import com.oqplanner.tripcompanion.domain.TripCompanion;
 import com.oqplanner.tripcompanion.mapper.TripCompanionMapper;
+import com.oqplanner.tripuser.service.TripUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,9 @@ public class TripCompanionService {
 //        if(list.size() > 0){
 //            return -1;
 //        }
+
+
+        // 동행자 등록
         tripCompanionMapper.saveCompanion(tripCompanion);
         int companionNo = Integer.parseInt(tripCompanion.getTripCompanionNo());
         System.out.println("companionNo :: " + companionNo);
