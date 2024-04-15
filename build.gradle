@@ -12,6 +12,7 @@ bootWar.enabled = false
 war.enabled = true
 war.archiveFileName = "oqplanner.war"
 
+
 java {
 	sourceCompatibility = '17'
 }
@@ -44,8 +45,9 @@ dependencies {
 	testImplementation 'org.thymeleaf:thymeleaf:3.1.1.RELEASE'
 	testImplementation 'org.projectlombok:lombok'
 
+
 	// jpa
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+//	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	// mysql connector
 	implementation 'mysql:mysql-connector-java:8.0.26'
 	// swagger
