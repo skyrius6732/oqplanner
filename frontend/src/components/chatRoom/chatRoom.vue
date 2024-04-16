@@ -105,7 +105,7 @@ input[type="text"] {
 }
 
 button {
-  background-color: #007bff;
+  background-color: #333;
   color: white;
   border: none;
   padding: 8px 15px;
