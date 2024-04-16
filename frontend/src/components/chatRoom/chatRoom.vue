@@ -1,7 +1,7 @@
 <template>
   <div class="chat-room">
     <div class="chat-toggle" @click="toggleChat">
-      {{ showChat ? '채팅방' : '채팅방입장test' }}
+      {{ showChat ? '채팅방' : '채팅방입장' }}
     <button class="exit-button" v-if="showChat" @click="toggleChat">나가기</button>
     </div>
     <div v-if="showChat" class="chat-window">
