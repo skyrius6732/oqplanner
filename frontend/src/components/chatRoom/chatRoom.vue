@@ -1,7 +1,8 @@
 <template>
   <div class="chat-room">
     <div class="chat-toggle" @click="toggleChat">
-      {{ showChat ? '채팅방' : '채팅방 입장' }}
+      {{ showChat ? '채팅방' : '채팅방입장' }}
+    <button class="exit-button" v-if="showChat" @click="toggleChat">나가기</button>
     </div>
     <div v-if="showChat" class="chat-window">
       <!-- 채팅 내용 표시 -->
@@ -66,6 +67,9 @@ export default {
 }
 
 .chat-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   cursor: pointer;
   background-color: #333;
   color: white;
@@ -73,6 +77,21 @@ export default {
   border-radius: 5px;
 }
 
+.toggle-text {
+  flex: 1;
+}
+
+.exit-button {
+  background-color: #333;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.exit-button:hover {
+  background-color: gray;
+}
 .chat-window {
   background-color: white;
   border: 1px solid #ccc;
