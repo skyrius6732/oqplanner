@@ -250,7 +250,7 @@ export default {
 
                   // vue-session 모듈 인식을 못함..
                   // this.$session.set('projectNoSession', projectNoSession);
-                  // this.$session.set('userNoSession', userNoSession);
+                  // this.$session.set('userNoSession', userNoSession);d
 
                   // sessionStorage 사용
                   sessionStorage.setItem('projectNoSession', projectNoSession);
@@ -259,6 +259,9 @@ export default {
 
                   // 팝업창 클로징 부모 컴포넌트 closeDialog 등록 하여 이벤트 호출
                   this.$emit("closeDialog");
+
+                  // Vuex store의 login 액션을 호출하여 로그인 상태를 변경하여 채팅방 보여주기
+                  this.$store.dispatch('login');
 
                   // router 이동
                   this.$router.push('/schedule');

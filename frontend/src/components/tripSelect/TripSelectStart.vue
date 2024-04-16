@@ -135,6 +135,9 @@ export default {
                       // 팝업창 클로징 부모 컴포넌트 closeDialog 등록 하여 이벤트 호출
                       this.$emit("closeDialog");
                       this.$router.push('/schedule');
+
+                      // Vuex store의 login 액션을 호출하여 로그인 상태를 변경하여 채팅방 보여주기
+                      this.$store.dispatch('login');
                     }, 3000);
 
          

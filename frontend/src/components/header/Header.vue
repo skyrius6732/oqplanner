@@ -39,6 +39,9 @@ export default {
       console.log('projectNoSession', sessionStorage.getItem("projectNoSession"));
       console.log('userNoSession',sessionStorage.getItem("userNoSession"));
 
+
+      // Vuex store의 login 액션을 호출하여 로그인 상태를 변경하여 채팅방 숨기기
+      this.$store.dispatch('logout');
       this.$router.push('/select'); 
 
      

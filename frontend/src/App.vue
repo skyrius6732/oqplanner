@@ -6,7 +6,9 @@
          <router-view></router-view>
       </v-container>
     </v-main>
-
+    <template v-if="$store.getters.isLoggedIn">
+      <chatRoom></chatRoom>
+    </template>
     <Footer
       ref="footer">
     </Footer>
@@ -16,8 +18,7 @@
 <script>
 import Header from './components/header/Header.vue';
 import Footer from './components/footer/Footer.vue';
-
-
+import chatRoom from './components/chatRoom/chatRoom.vue';
 
 export default {
   name: 'App',
@@ -25,6 +26,7 @@ export default {
   components: {
     Header,
     Footer,
+    chatRoom,
   },
 
   data: () => ({
@@ -32,3 +34,7 @@ export default {
   }),
 }
 </script>
+
+<style>
+
+</style>
