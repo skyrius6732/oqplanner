@@ -47,13 +47,13 @@ dependencies {
 
 
 	// jpa
-//	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	//	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	// mysql connector
 	implementation 'mysql:mysql-connector-java:8.0.26'
 	// swagger
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
 	// logback
-//	implementation 'ch.qos.logback:logback-classic:1.2.6'
+	//	implementation 'ch.qos.logback:logback-classic:1.2.6'
 
 	// Mono: 리액티브 프로그래밍에서 단일 결과 값을 나타내는 클래스로, 비동기 및 논블로킹 처리를 지원합니다.
 	implementation 'io.projectreactor:reactor-core:3.5.0'
@@ -76,6 +76,9 @@ dependencies {
 //	내/외장 서블릿 컨테이너 모두에 사용 가능한 WAR파일이 될 수 있다.
 			
 	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+
+	// redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 
 }
