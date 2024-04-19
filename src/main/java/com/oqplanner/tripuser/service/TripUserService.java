@@ -41,4 +41,8 @@ public class TripUserService {
         return tripUserMapper.removeUserInfoBytripUserNo(tripUserNo);
     }
 
+    public TripUser getUserInfo(String tripUserNo){
+        return tripUserMapper.getUserInfo(tripUserNo);
+    }
+
 }

@@ -51,4 +51,14 @@ public class TripUserController {
         return tripUserService.removeUserInfoBytripUserNo(tripUserNo);
     }
 
+    @Operation(summary = "여행유저 조회", description = "여행유저 조회 메서드 입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "사용자 정보 조회 성공", content = @Content(schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = Error.class)))
+    })
+    @GetMapping("/info")
+    public TripUser getUserInfo(@RequestParam String tripUserNo){
+        return tripUserService.getUserInfo(tripUserNo);
+    }
+
 }

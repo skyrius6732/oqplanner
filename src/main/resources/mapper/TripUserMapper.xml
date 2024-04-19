@@ -17,8 +17,8 @@
         </where>
     </delete>
 
-    <!--<select id="getUserInfo" resultType="com.oqplanner.tripuser.domain.TripUser">
-        select * from TRIP_USER
-    </select>-->
+    <select id="getUserInfo" resultType="com.oqplanner.tripuser.domain.TripUser" parameterType="com.oqplanner.tripuser.domain.TripUser">
+        select * from TRIP_USER where TRIP_USER_NO = #{tripUserNo}
+    </select>
 
 </mapper>

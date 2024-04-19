@@ -8,4 +8,6 @@ import org.apache.ibatis.annotations.Mapper;
 public interface TripUserMapper {
     int saveUserInfo(TripUser tripUser);
     int removeUserInfoBytripUserNo(String tripUserNo);
+
+    TripUser getUserInfo(String tripUserNo);
 }
