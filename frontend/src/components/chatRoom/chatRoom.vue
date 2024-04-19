@@ -69,7 +69,7 @@ export default {
       userName: '',
       projectNo: '',
       websocket: '',
-      address: 'ws://localhost:8081/oqplanner/ws/chat',
+      address: 'ws://13.209.197.38:8081/oqplanner/ws/chat',
     };
   },
   methods: {
