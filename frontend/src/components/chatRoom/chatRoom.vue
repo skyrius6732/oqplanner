@@ -86,8 +86,8 @@ export default {
 
   },
   created(){
-    // this.userNo = sessionStorage.getItem("userNoSession");
-    this.userNo = '8367b2193356'; // 임시
+    this.userNo = sessionStorage.getItem("userNoSession");
+    // this.userNo = '8367b2193356'; // 임시
     this.projectNo = sessionStorage.getItem("projectNoSession");
     this.getTripUserInfo();
     
@@ -110,8 +110,8 @@ export default {
       userName: '',
       projectNo: '',
       websocket: '',
-      address: "ws://localhost:8081/oqplanner/ws/chat", // 임시
-      // address: 'ws://13.209.197.38:8081/oqplanner/ws/chat',
+      // address: "ws://localhost:8081/oqplanner/ws/chat", // 임시
+      address: 'ws://13.209.197.38:8081/oqplanner/ws/chat',
     };
   },
   methods: {
