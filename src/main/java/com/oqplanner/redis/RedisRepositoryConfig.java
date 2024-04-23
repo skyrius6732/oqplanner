@@ -19,11 +19,13 @@ public class RedisRepositoryConfig {
 
     private final RedisProperties redisProperties;
 
-    // lettuce
+
+    // LettuceConnectionFactory 빈을 생성하는 메서드
     @Bean
-    public RedisConnectionFactory redisConnectionFactory() {
+    public LettuceConnectionFactory redisConnectionFactory() {
         return new LettuceConnectionFactory(redisProperties.getHost(), redisProperties.getPort());
     }
+
 
     // Redis template
     @Bean
