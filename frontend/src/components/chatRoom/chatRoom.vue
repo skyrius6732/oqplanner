@@ -55,7 +55,7 @@
           class="chat"
         >
         <div class="scroll-to-bottom" v-if="!isScrolledToBottom" @click="scrollToBottom">
-           ⬇ 최신 메시지로 이동 ⬇
+           ⏬최신 메세지 이동⏬
         </div>
         <div>
           <v-container>
