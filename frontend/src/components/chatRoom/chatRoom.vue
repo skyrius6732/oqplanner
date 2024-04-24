@@ -235,7 +235,7 @@ export default {
             // 현재 입장의 알림 push
             const currentDate = new Date();
             const formattedDate = `${currentDate.getFullYear().toString().substr(-2)}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')} ${currentDate.getHours().toString().padStart(2, '0')}:${currentDate.getMinutes().toString().padStart(2, '0')}:${currentDate.getSeconds().toString().padStart(2, '0')}`;
-            console.log("formattedDate :: " + formattedDate);
+            console.log("formattedDate 입장 date:: " + formattedDate);
            
             this.chatMessages.push({   // 자신과 타인의 클라이언트에 보여지는 chatTotalMessages에 입장 추가  
                                       // 이후 webSocket.send로 전달되어 다른 클라이언트에게 보여짐
