@@ -54,6 +54,9 @@
                   }"
           class="chat"
         >
+        <div class="scroll-to-bottom" v-if="!isScrolledToBottom" @click="scrollToBottom">
+           ⬇ 최신 메시지로 이동 ⬇
+        </div>
         <div>
           <v-container>
             <v-row>
@@ -70,8 +73,9 @@
         </div>
         </li>
       </ul>
-
-      <!-- 채팅 입력 폼 -->
+    </div>
+    <div v-if="showChat">
+        <!-- 채팅 입력 폼 -->
       <div class="input-container">
         <input type="text" v-model="newMessage" @keyup.enter="sendMessage" placeholder="메시지를 입력하세요.">
         <button @click="sendMessage">전송</button>
@@ -83,11 +87,11 @@
 <script>
 export default {
   mounted(){
-
+    window.addEventListener('wheel', this.handleScroll);
   },
   created(){
     this.userNo = sessionStorage.getItem("userNoSession");
-    // this.userNo = '8367b2193356'; // 임시
+    // this.userNo = '66f21fb2b35c'; // 임시
     this.projectNo = sessionStorage.getItem("projectNoSession");
     this.getTripUserInfo();
     
@@ -110,6 +114,7 @@ export default {
       userName: '',
       projectNo: '',
       websocket: '',
+      isScrolledToBottom: true, // 스크롤이 제일 아래로 이동했는지 여부를 추적
       // address: "ws://localhost:8081/oqplanner/ws/chat", // 임시
       address: 'ws://13.209.197.38:8081/oqplanner/ws/chat',
     };
@@ -148,7 +153,9 @@ export default {
               this.getChatters();
             }
 
-            this.moveScroll();
+            if(this.userNo == message.userNo){
+              this.moveScroll(); 
+            }
           }catch(error){
             console.error('JSON 파싱 오류:', error);
           }  
@@ -311,7 +318,7 @@ export default {
         this.websocket.send(JSON.stringify(this.chatMessages[0]));
         this.chatMessages = [];
       }
-      this.moveScroll();
+      // this.moveScroll(); // 스크롤클릭시아래로 주석
      
     },
     moveScroll() {
@@ -320,10 +327,25 @@ export default {
         let chatWindow = this.$el.querySelector('.chat-window');
         if (chatWindow) {
           chatWindow.scrollTop = chatWindow.scrollHeight-50;
+          this.isScrolledToBottom = true;
         }
       });
     },
-  }
+    scrollToBottom() {
+      this.moveScroll(); // 스크롤이 제일 아래로 이동
+      this.isScrolledToBottom = true; // 스크롤이 제일 아래로 이동했음을 표시
+    },
+    handleScroll(event) {
+      // 스크롤이 위로 올라갔는지 여부 확인
+      if (event.deltaY < 0 || event.deltaY > 0) {
+        this.isScrolledToBottom = false; // 스크롤이 위로 올라갔을 때 isScrolledToBottom을 false로 설정
+      }
+    },
+  },
+  beforeUnmount() {
+    window.removeEventListener('wheel', this.handleScroll);
+  },
+
 };
 </script>
 
@@ -506,6 +528,22 @@ button {
 
 .chat-date {
   font-size: 10px !important;
+}
+
+.scroll-to-bottom {
+  position: absolute; /* 절대 위치 지정 */
+  bottom: 25px; /* 하단으로부터의 거리 설정 */
+  left: 50%; /* 가로 중앙으로 이동 */
+  transform: translateX(-50%); /* 중앙 정렬을 위한 변형(transform) 설정 */
+  background-color: #333; /* 배경색 지정 */
+  color: white; /* 글자색 지정 */
+  padding: 10px; /* 내부 여백 설정 */
+  border-radius: 5px; /* 모서리 둥글게 설정 */
+  cursor: pointer; /* 마우스 커서를 포인터로 변경하여 클릭 가능함을 나타냄 */
+}
+
+.scroll-to-bottom:hover {
+  background-color: #555; /* 마우스를 올렸을 때의 배경색 지정 */
 }
 
 
