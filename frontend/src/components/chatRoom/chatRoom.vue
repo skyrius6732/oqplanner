@@ -132,7 +132,7 @@ export default {
 
       this.websocket.onmessage = (event)=>{
           console.log('take a message');
-
+          console.log("onmessage", event.data);
           try{
             const message = JSON.parse(event.data);
 
@@ -183,8 +183,9 @@ export default {
       this.chatterTotalList=[]; // 초기화
       this.$axios.get('/trip/chat/chatter')
       .then(response => {
+        console.log('getChatter response', response)
           response.data.forEach(item => {
-              console.log(item);
+              console.log("getChatter", item);
               this.chatterTotalList.push(item);
           });
       }).finally(()=>{
@@ -336,7 +337,7 @@ export default {
     },
     handleScroll(event) {
       // 스크롤이 위로 올라갔는지 여부 확인
-      if (event.target.scrollTop <= 8900) {
+      if (event.target.scrollTop <= 8000) {
         console.log('scroll moving');
         this.isScrolledToBottom = false; // 스크롤이 위로 올라갔을 때 isScrolledToBottom을 false로 설정
       }
@@ -549,7 +550,7 @@ button {
 
  @media (max-width: 768px) {
   .chat-room{
-    width: 100%;
+    /* width: 100%; */
   }
 
    .chat-window{

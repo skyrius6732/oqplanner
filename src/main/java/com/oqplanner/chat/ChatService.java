@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -42,13 +43,26 @@ public class ChatService {
     }*/
 
     // webSocket 세션 아이디를 통한 채팅자 리스트 관리
-    public void saveChatter(String sessionId){
+    public void saveChatter(String sessionId, ChatMessage chatMessage) {
         String key = sessionId;
+        try {
+            if (chatMessage == null) { // webSocket 클라이언트 접속 시
+                // 포맷을 지정하여 현재 날짜를 yyMMddHHmmss 형식으로 변환
+                String formatDate = new SimpleDateFormat("yy-MM-dd HH:mm:ss").format(new Date());
+                LocalDateTime date = LocalDateTime.parse(formatDate, DateTimeFormatter.ofPattern("yy-MM-dd HH:mm:ss"));
+                // Sorted Set에 시간순으로 키를 추가
+                redisTemplate.opsForZSet().add("chatters", key, date.toEpochSecond(ZoneOffset.UTC));
+            } else {  // 접속 후 onMessage(user정보 있음)
+//            String key = chatMessage.getUserNo();
+                ObjectMapper objectMapper = new ObjectMapper();
+                String json = objectMapper.writeValueAsString(chatMessage);
+                redisTemplate.opsForValue().set(key, json);
+            }
+        }catch(JsonProcessingException e) {
+            e.printStackTrace();
+        }
 
-        // 포맷을 지정하여 현재 날짜를 yyMMddHHmmss 형식으로 변환
-        LocalDateTime date = LocalDateTime.parse(new Date().toString(), DateTimeFormatter.ofPattern("yy-MM-dd HH:mm:ss"));
-        // Sorted Set에 시간순으로 키를 추가
-        redisTemplate.opsForZSet().add("chatters", key, date.toEpochSecond(ZoneOffset.UTC));
+
 
     }
 
@@ -61,6 +75,7 @@ public class ChatService {
 
 
     public void deleteChatter(String sessionId) {
+
         // chatters 항목 중 해당 key값 삭제
         redisTemplate.opsForZSet().remove("chatters", sessionId);
     }
@@ -71,7 +86,10 @@ public class ChatService {
         String json = "";
         sortedKeys = getChatterKeys();
         for (String key : sortedKeys) {
+            System.out.println("key ::: " + key);
+
             json = redisTemplate.opsForValue().get(key);
+            System.out.println("json ::: " + json);
             if (json != null) {
                 try {
                     ObjectMapper objectMapper = new ObjectMapper();

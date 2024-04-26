@@ -11,6 +11,7 @@ import org.springframework.data.redis.core.RedisHash;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChatMessage {
+
     private String flag;         // chatter, chat 구분
     private String userName;    // 사용자 이름
     private String userNo;      // 사용자 No

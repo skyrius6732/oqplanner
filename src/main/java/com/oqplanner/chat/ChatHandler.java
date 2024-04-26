@@ -32,7 +32,7 @@ public class ChatHandler extends TextWebSocketHandler{
             log.info("payload : " + payload);
             ObjectMapper objectMapper = new ObjectMapper();
             ChatMessage chatMessage = objectMapper.readValue(payload, ChatMessage.class);
-
+            String sessionId = session.getId();
                 String preDate = chatMessage.getDate();
                 String keyDate = "";
                 String[] value = preDate.split(" ");
@@ -43,14 +43,14 @@ public class ChatHandler extends TextWebSocketHandler{
 
                 if("enter".equals(chatMessage.getFlag()) || "message".equals(chatMessage.getFlag())) {
                     // 입장 시 채팅자 redis 저장 webSocket send X
-//                    chatService.saveChatter(chatMessage);
+                    chatService.saveChatter(sessionId, chatMessage);
 
                     // 입장시, 전송시 메세지 redis 저장
                     chatService.saveChatMessage(keyDate, chatMessage);
 
                 }else if("exit".equals(chatMessage.getFlag())) {
                     // 퇴장 시 채팅자 redis 삭제 webSocket send X
-//                    chatService.deleteChatter(chatMessage);
+//                    chatService.deleteChatter(sessionId, chatMessage);
 
                     // 입장시, 전송시 메세지 redis 저장
                     chatService.saveChatMessage(keyDate, chatMessage);
@@ -70,7 +70,7 @@ public class ChatHandler extends TextWebSocketHandler{
         @Override
         public void afterConnectionEstablished(WebSocketSession session) throws Exception {
             list.add(session);
-            chatService.saveChatter(session.getId());
+            chatService.saveChatter(session.getId(),null);
             log.info(session + " 클라이언트 접속");
         }
 
