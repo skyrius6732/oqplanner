@@ -3,7 +3,7 @@
     <Header></Header>
     <v-main>
       <v-container fluid>
-         <router-view></router-view>
+         <router-view/>
       </v-container>
     </v-main>
     <template v-if="$store.getters.isLoggedIn">
