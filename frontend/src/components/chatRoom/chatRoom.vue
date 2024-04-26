@@ -549,7 +549,7 @@ button {
 
  @media (max-width: 768px) {
   .chat-room{
-    /* width: 100%; */
+    width: 100%;
   }
 
    .chat-window{

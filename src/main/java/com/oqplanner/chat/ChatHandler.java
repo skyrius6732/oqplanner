@@ -43,14 +43,14 @@ public class ChatHandler extends TextWebSocketHandler{
 
                 if("enter".equals(chatMessage.getFlag()) || "message".equals(chatMessage.getFlag())) {
                     // 입장 시 채팅자 redis 저장 webSocket send X
-                    chatService.saveChatter(chatMessage);
+//                    chatService.saveChatter(chatMessage);
 
                     // 입장시, 전송시 메세지 redis 저장
                     chatService.saveChatMessage(keyDate, chatMessage);
 
                 }else if("exit".equals(chatMessage.getFlag())) {
                     // 퇴장 시 채팅자 redis 삭제 webSocket send X
-                    chatService.deleteChatter(chatMessage);
+//                    chatService.deleteChatter(chatMessage);
 
                     // 입장시, 전송시 메세지 redis 저장
                     chatService.saveChatMessage(keyDate, chatMessage);
@@ -70,7 +70,7 @@ public class ChatHandler extends TextWebSocketHandler{
         @Override
         public void afterConnectionEstablished(WebSocketSession session) throws Exception {
             list.add(session);
-
+            chatService.saveChatter(session.getId());
             log.info(session + " 클라이언트 접속");
         }
 
@@ -79,6 +79,7 @@ public class ChatHandler extends TextWebSocketHandler{
         @Override
         public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
             log.info(session + " 클라이언트 접속 해제");
+            chatService.deleteChatter(session.getId());
             list.remove(session);
         }
     }

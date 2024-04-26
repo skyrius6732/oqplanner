@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -23,7 +24,8 @@ public class ChatService {
     private RedisTemplate<String, String> redisTemplate;
 
 
-    public void saveChatter(ChatMessage chatMessage){
+    // userNo를 통한 채팅자 리스트 관리
+    /*public void saveChatter(ChatMessage chatMessage){
         try{
             String key = chatMessage.getUserNo();
             ObjectMapper objectMapper = new ObjectMapper();
@@ -37,13 +39,30 @@ public class ChatService {
         }catch(JsonProcessingException e) {
             e.printStackTrace();
         }
+    }*/
+
+    // webSocket 세션 아이디를 통한 채팅자 리스트 관리
+    public void saveChatter(String sessionId){
+        String key = sessionId;
+
+        // 포맷을 지정하여 현재 날짜를 yyMMddHHmmss 형식으로 변환
+        LocalDateTime date = LocalDateTime.parse(new Date().toString(), DateTimeFormatter.ofPattern("yy-MM-dd HH:mm:ss"));
+        // Sorted Set에 시간순으로 키를 추가
+        redisTemplate.opsForZSet().add("chatters", key, date.toEpochSecond(ZoneOffset.UTC));
+
     }
 
-    public void deleteChatter(ChatMessage chatMessage) {
-        // 실제 저장된 key 값들을 삭제
-        redisTemplate.delete(chatMessage.getUserNo());
+//    public void deleteChatter(ChatMessage chatMessage) {
+//        // 실제 저장된 key 값들을 삭제
+//        redisTemplate.delete(chatMessage.getUserNo());
+//        // chatters 항목 중 해당 key값 삭제
+//        redisTemplate.opsForZSet().remove("chatters", chatMessage.getUserNo());
+//    }
+
+
+    public void deleteChatter(String sessionId) {
         // chatters 항목 중 해당 key값 삭제
-        redisTemplate.opsForZSet().remove("chatters", chatMessage.getUserNo());
+        redisTemplate.opsForZSet().remove("chatters", sessionId);
     }
 
     public List<ChatMessage> getChatter(){
