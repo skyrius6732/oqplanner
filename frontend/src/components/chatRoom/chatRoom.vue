@@ -336,7 +336,8 @@ export default {
     },
     handleScroll(event) {
       // 스크롤이 위로 올라갔는지 여부 확인
-      if (event.deltaY < 0 || event.deltaY > 0) {
+      if (event.target.scrollTop <= 8900) {
+        console.log('scroll moving');
         this.isScrolledToBottom = false; // 스크롤이 위로 올라갔을 때 isScrolledToBottom을 false로 설정
       }
     },
@@ -558,7 +559,7 @@ button {
 
   .chat-list-window{
     width: 100%;
-    max-height: 100px; 
+    max-height: 150px; 
   }
 
   .scroll-to-bottom{
