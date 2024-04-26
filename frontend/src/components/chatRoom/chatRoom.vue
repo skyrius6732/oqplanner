@@ -1,6 +1,4 @@
 <template>
-
-
   <div class="chat-room">
     <div>
       <div class="chat-toggle" v-if="!showChat" @click="enterChat($event)">{{ chatRoomText }}</div>  <!-- 채팅방입장 -->
@@ -77,7 +75,7 @@
     <div v-if="showChat">
         <!-- 채팅 입력 폼 -->
       <div class="input-container">
-        <input type="text" v-model="newMessage" @keyup.enter="sendMessage" placeholder="메시지를 입력하세요.">
+        <input type="text" v-model="newMessage" @keyup.enter="sendMessage" placeholder="메세지를 입력하세요.">
         <button @click="sendMessage">전송</button>
       </div>
     </div>
@@ -87,7 +85,8 @@
 <script>
 export default {
   mounted(){
-    window.addEventListener('wheel', this.handleScroll);
+    // window.addEventListener('wheel', this.handleScroll);
+    window.addEventListener('scroll', this.handleScroll, true);
   },
   created(){
     this.userNo = sessionStorage.getItem("userNoSession");
@@ -343,7 +342,8 @@ export default {
     },
   },
   beforeUnmount() {
-    window.removeEventListener('wheel', this.handleScroll);
+    // window.removeEventListener('wheel', this.handleScroll);
+    window.removeEventListener('scroll', this.handleScroll);
   },
 
 };
@@ -409,7 +409,7 @@ export default {
   display: flex;
   align-items: center;
   border-top: 1px solid #ccc;
-  padding-top: 10px;
+  background-color: white;
 }
 
 input[type="text"] {
@@ -545,6 +545,29 @@ button {
 .scroll-to-bottom:hover {
   background-color: #555; /* 마우스를 올렸을 때의 배경색 지정 */
 }
+
+ @media (max-width: 768px) {
+  .chat-room{
+    /* width: 100%; */
+  }
+
+   .chat-window{
+    width: 100%;
+    max-height: 450px; 
+  }
+
+  .chat-list-window{
+    width: 100%;
+    max-height: 100px; 
+  }
+
+  .scroll-to-bottom{
+    font-size: 8px;
+  }
+
+ 
+ }
+
 
 
 
