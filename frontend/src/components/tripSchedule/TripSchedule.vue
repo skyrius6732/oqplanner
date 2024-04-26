@@ -1,47 +1,44 @@
 <template>
   <v-container class="custom-container">
-    <div class="d-flex justify-space-between mb-2">
-          <div>
-           <span class="subtitle-detail">일정 간략히 보기</span>
+    <!-- <div class="d-flex justify-space-between mb-2"> -->
+          <div class="subtitle-detail">
+           <span >일정 간략히 보기</span>
           </div>
-    </div>
+    <!-- </div> -->
     <v-row>
-      <v-col v-for="(schedule, index) in schedules" :key="index" :cols="4">
+      <v-col v-for="(schedule, index) in schedules" :key="index" cols="12" md="4">
         <v-card class="custom-card">
           <v-card-title class="title text-left">
             {{ schedule.date }}
           </v-card-title>
           <v-card-text class="schedule-contents">
             <v-row class="icon-row">
-              <v-col :cols="1">
+              <v-col cols="2" md="1">
                 <v-icon class="icon">mdi-map-marker</v-icon>
               </v-col>
-              <v-col :cols="11">
+              <v-col cols="10" md="11">
                 <h3 class="subtitle">여행 경로</h3>
                 {{ schedule.route.length >= 20 ? schedule.route.slice(0, 20) + ' ...' : schedule.route }}
               </v-col>
             </v-row>
 
             <v-row class="icon-row">
-              <v-col :cols="1">
+              <v-col cols="2" md="1">
                 <v-icon class="icon">mdi-currency-krw</v-icon>
               </v-col>
-              <v-col :cols="11">
+              <v-col cols="10" md="11">
                 <h3 class="subtitle">여행 비용</h3>
                 <p>{{ schedule.cost }}</p>
               </v-col>
             </v-row>
 
             <v-row class="icon-row">
-               <v-col :cols="1">
+               <v-col cols="2" md="1">
                 <v-icon class="icon">mdi-comment-outline</v-icon>
               </v-col>
-              <v-col :cols="11">
+              <v-col cols="10" md="11">
                 <h3 class="subtitle">메모</h3>
                 <ul v-if="schedule.remarks">
-                    <!-- <li v-for="(note, index) in Array.from({ length: 3 }).map((_, i) => schedule.remarks ? schedule.remarks.split('/')[i] || ' - ' : '')" :key="index">
-                      {{ note.length > 20 ? note.slice(0, 20) + ' ...' : note.trim() }}
-                    </li> -->
                     <li v-for="(note, index) in schedule.remarks.split('/').filter(value => value.trim() !== '').slice(0,4)" :key="index">
                         {{ note.length > 20 ? note.slice(0, 20) + ' ...' : note.trim() }}
                     </li>
@@ -57,7 +54,7 @@
           </v-row>
         </v-card>
       </v-col>
-      <v-col :cols="4">
+      <v-col :cols="12" md="4">
         <v-card v-if="schedules.length < tripPlanAllNum" class="plus-button-card" @click="addSchedule">
           <v-card-text class="text-center">
               <v-icon size="55">mdi-plus-box</v-icon>
@@ -66,8 +63,8 @@
       </v-col>
     </v-row>
 
-    <!-- 밑줄 -->
-    <v-row class="underline-row">
+   <!-- 밑줄 -->
+    <v-row id="schedule-table" class="underline-row">
       <v-col>
         <v-divider></v-divider>
       </v-col>
@@ -75,14 +72,14 @@
 
      <!-- 일정 자세히 보기 -->
     <v-form ref="form" lazy-validation>
-    <v-row id="schedule-table" v-if="selectedSchedule">
-      <v-col>
-        <div class="d-flex justify-space-between mb-2">
+      <v-row class="d-flex justify-space-between mb-2" v-if="selectedSchedule"> 
           <div>
            <span class="subtitle-detail">일정 자세히 보기</span>
-           <span class="subtitle-detail-date" > {{ selectedSchedule && selectedSchedule.date }} </span>
+           <span class="subtitle-detail-date" >  {{ selectedSchedule && selectedSchedule.date }} </span>
           </div>
-          <div>
+      </v-row>
+      <v-row v-if="selectedSchedule">
+          <v-col :cols="12" class="d-flex justify-end">
              <!-- 수정 상태인지 확인하고, 수정 상태라면 저장 버튼을 표시 -->
             <template v-if="isEditing">
               <v-btn class="button-style" @click="saveSchedule">일정 저장</v-btn>
@@ -91,14 +88,18 @@
             <template v-else>
               <v-btn class="button-style" @click="startEditing">일정 수정</v-btn>
             </template>
-              </div>
-        </div>
+          </v-col>
+      </v-row>
+    <v-row v-if="selectedSchedule">
+ 
+      <v-col>
         <!-- height selectedScheduleDetails 개수에 따라 동적변경 진행 -->
         <v-data-table
         :headers="tableHeaders"
         :items="selectedScheduleDetails"
         :items-per-page="60"
         height="800px"
+        mobile-breakpoint="1000px"
         >
         <template v-slot:body="{ items }">
             <tr v-for="(schedule, index) in items" :key="index" class="tr-style">
@@ -227,6 +228,7 @@
         </v-data-table>
 
       </v-col>
+
     </v-row>
     </v-form>
   </v-container>
@@ -293,6 +295,7 @@
 
 </template>
 
+
 <script>
 // import TimeRangePicker from 'vuetify3-time-range-picker';
 
@@ -335,19 +338,19 @@ export default {
     
     // 임시코드 (빌드없이 프론트단 사용을 위한...)
     // 추후에 지워야함
-    // if(sessionStorage.getItem("projectNoSession")){
-    //   console.log('강제로 넣어줌 안타?');
-    //   this.tripProjectNo = "c5bf464bf576";
-    // }else{
-    //   console.log('강제로 넣어줌 안타?2222222');
-    //   this.tripProjectNo = sessionStorage.getItem("projectNoSession")
-    // }
+    if(sessionStorage.getItem("projectNoSession")){
+      console.log('강제로 넣어줌 안타?');
+      this.tripProjectNo = "64c9505cf55f";
+    }else{
+      console.log('강제로 넣어줌 안타?2222222');
+      this.tripProjectNo = sessionStorage.getItem("projectNoSession")
+    }
 
-    // if(sessionStorage.getItem("userNoSession")){
-    //   this.tripUserNo = "3bb8aff388ab";
-    // }else{
-    //   this.tripUserNo = sessionStorage.getItem("userNoSession")
-    // }
+    if(sessionStorage.getItem("userNoSession")){
+      this.tripUserNo = "966e78ad4ea1";
+    }else{
+      this.tripUserNo = sessionStorage.getItem("userNoSession")
+    }
 
     
 
@@ -527,60 +530,6 @@ export default {
         this.saveFlag = true;
       }
       
-
-
-
-      // if(currentStartFullStr > currentEndFullStr){
-      //   //startTime과 endTime비교하여 startTime이 큰 경우 제외
-      //   value[index].alertFlag = true;
-      //   value[index].alertMessage = "현재 종료시간 > 현재 시작시간";
-      //   console.log("현재 스케쥴 비교");
-      //   this.saveFlag = false;
-      //   return;
-  
-      // }else{
-      //   value[index].alertFlag = false;
-      //   value[index].alertMessage = "";
-      //   this.saveFlag = true;
-      // }
-      
-
-
-
-
-      // if(nextIdx < arrayLength && currentEndFullStr > nextStartFullStr){
-      //   value[index].alertFlag = true;
-      //   value[index].alertMessage = "현재 종료시간 < 다음 시작시간";
-      //   console.log("after 비교")
-      //   this.saveFlag = false;
-      //   return;
-      // }else{
-      //   value[index].alertFlag = false;
-      //   if(beforeIdx >= 0){
-      //     value[beforeIdx].alertFlag = false;
-      //   }
-      //   value[index].alertMessage = "";
-      //   this.saveFlag = true;
-      // }
-      
-
-
-
-
-      // if(beforeIdx >= 0 && currentStartFullStr < beforeEndFullStr){
-      //   value[index].alertFlag = true;
-      //   value[index].alertMessage = "현재 시작시간 > 이전 종료시간";
-      //   console.log("before 비교")
-      //   this.saveFlag = false;
-      //   return;
-      // }else{
-      //   value[index].alertFlag = false;
-      //    if(nextIdx < arrayLength){
-      //       value[nextIdx].alertFlag = false;
-      //   }
-      //    value[index].alertMessage = "";
-      //    this.saveFlag = true;
-      // }
       
       console.log(value)
       console.log(value[index+1]);
@@ -687,13 +636,7 @@ export default {
       }
     },
 
-    // getTransportationString(transportationValue) {
 
-    //   const transportationObject = this.transPortations.find(
-    //     (item) => item.value === transportationValue
-    //   );
-    //   return transportationObject ? transportationObject.string : "";
-    // },
     getDetailSchedule(scheduleDay){
 
       this.selectedScheduleDetails = []; //다시 조회 하기에 선택된 스케쥴 배열 초기화(시간 제외)
@@ -928,7 +871,6 @@ export default {
 }
 
 .subtitle-detail {
-  margin-top: -50px;
   color: #333;
   font-size: 17px;
   font-weight: bold;
@@ -936,7 +878,7 @@ export default {
 
 .subtitle-detail-date{
   font-size: 13px;
-  margin-left: 10px;
+  /* margin-left: 10px; */
 }
 
 .mr-2 {
@@ -1041,6 +983,31 @@ export default {
 .tr-style{
   height: 150px;
 }
+
+/** 모바일, pc */
+/* Styles for mobile devices (adjust font sizes and paddings as needed) */
+  @media (max-width: 768px) {
+    .subtitle-detail{
+       font-size: 0.8rem; /* Adjust font size */
+    }
+    .subtitle-detail-date{
+       font-size: 0.6rem; /* Adjust font size */
+    }
+    .v-btn {
+      font-size: 0.8rem; /* Adjust font size */
+      /* padding: 4px 8px; Adjust padding */
+    }
+    .button-style{
+      font-size: 0.8rem; /* Adjust font size */
+    }
+    .spot-button-style{
+      padding: 0px
+    }
+    .v-data-table td {
+      /* transform: rotate(0deg); */
+      width:300px;
+    }
+  }
 
 /* .plus-button-card{
   height: 360px;

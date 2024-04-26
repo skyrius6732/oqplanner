@@ -8,7 +8,7 @@
       </v-row>
 
       <v-row>
-        <v-col v-for="(costs, index) in privateCosts" :key="index" :cols="4">
+        <v-col v-for="(costs, index) in privateCosts" :key="index" cols="12" md="4">
           <v-card class="custom-card">
             <v-card-title class="title margin-bottom">
               여행자 {{ index+1 }}
@@ -16,10 +16,10 @@
             </v-card-title>
             <v-card-text class="schedule-contents">
               <v-row class="icon-row">
-                <v-col :cols="1">
+                <v-col cols="2" md="1">
                   <v-icon class="icon">mdi-currency-krw</v-icon>
                 </v-col>
-                <v-col :cols="11">
+                <v-col cols="10" md="11">
                   <h3 class="subtitle">여행 비용</h3>
                     <!-- <template v-for="(info, index) in privateCosts[index].tripPrivatCostList" :key="index"> -->
                     {{ getTotalCost(privateCosts[index].tripPrivatCostList) }}
@@ -28,10 +28,10 @@
               </v-row>
 
               <v-row class="icon-row">
-                <v-col :cols="1">
+                <v-col cols="2" md="1">
                   <v-icon class="icon">mdi-comment-outline</v-icon>
                 </v-col>
-                <v-col :cols="11">
+                <v-col cols="10" md="11">
                   <h3 class="subtitle">여행 비용 리스트</h3>
                     <ul>
                         <li v-for="(info, index) in privateCosts[index].tripPrivatCostList.filter((e) => e.costNote != '').slice(0,7)" :key="index">
@@ -42,7 +42,7 @@
               </v-row>
             </v-card-text>
             <v-row class="icon-row">
-              <v-col :cols="12" class="d-flex justify-end">
+              <v-col cols="12" md="12" class="d-flex justify-end">
                   <v-btn class="button-margin button-style" @click="viewCost(privateCosts[index])">비용 보기</v-btn>
               </v-col>
             </v-row>

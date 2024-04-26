@@ -423,4 +423,11 @@ export default {
     font-weight: bold;
 }
 
+@media (max-width: 768px) {
+   .v-btn {
+      font-size: 0.8rem !important; /* Adjust font size */
+      padding: 4px 8px;
+    }
+}
+
 </style>

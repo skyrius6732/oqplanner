@@ -1,83 +1,83 @@
 <template>
-   <!-- 팝업 창 -->
-   <div class="modal-detail">
-    <!-- <div @click="openStartDialog" class="close-button">
-      <v-icon>mdi-close</v-icon>
-    </div> -->
+  <div class="modal-detail">
     <v-form ref="form" lazy-validation>
-    <v-card class="custom-card">
-      <v-text-field label="여행 이름" 
-        v-model="tripPlanName" 
-        placeholder="최대 8글자 까지만 입력해 주세요."
-        :rules="tripPlanNameRules"
-        class="gray-text-field no-cursor"
-        disabled></v-text-field>
-      <v-text-field label="여행자 이름" 
-        v-model="tripUserName" 
-        placeholder="여행자 본인 이름을 입력해 주세요."
-        class="gray-text-field no-cursor"
-        disabled></v-text-field>
-      <v-select
-        label="여행 연도"
-        v-model="tripYear"
-        :items="tripYears"
-        item-title="string"
-        item-value="value"
-        class="no-cursor"
-      ></v-select>
-      <div class="date-fields">
-      <v-text-field
-        label="여행 시작 날짜"
-        v-model="tripStartDate"
-        placeholder="MMDD"  
-        :rules="tripStartDateRules"
-        class="no-cursor"
-      ></v-text-field>
-      <v-text-field
-        label="여행 종료 날짜"
-        v-model="tripEndDate"
-        placeholder="MMDD"  
-        :rules="tripEndDateRules"
-        class="end-date-field no-cursor"
-      ></v-text-field>
-      </div>
-      <v-checkbox 
-        :label="checkboxLabel"
-        v-model="showDetailFields"
-        class="no-cursor"></v-checkbox>
-      <div v-if="showDetailFields" class="detail-fields">
-      <v-select
-        label="여행 시작 시간"
-        v-model="tripStartTime"
-        :items="tripStartTimes"
-        item-title="string"
-        item-value="value"
-        class="no-cursor"
-      ></v-select>
-      <v-select
-        label="여행 일정 단위"
-        v-model="tripPlanUnit"
-        :items="tripPlanUnits"
-        item-title="string"
-        item-value="value"
-        class="plan-unit-field no-cursor"
-      ></v-select>
-      </div>
-      <v-card-actions>
-        <v-btn @click="openStartDialog" class="button-style">이전으로</v-btn>
-        <v-btn @click="makeTrip" class="button-style">여행 만들기</v-btn>
-      </v-card-actions>
-      <!-- v-alert 추가 -->
-      <v-alert 
-        v-model="alert"
-        class="disabled-alert black-and-white"
-        transition="scale-transition"
-        closable
-         prominent
+      <v-card class="custom-card v-responsive">
+        <v-text-field
+          v-model="tripPlanName"
+          label="여행 이름"
+          placeholder="최대 8글자 까지만 입력해 주세요."
+          :rules="tripPlanNameRules"
+          class="gray-text-field no-cursor"
+          disabled
+        ></v-text-field>
+        <v-text-field
+          v-model="tripUserName"
+          label="여행자 이름"
+          placeholder="여행자 본인 이름을 입력해 주세요."
+          class="gray-text-field no-cursor"
+          disabled
+        ></v-text-field>
+        <v-select
+          v-model="tripYear"
+          label="여행 연도"
+          :items="tripYears"
+          item-title="string"
+          item-value="value"
+          class="no-cursor"
+        ></v-select>
+        <div class="date-fields">
+          <v-text-field
+            v-model="tripStartDate"
+            label="여행 시작 날짜"
+            placeholder="MMDD"
+            :rules="tripStartDateRules"
+            class="no-cursor"
+          ></v-text-field>
+          <v-text-field
+            v-model="tripEndDate"
+            label="여행 종료 날짜"
+            placeholder="MMDD"
+            :rules="tripEndDateRules"
+            class="end-date-field no-cursor"
+          ></v-text-field>
+        </div>
+        <v-checkbox
+          v-model="showDetailFields"
+          label="여행 상세 기간 입력시 체크 \n (체크하지 않을 시 기본값[09시 / 1시간])"
+          class="no-cursor"
+        ></v-checkbox>
+        <div v-if="showDetailFields" class="detail-fields">
+          <v-select
+            v-model="tripStartTime"
+            label="여행 시작 시간"
+            :items="tripStartTimes"
+            item-title="string"
+            item-value="value"
+            class="no-cursor"
+          ></v-select>
+          <v-select
+            v-model="tripPlanUnit"
+            label="여행 일정 단위"
+            :items="tripPlanUnits"
+            item-title="string"
+            item-value="value"
+            class="plan-unit-field"
+          ></v-select>
+        </div>
+        <v-card-actions class="v-flex">
+          <v-btn @click="openStartDialog" class="button-style">이전으로</v-btn>
+          <v-btn @click="makeTrip" class="button-style">여행 만들기</v-btn>
+        </v-card-actions>
+        <v-alert
+          v-model="alert"
+          class="disabled-alert black-and-white"
+          transition="scale-transition"
+          closable
+          prominent
         >
-        {{ alertMessage }}
-      </v-alert>
-    </v-card>
+          {{ alertMessage }}
+        </v-alert>
+      </v-card>
     </v-form>
   </div>
 </template>
@@ -250,7 +250,7 @@ export default {
 
                   // vue-session 모듈 인식을 못함..
                   // this.$session.set('projectNoSession', projectNoSession);
-                  // this.$session.set('userNoSession', userNoSession);d
+                  // this.$session.set('userNoSession', userNoSession);
 
                   // sessionStorage 사용
                   sessionStorage.setItem('projectNoSession', projectNoSession);
@@ -362,5 +362,30 @@ export default {
    font-size: 13px;
    margin-left: 5px;
    margin-top: 10px; /* 적용 버튼을 조금 아래로 이동 */
+}
+
+.black-and-white {
+  background-color: #333;
+  color: #fff; /* White text */
+}
+
+.modal-detail {
+  background-color: white;
+  padding: 20px;
+  width: 35%;
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .modal-detail {
+    width: 100%;
+    padding: 10px;
+  }
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10
 }
 </style>

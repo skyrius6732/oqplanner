@@ -16,7 +16,7 @@
     <v-col>
       <v-form ref="form" lazy-validation>
       <v-row>
-        <v-col>
+        <v-col cols="6" md="6">
           <v-select
             v-model="selectedSi"
             :items="regionSi"
@@ -26,7 +26,7 @@
             :rules="regionSiRules"
           ></v-select>
         </v-col>
-        <v-col>
+        <v-col cols="6" md="6">
           <v-select
             v-model="selectedGu"
             :items="regionGu"
@@ -46,14 +46,14 @@
       </v-row>
 
       <v-row>
-        <v-col cols="11">
+        <v-col cols="12" md="11">
           <v-text-field 
             v-model="searchKeyword" 
             label="검색어"
             :rules="keywordRules"
              @keyup.enter="search(searchKeyword)"></v-text-field>
         </v-col>
-        <v-col cols="1"> 
+        <v-col cols="12" md="1"> 
           <v-btn @click="search(searchKeyword)"  size="x-large" class="button-style center-button">검색</v-btn>
         </v-col>
       </v-row>
@@ -449,7 +449,7 @@ export default {
 
 
 .custom-dialog {
-        width: 70%;
+        width: 80%;
         height: 75%;
         background: white;
         background-color: rgba(0, 0, 0, 0.5);

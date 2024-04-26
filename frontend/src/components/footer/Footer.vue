@@ -1,5 +1,5 @@
 <template>
-  <v-bottom-navigation grow>
+  <v-bottom-navigation flex>
       <v-btn
         v-for="menu in menus"
         :key="menu.title"
@@ -16,10 +16,11 @@
         @click="openPage(menu.title)"
       
       > -->
-       <v-icon>{{menu.icon}}</v-icon>
+       <v-icon >{{menu.icon}}</v-icon>
        <span>{{menu.text}}</span>
        <span>{{menu.title}}</span>
     </v-btn>
+   
 </v-bottom-navigation>
 </template>
 
@@ -105,5 +106,18 @@ export default {
 
 <style scoped>
 
+  /* 아이콘과 텍스트의 크기를 줄입니다. */
+.v-btn .v-icon {
+  font-size: 15px; /* 아이콘 크기 조절 */
+}
+
+.v-btn span {
+  font-size: 10px; /* 텍스트 크기 조절 */
+}
+
+.v-btn {
+  padding: 0px; /* 위, 아래 여백을 조절하여 버튼의 크기를 줄입니다. */
+  min-width: auto; /* 최소 너비를 자동으로 설정하여 내용에 맞게 버튼의 크기를 조절합니다. */
+}
 
 </style>

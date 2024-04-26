@@ -1,40 +1,34 @@
 <template>
    <div class="modal-start">
-      <!-- <div @click="closeDialog" class="close-button">
-        <v-icon>mdi-close</v-icon>
-      </div> -->
-        <v-card class="custom-card">
-         <div class="welcome-message">
+        <v-card class="custom-card v-flex">
+         <v-card-title class="welcome-message v-layout align-center">
             <p class="welcome-text">환영합니다</p>
             <p class="app-name"><span class="accent-color">OQplanner</span>와 함께</p>
             <p class="invite-text">여행을 떠나시겠어요?</p>
-        </div>
+        </v-card-title>
+        <v-card-text class="v-layout v-flex">
         <v-form ref="form" lazy-validation>
-          <v-text-field 
+          <v-text-field v-flex 
             label="여행 이름" 
             v-model="tripPlanName" 
             placeholder="여행 이름을 입력해 주세요."
             :rules="tripPlanNameRules"
             class="name-input no-cursor">
           </v-text-field>
-          <v-text-field 
+          <v-text-field v-flex
             label="여행자 이름" 
             v-model="tripUserName" 
             placeholder="여행자 본인 이름을 입력해 주세요."
             :rules="tripUserNameRules"
             class="name-input no-cursor">
           </v-text-field>
-          <!-- <v-text-field 
-            label="동행자 이름" 
-            v-model="companionName" 
-            :rules="companionNameRules"
-            placeholder="여행 동행자 이름을 입력해 주세요." 
-            class="no-cursor"></v-text-field> -->
         </v-form>
+        </v-card-text>
         <v-snackbar v-model="snackbar" timeout="3000" class="snackbar-center" flex>
           {{ tripPlanName }}, 여행자님 이용해 주셔서 감사합니다.
         </v-snackbar>
-        <v-card-actions class="button-container">
+
+        <v-card-actions class="button-container v-layout justify-space-between">
           <!-- 확인 및 취소 버튼 -->
           <v-btn @click="submitCompanion" class="action-button button-style">같이가기</v-btn>
           <v-btn @click="submitTrip(this.flag)" class="action-button button-style">여행하기</v-btn>
@@ -130,6 +124,7 @@ export default {
                     sessionStorage.setItem('userNoSession', userNoSession);
 
 
+
                    
                     setTimeout(() => {
                       // 팝업창 클로징 부모 컴포넌트 closeDialog 등록 하여 이벤트 호출
@@ -222,18 +217,12 @@ export default {
 
 <style scoped>
 
+
+
 .black-and-white {
   background-color: #333;
   color: #fff; /* White text */
 }
-
-.modal-start {
-  background-color: white;
-  padding: 20px;
-  position: relative;
-  width: 20%;
-}
-
 
 .close-button {
   position: absolute;
@@ -258,6 +247,7 @@ export default {
   position: relative;
 }
 
+
 .welcome-message{
   margin-top: 10px;
   margin-bottom: 10px;
@@ -265,6 +255,7 @@ export default {
   max-width: 500px; /* 최대 너비 설정 (원하는 값으로 조절) */
   width: 100%; /* 너비 100%로 설정하여 부모에 맞게 조절 */
 }
+
 
 .welcome-text {
   text-align: center;
@@ -301,6 +292,7 @@ export default {
   transform: translate(-50%, -50%);
 }
 
+
 .button-container {
   display: flex;
   justify-content: space-between;
@@ -331,5 +323,42 @@ export default {
     left: 49.6%;
     transform: translate(-50%, -50%);
   }
+
+
+/**-------------------- */
+
+
+.modal-start {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.custom-card {
+  max-width: 500px;
+  padding: 20px;
+}
+
+.welcome-message {
+  text-align: center;
+}
+
+.name-input {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.button-container {
+  margin-top: 20px;
+}
+
+.snackbar-center {
+  bottom: -50px;
+}
+
+
+
+
 
 </style>
