@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 // import TripSelect from "@/components/TripSelect.vue";
 
 const routerOptions = [
-  { path: "/", redirect: "/select" },
+  { path: "/oqplanner", redirect: "/select" },
   { path: "/select", name: "TripSelect", component: "TripSelect", menu: "tripSelect" },
   { path: "/schedule", name: "TripSchedule", component: "TripSchedule", menu: "tripSchedule" },
   { path: "/cost", name: "TripCost", component: "TripCost", menu: "tripCost" },
