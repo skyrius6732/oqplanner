@@ -339,19 +339,19 @@ export default {
     
     // 임시코드 (빌드없이 프론트단 사용을 위한...)
     // 추후에 지워야함
-    // if(sessionStorage.getItem("projectNoSession")){
-    //   console.log('강제로 넣어줌 안타?');
-    //   this.tripProjectNo = "9210e148da87";
-    // }else{
-    //   console.log('강제로 넣어줌 안타?2222222');
-    //   this.tripProjectNo = sessionStorage.getItem("projectNoSession")
-    // }
+    if(sessionStorage.getItem("projectNoSession")){
+      console.log('강제로 넣어줌 안타?');
+      this.tripProjectNo = "9210e148da87";
+    }else{
+      console.log('강제로 넣어줌 안타?2222222');
+      this.tripProjectNo = sessionStorage.getItem("projectNoSession")
+    }
 
-    // if(sessionStorage.getItem("userNoSession")){
-    //   this.tripUserNo = "966e78ad4ea1";
-    // }else{
-    //   this.tripUserNo = sessionStorage.getItem("userNoSession")
-    // }
+    if(sessionStorage.getItem("userNoSession")){
+      this.tripUserNo = "966e78ad4ea1";
+    }else{
+      this.tripUserNo = sessionStorage.getItem("userNoSession")
+    }
 
     
 

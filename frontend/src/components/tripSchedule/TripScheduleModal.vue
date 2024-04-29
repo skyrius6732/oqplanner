@@ -45,20 +45,33 @@
         </v-col> -->
       </v-row>
 
-      <v-row>
-        <v-col cols="12" md="11">
+      <v-row v-if="this.mobileFlag === false">
+        <v-col cols="12" md="6">
           <v-text-field 
             v-model="searchKeyword" 
             label="검색어"
             :rules="keywordRules"
              @keyup.enter="search(searchKeyword)"></v-text-field>
         </v-col>
-        <v-col cols="12" md="1"> 
+        <v-col cols="12" md="6"> 
           <v-btn @click="search(searchKeyword)"  size="x-large" class="button-style center-button">검색</v-btn>
         </v-col>
       </v-row>
+
+      <v-row v-if="this.mobileFlag === true">
+        <v-col cols="9">
+          <v-text-field 
+            v-model="searchKeyword" 
+            label="검색어"
+            :rules="keywordRules"
+             @keyup.enter="search(searchKeyword)"></v-text-field>
+        </v-col>
+        <v-col cols="3"> 
+          <v-btn @click="search(searchKeyword)" class="button-style-mobile center-button">검색</v-btn>
+        </v-col>
+      </v-row>
       </v-form>
-      <v-row>
+      <v-row v-if="this.mobileFlag === false">
         <v-col>
         <!-- 검색 결과 표시 -->
         <v-list style="height: 300px;"  v-if="searchResults && searchResults.length > 0">
@@ -80,6 +93,63 @@
                         </v-img>
                     </v-col>
                     <v-col cols="10">
+                        <v-row class="search-title">
+                           <!-- 북마크 아이콘 추가 -->
+                            <v-icon @click.stop="toggleBookmark(result, index)" :color="result.bookmarked ? 'yellow' : 'grey'">
+                                {{ result.bookmarked ? 'mdi-star' : 'mdi-star-outline' }}
+                            </v-icon>
+                            <div class="search-title-text"> 
+                                <!-- <span v-html="highlightSpecialText(result.searchTitle, searchKeyword)"></span> -->
+                                <span v-html="result.searchTitle" ></span>
+                            </div> 
+                            <div class="search-addr-text"> ({{ result.addr }})</div>
+                        </v-row>
+                        <v-row>
+                            <div class="search-text">{{ truncateText(result.overview, 260) }}</div>
+                        </v-row>
+                    </v-col>
+                  </v-row>
+            </v-list-item>
+        </v-list>
+        <div v-else class="no-results-container">
+            <div class="no-results-overlay">
+                 <span v-if="!isLoading && enterFavorits" class="no-results-text">검색 결과가 없습니다.</span>
+                 <span v-if="!isLoading && !enterFavorits" class="no-results-text">검색 결과를 클릭하여 장소를 선택 해주세요.</span>
+                 <span v-if="isLoading">
+                      <!-- 로딩 중일 때 보여질 내용 -->
+                      <v-progress-circular
+                          indeterminate
+                          color="black"
+                      ></v-progress-circular>
+                  </span>
+            </div>
+        </div>
+        </v-col>
+      </v-row>
+
+
+      <v-row v-if="this.mobileFlag === true">
+        <v-col>
+        <!-- 검색 결과 표시 -->
+        <v-list style="height: 470px;"  v-if="searchResults && searchResults.length > 0">
+             <!-- v-list-item에 직접 슬롯 적용 -->
+            <v-list-item 
+                v-for="(result, index) in searchResults" 
+                :key="index" 
+                class="search-item"
+                @click="itemClick(result.searchTitle)"
+                >
+                  <v-row>
+                    <v-col cols="6">
+                        <v-img :src="result.imageUrl" 
+                        max-height="100px"
+                        max-width="200px"
+                        @error="replaceImg"
+                        cover
+                        >
+                        </v-img>
+                    </v-col>
+                    <v-col cols="6">
                         <v-row class="search-title">
                            <!-- 북마크 아이콘 추가 -->
                             <v-icon @click.stop="toggleBookmark(result, index)" :color="result.bookmarked ? 'yellow' : 'grey'">
@@ -137,6 +207,7 @@ export default {
       }
     },
     created(){
+      this.isMobile();
       this.tripProjectNo = sessionStorage.getItem("projectNoSession");
       this.tripUserNo = sessionStorage.getItem("userNoSession");
 
@@ -189,9 +260,21 @@ export default {
             ],
             currentRowIndex: "",
             currentRowKey: "",
+            mobileFlag: "",
           };
         },
     methods:{
+        isMobile() {
+          // 모바일 화면 여부를 확인하는 로직을 여기에 추가
+          // 윈도우 객체에서 innerWidth 속성을 사용하여 현재 창의 너비를 가져옴
+          const screenWidth = window.innerWidth;
+          if( screenWidth > 768){
+            this.mobileFlag = false;
+          }else{
+            this.mobileFlag = true;
+          }
+
+          },
         showModal(rowIndex, rowKey) {
             // 모달을 열 때 현재 행의 index를 기억
             this.currentRowIndex = rowIndex;
@@ -487,6 +570,14 @@ export default {
    font-weight: bold;
 }
 
+.button-style-mobile{
+   background-color: #333;
+   color: #fff;
+   font-size: 15px;
+   margin-left: 5px;
+   height: 55px;
+}
+
 .center-button {
   margin-left: -10px; 
 }
@@ -615,7 +706,7 @@ export default {
   z-index: 1;
 } */
 
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: 600px) {
     .custom-dialog {
         width: 95%;
         height: 90%;
@@ -649,11 +740,13 @@ export default {
       font-weight: bold;
     }
 
+
     .no-results-container {
      position: relative;
       height: 250px;
     }
-  
+    
+   
 }
 
 

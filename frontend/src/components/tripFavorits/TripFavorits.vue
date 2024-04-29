@@ -376,7 +376,7 @@ export default {
             this.mobileFlag = true;
           }
 
-        },
+          },
 
         // isSpecialTextIncluded(title) {
         //   // 특정 글자가 포함되어 있는지 여부를 확인하고 true 또는 false를 반환
