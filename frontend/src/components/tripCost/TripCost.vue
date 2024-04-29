@@ -32,13 +32,22 @@
       <v-col class="m-4">
       <template v-if="companionEdit">
           <v-row>
-            <v-btn @click="companionApply" size="x-large" class="apply-button-style center-button">적용</v-btn>
+             <v-btn @click="companionApply" 
+             :class="{'apply-button-style-mobile center-button' : this.mobileFlag === true,
+                       'apply-button-style center-button' : this.mobileFlag === false 
+             }"
+             >적용</v-btn>
           </v-row>
       </template>
       <template v-else>
           <v-row>
-            <v-btn v-if="numberOfCompanions != 0" @click="companionModify" size="x-large" class="apply-button-style center-button">여행자 수정</v-btn>
-            <v-btn @click="startShowResetDialog" size="x-large" class="apply-button-style center-button">전체 초기화</v-btn>
+            <v-btn v-if="numberOfCompanions != 0" @click="companionModify" 
+            :class="{'apply-button-style-mobile-modify-reset center-button' : this.mobileFlag === true,
+                       'apply-button-style center-button' : this.mobileFlag === false 
+             }">여행자 수정</v-btn>
+            <v-btn @click="startShowResetDialog" :class="{'apply-button-style-mobile-modify-reset center-button' : this.mobileFlag === true,
+                       'apply-button-style center-button' : this.mobileFlag === false 
+             }">전체 초기화</v-btn>
           </v-row>
       </template>
       </v-col>
@@ -79,7 +88,9 @@
       width="auto"
     >
       <v-card>
-        <v-card-title class="text-h5">
+        <v-card-title :class="{'text-h5': this.mobileFlag === false,
+        'mobile-font': this.mobileFlag === true}"
+        >
           여행 비용 전체 초기화 하시겠습니까?
         </v-card-title>
         <v-card-text>등록 하신 여행자, 여행 공통비용, 여행 개인비용이 모두 삭제 됩니다.</v-card-text>
@@ -116,7 +127,18 @@ export default {
     TripPublicCost,
     TripPrivateCost
   },
+  computed: {
+  // applyButtonClass() {
+    
+  //   if (this.isMobile()) {
+  //     return 'apply-button-style-mobile center-button';
+  //   } else {
+  //     return 'apply-button-style center-button';
+  //   }
+  // }
+  },
   created(){
+    this.isMobile();
     this.tripProjectNo = sessionStorage.getItem("projectNoSession");
     this.tripUserNo = sessionStorage.getItem("userNoSession");
     console.log('projectNoSession', sessionStorage.getItem("projectNoSession"));
@@ -171,14 +193,21 @@ export default {
           v => !( v && v.length > 8) || '여행자 이름은 8자 이상 입력할 수 없습니다.',
           // v => this.checkCompanion(v)
         ],
+        mobileFlag: "",
     };
   },
   methods: {
-    // checkCompanion(v){
-    //   // if(v){
+     isMobile() {
+      // 모바일 화면 여부를 확인하는 로직을 여기에 추가
+      // 윈도우 객체에서 innerWidth 속성을 사용하여 현재 창의 너비를 가져옴
+      const screenWidth = window.innerWidth;
+      if( screenWidth > 768){
+        this.mobileFlag = false;
+      }else{
+         this.mobileFlag = true;
+      }
 
-    //   // }
-    // },
+    },
     startShowResetDialog(){
        this.resetDialog = true;
     },
@@ -370,6 +399,7 @@ export default {
    font-size: 15px;
    margin-left: 5px;
    font-weight: bold;
+   height: 55px;
 }
 
 /* v-text-field의 간격을 좁게 조절하는 부분 */
@@ -423,11 +453,67 @@ export default {
     font-weight: bold;
 }
 
-@media (max-width: 768px) {
-   .v-btn {
-      font-size: 0.8rem !important; /* Adjust font size */
-      padding: 4px 8px;
-    }
+
+.apply-button-style-mobile {
+  /* 모바일 버튼 스타일 */
+  font-size: 12px;
+  padding: 8px 16px;
+  height: 50px;
+  background-color: #333;
+  color: #fff;
+  font-size: 15px;
+  font-weight: bold;
 }
+
+.apply-button-style-mobile-modify-reset {
+  font-size: 8px;
+  height: 20px;
+  background-color: #333;
+  color: #fff;
+  font-weight: bold;
+}
+
+.mobile-font{
+  font-size: 16px;
+  font-weight: bold;
+}
+
+@media screen and (max-width: 768px) {
+  .custom-container {
+    width: 100%; /* 모바일 화면에 대응하여 전체 너비로 조정 */
+  }
+
+  .button-style,
+  .apply-button-style {
+    font-size: 10px; /* 버튼 글자 크기를 줄임 */
+  }
+
+  .center-button {
+    margin-top: 10px; /* 버튼 간격을 조절 */
+  }
+
+  .margin-right {
+    margin-right: 5px; /* 여행자 수 선택 항목과 텍스트 필드 간격을 조절 */
+  }
+
+  .v-text-field {
+    margin-top: 5px; /* 텍스트 필드 간격을 조절 */
+  }
+
+  .snackbar-center {
+    top: 5%; /* 스낵바 위치를 조정 */
+  }
+
+  .no-results-text {
+    font-size: 14px; /* 텍스트 크기를 줄임 */
+  }
+
+  .overlay {
+    width: 90%;
+    height: 65%;
+
+  }
+}
+
 
 </style>

@@ -75,7 +75,8 @@ public class ChatService {
 
 
     public void deleteChatter(String sessionId) {
-
+        // 실제 저장된 key 값들을 삭제
+        redisTemplate.delete(sessionId);
         // chatters 항목 중 해당 key값 삭제
         redisTemplate.opsForZSet().remove("chatters", sessionId);
     }
@@ -86,10 +87,7 @@ public class ChatService {
         String json = "";
         sortedKeys = getChatterKeys();
         for (String key : sortedKeys) {
-            System.out.println("key ::: " + key);
-
             json = redisTemplate.opsForValue().get(key);
-            System.out.println("json ::: " + json);
             if (json != null) {
                 try {
                     ObjectMapper objectMapper = new ObjectMapper();

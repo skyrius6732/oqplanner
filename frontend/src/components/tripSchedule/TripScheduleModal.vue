@@ -615,5 +615,47 @@ export default {
   z-index: 1;
 } */
 
+@media only screen and (max-width: 768px) {
+    .custom-dialog {
+        width: 95%;
+        height: 90%;
+    }
+
+    .title {
+        font-size: 16px;
+    }
+
+    .search-title-text {
+        font-size: 14px;
+    }
+
+    .search-addr-text{
+        font-size: 10px;
+    }
+
+    .search-text {
+        font-size: 12px;
+    }
+
+    .no-results-text {
+        font-size: 10px;
+    }
+    
+    .button-style{
+      background-color: #333;
+      color: #fff;
+      font-size: 10px;
+      margin-left: 170px;
+      font-weight: bold;
+    }
+
+    .no-results-container {
+     position: relative;
+      height: 250px;
+    }
+  
+}
+
+
 
 </style>

@@ -1,5 +1,5 @@
 <template>
-        <v-row>
+        <v-row v-if="!mobileFlag">
           <v-col>
               <div>
                   <span class="subtitle-detail">공통 비용</span>
@@ -16,6 +16,33 @@
             <v-btn @click="costSave" class="button-style">비용 저장</v-btn>
           </v-col>
         </v-row>
+        <v-row v-if="mobileFlag">
+          <v-row>
+            <v-col>
+                  <div>
+                      <span class="subtitle-detail">공통 비용</span>
+                  </div>
+            </v-col>
+          </v-row>
+          <v-row v-if="!isEditing">
+            <v-col md="11"></v-col>
+            <v-col md="1">
+                <v-btn @click="costModify" class="button-style-mobile">비용 수정</v-btn>
+            </v-col>
+          </v-row>
+          <v-row v-if="isEditing">
+                <v-col md="12">
+                <v-btn @click="addRow" class="button-style-mobile">+</v-btn>
+                <v-btn @click="removeRow" class="button-style-mobile">-</v-btn>
+                <v-btn @click="costReset" class="button-style-mobile">비용 초기화</v-btn>
+                <v-btn @click="costShow" class="button-style-mobile">비용 보기</v-btn>
+                <v-btn @click="costSave" class="button-style-mobile">비용 저장</v-btn>
+                </v-col>
+          </v-row>
+        </v-row>
+
+
+
           <v-row>
           <v-form 
             ref='publicForm'
@@ -96,6 +123,7 @@ export default {
 
   },
   created(){
+    this.isMobile();
     this.tripProjectNo = sessionStorage.getItem("projectNoSession");
     this.tripUserNo = sessionStorage.getItem("userNoSession");
 
@@ -139,9 +167,21 @@ export default {
         tripSaveCost: [],
         tripUdpateCost: [],
         tripDeleteCost: [],
+        mobileFlag: "",
     }
   },
   methods:{
+    isMobile() {
+      // 모바일 화면 여부를 확인하는 로직을 여기에 추가
+      // 윈도우 객체에서 innerWidth 속성을 사용하여 현재 창의 너비를 가져옴
+      const screenWidth = window.innerWidth;
+      console.log("screenWidth", screenWidth);
+      if( screenWidth > 768){
+        this.mobileFlag = false;
+      }else{
+        this.mobileFlag = true;
+      }
+    },
     costShow(){
       const tripCost = {
         tripProjectNo: this.tripProjectNo,
@@ -328,11 +368,25 @@ export default {
       margin-left: 5px;
       margin-top: 10px; /* 적용 버튼을 조금 아래로 이동 */
     }
+ 
+    .button-style-mobile{
+      background-color: #333;
+      color: #fff;
+      height: 20px;
+      width: 5px !important;
+      margin-bottom: 20px;
+      /* width: auto; */
+      font-size: 10px; 
+      }
+
 
     /* v-text-field의 간격을 좁게 조절하는 부분 */
     .v-text-field{
         width: 100%; /* 100%로 변경 */
         margin-top: 10px;
+    }
+    @media screen and (max-width: 768px) {
+      
     }
 
 

@@ -1,6 +1,8 @@
 <template>
-    <v-container class="custom-container">
-    <v-row>
+    <v-container class="custom-container" fluid>
+
+    <!-- 웹 -->
+    <v-row v-if="this.mobileFlag === false">
     <!-- 왼쪽 영역 -->
     <v-col cols="10">
       <v-row>
@@ -10,6 +12,7 @@
       </v-row>
       
       <v-form ref="form" lazy-validation>
+
       <v-row>
         <v-col>
           <v-select
@@ -52,6 +55,7 @@
           <v-btn @click="search(searchKeyword)" size="x-large" class="button-style center-button">검색</v-btn>
         </v-col>
       </v-row>
+
       </v-form>
 
       <v-row>
@@ -142,10 +146,150 @@
             </v-list>
           </v-col>
         </v-row>
-        
     </v-col>
 
     </v-row>
+
+    <!-- 모바일 -->
+    <v-row v-if="this.mobileFlag === true">
+      <v-col cols="8">
+      <v-row>
+        <v-col>
+          <div class="subtitle-detail">지역 선택</div>
+        </v-col>
+      </v-row>
+      <v-form ref="form" lazy-validation>
+      <v-row>
+        <v-col>
+          <v-select
+            v-model="selectedSi"
+            :items="regionSi"
+            item-title="name"
+            item-value="code"
+            label="지역(시) 선택"
+            :rules="regionSiRules"
+          ></v-select>
+        </v-col>
+        <v-col>
+          <v-select
+            v-model="selectedGu"
+            :items="regionGu"
+            item-title="name"
+            item-value="code"
+            :disabled="!selectedSi"
+            label="지역(구) 선택"
+          ></v-select>
+        </v-col>
+      </v-row>
+
+      <v-row>
+        <v-col cols="8">
+          <v-text-field 
+            v-model="searchKeyword" 
+            label="검색어"
+            :rules="keywordRules"
+            @keyup.enter="search(searchKeyword)"></v-text-field>
+        </v-col>
+        <v-col cols="4"> 
+          <v-btn @click="search(searchKeyword)" class="button-style-mobile center-button">검색</v-btn>
+        </v-col>
+      </v-row>
+
+      </v-form>
+
+      <v-row>
+        <v-col>
+        <!-- 검색 결과 표시 -->
+        <v-list style="height: 470px;"  v-if="searchResults && searchResults.length > 0">
+             <!-- v-list-item에 직접 슬롯 적용 -->
+            <v-list-item v-for="(result, index) in searchResults" :key="index" class="search-item">
+                  <v-row class="mobile-search-item">
+                    <v-col cols="6">
+                        <v-img :src="result.imageUrl" 
+                        max-height="100px"
+                        max-width="200px"
+                        @error="replaceImg"
+                        cover
+                        >
+                        </v-img>
+                    </v-col>
+                    <v-col cols="6">
+                        <v-row class="search-title">
+                           <!-- 북마크 아이콘 추가 -->
+                            <v-icon class="bookmark-mobile" @click="toggleBookmark(result, index)" :color="result.bookmarked ? 'yellow' : 'grey'">
+                                {{ result.bookmarked ? 'mdi-star' : 'mdi-star-outline' }}
+                            </v-icon>
+                            <div class="search-title-text"> 
+                                <!-- <span v-html="highlightSpecialText(result.searchTitle, searchKeyword)"></span> -->
+                                <span v-html="result.searchTitle" ></span>
+                            </div> 
+                            <div class="search-addr-text"> ({{ result.addr }})</div>
+                        </v-row>
+                        <v-row>
+                            <div class="search-text-mobile">{{ truncateText(result.overview, 260) }}</div>
+                        </v-row>
+                    </v-col>
+                  </v-row>
+            </v-list-item>
+        </v-list>
+        <div v-else class="no-results-container">
+            <div class="no-results-overlay">
+                 <span v-if="!isLoading && enterFavorits == false" class="no-results-text">검색 결과가 없습니다.</span>
+                 <span v-if="isLoading">
+                      <!-- 로딩 중일 때 보여질 내용 -->
+                      <v-progress-circular
+                          indeterminate
+                          color="black"
+                      ></v-progress-circular>
+                  </span>
+            </div>
+        </div>
+        </v-col>
+      </v-row>
+      
+
+    </v-col>
+
+    <!-- 오른쪽 영역 -->
+    <v-col cols="4">
+      <v-row>
+        <v-col>
+          <div class="subtitle-detail">즐겨찾기</div>
+        </v-col>
+      </v-row>
+
+      <v-row>
+          <v-col class="overlay-content">
+            <v-list style="height: 675px; overflow-y: auto;">
+                <v-list-item v-for="(favorit, index) in favorits" :key="index" class="search-item">
+                    <div style="position: relative;"> <!-- 새로운 div 추가 -->
+                     <v-img :src="favorit.imageUrl" 
+                      width="200px"
+                      max-height="120px"
+                      @error="replaceImg"
+                      cover
+                      >
+                        <!-- 북마크 아이콘 추가 -->
+                        <v-icon @click="toggleBookmark(favorit, index)" 
+                                :color="favorit.bookmarked ? 'yellow' : 'grey'"
+                                style="position: absolute; top: 0; left: 0;">
+                                  {{ favorit.bookmarked ? 'mdi-star' : 'mdi-star-outline' }}
+                        </v-icon>
+                      </v-img>
+                    </div>
+                     
+                     <row class="favorit-title-text">
+                      [{{ favorit.searchTitle }}]
+                     </row>
+                </v-list-item>
+            </v-list>
+          </v-col>
+        </v-row>
+    </v-col>
+    </v-row>
+
+
+
     </v-container>
 
 </template>
@@ -165,7 +309,7 @@ export default {
       }
     },
     created(){
-
+      this.isMobile();
       this.tripProjectNo = sessionStorage.getItem("projectNoSession");
       this.tripUserNo = sessionStorage.getItem("userNoSession");
 
@@ -218,9 +362,22 @@ export default {
             keywordRules: [
               v => !!v || '검색어를 입력해 주시길 바랍니다.',
             ],
+            mobileFlag: "",
           };
         },
     methods:{
+         isMobile() {
+          // 모바일 화면 여부를 확인하는 로직을 여기에 추가
+          // 윈도우 객체에서 innerWidth 속성을 사용하여 현재 창의 너비를 가져옴
+          const screenWidth = window.innerWidth;
+          if( screenWidth > 768){
+            this.mobileFlag = false;
+          }else{
+            this.mobileFlag = true;
+          }
+
+        },
+
         // isSpecialTextIncluded(title) {
         //   // 특정 글자가 포함되어 있는지 여부를 확인하고 true 또는 false를 반환
         //   return title.includes(this.searchKeyword);
@@ -254,7 +411,6 @@ export default {
         },
 
         replaceImg(e){
-          console.log('나오긴하냐??');
            e.target.src = require('@/assets/images/readyImage.png');
         },
 
@@ -559,6 +715,14 @@ export default {
    margin-top: 3px; /* 적용 버튼을 조금 아래로 이동 */
 }
 
+.button-style-mobile{
+   background-color: #333;
+   color: #fff;
+   font-size: 15px;
+   margin-left: 5px;
+   height: 55px;
+}
+
 .center-button {
   margin-left: -10px; 
 }
@@ -605,6 +769,11 @@ export default {
     color: #333;
   }
 
+  .search-text-mobile {
+    font-size: 10px;
+    color: #333;
+  }
+
   .bookmark-icon {
     margin-left: 5px;
   }
@@ -619,6 +788,19 @@ export default {
     align-items: center;
     text-align: center;
     font-size: 18px; /* 텍스트 크기 */
+    border-radius: 20px; /* 모서리 둥글게 설정 */
+  }
+
+.overlay-content-mobile {
+    width: 100%;
+    height: 700px;
+    background-color: rgba(255, 16, 16, 0.5); /* overlay 배경 색상 및 투명도 조절 */
+    color: #fff; /* overlay 텍스트 색상 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 10px; /* 텍스트 크기 */
     border-radius: 20px; /* 모서리 둥글게 설정 */
   }
 
@@ -656,11 +838,67 @@ export default {
     font-weight: bold;
 }
 
-  .subtitle-detail {
+.subtitle-detail {
         color: #333;
         font-size: 17px;
         font-weight: bold;
+}
+
+.mobile-search-item{
+  height: 100%;
+  /* margin-left: 50px; */
+}
+
+.bookmark-mobile{
+  height: 10px;
+  width: 10px;
+}
+
+@media screen and (max-width: 600px) {
+  .custom-container {
+    width: 100%; /* 모바일 화면에 맞춰 전체 너비로 변경 */
+    padding: 0 10px; /* 좌우 여백 조정 */
   }
+
+  .subtitle-detail {
+    font-size: 16px; /* 모바일에서 제목 폰트 크기 조정 */
+  }
+
+  .button-style {
+    font-size: 13px; /* 모바일에서 버튼 폰트 크기 조정 */
+  }
+
+  .search-title-text {
+    font-size: 14px; /* 모바일에서 검색 결과 제목 폰트 크기 조정 */
+  }
+
+  .search-addr-text {
+    font-size: 10px; /* 모바일에서 검색 결과 주소 폰트 크기 조정 */
+  }
+
+  .favorit-title-text {
+    font-size: 8px; /* 모바일에서 즐겨찾기 제목 폰트 크기 조정 */
+  }
+
+  /* .overlay-content {
+    height: 100%; 
+    width: 450px;
+  } */
+
+  .no-results-text {
+    font-size: 14px; /* 모바일에서 검색 결과 없음 텍스트 폰트 크기 조정 */
+  }
+
+  .no-results-overlay {
+    width: 100%;
+    height: 100%;
+  }
+
+  .v-text-field {
+    font-size: 10px;
+  }
+}
+
 
 
 </style>

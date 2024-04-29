@@ -4,7 +4,7 @@
         <v-row>
             <div class="close-button" @click="closeDialog"><v-icon>mdi-close</v-icon></div>
         </v-row>
-        <v-row>
+        <v-row v-if="!mobileFlag">
             <v-col>
                 <div>
                      <span class="subtitle-detail">{{ tripCompanionNm }}의 개인 비용</span>
@@ -19,7 +19,31 @@
             <v-btn @click="costReset" class="button-style">비용 초기화</v-btn>
             <v-btn @click="costSave" class="button-style">비용 저장</v-btn>
             </v-col>
-
+        </v-row>
+        <v-row v-if="mobileFlag">
+          <v-row>
+          <v-col>
+                <div>
+                     <span class="subtitle-detail">{{ tripCompanionNm }}의 개인 비용</span>
+                </div>
+          </v-col>
+          </v-row>
+          <v-row v-if="!isEditing">
+            <v-col md="11"></v-col>
+            <v-col md="1">
+                <v-btn @click="costModify" class="button-style-mobile">비용 수정</v-btn>
+            </v-col>
+          </v-row>
+          <v-row v-if="isEditing">
+                <v-col md="12">
+                <v-btn @click="addRow" class="button-style-mobile">+</v-btn>
+                <v-btn @click="removeRow" class="button-style-mobile">-</v-btn>
+                <v-btn @click="costReset" class="button-style-mobile">비용 초기화</v-btn>
+                <v-btn @click="costSave" class="button-style-mobile">비용 저장</v-btn>
+                </v-col>
+          </v-row>
+        </v-row>
+        <v-row>
             <!-- 행의 높이를 50px로 가정 -->
             <v-table
                 fixed-header
@@ -95,6 +119,7 @@ export default {
   name: 'TripPrivateCostDetail',
   //   props: ['isModalVisible'],
   created(){
+    this.isMobile();
     this.tripProjectNo = sessionStorage.getItem("projectNoSession");
     this.tripUserNo = sessionStorage.getItem("userNoSession");
 
@@ -158,9 +183,22 @@ export default {
         costNoteRules:[
           v => !( v && v.length > 30 ) || '메모 입력은 최대 30글자까지 가능합니다.( ' + v.length + '글자 )',
         ],
+        mobileFlag: "",
     }
   },
   methods:{
+    isMobile() {
+      // 모바일 화면 여부를 확인하는 로직을 여기에 추가
+      // 윈도우 객체에서 innerWidth 속성을 사용하여 현재 창의 너비를 가져옴
+      const screenWidth = window.innerWidth;
+      console.log("screenWidth", screenWidth);
+      if( screenWidth > 768){
+        this.mobileFlag = false;
+      }else{
+        this.mobileFlag = true;
+      }
+
+    },
     costModify(){
       this.isEditing = true;
     },
@@ -393,6 +431,18 @@ export default {
         margin-top: 10px; /* 적용 버튼을 조금 아래로 이동 */
     }
 
+
+    .button-style-mobile{
+      background-color: #333;
+      color: #fff;
+      height: 20px;
+      width: 5px !important;
+      margin-bottom: 20px;
+      /* width: auto; */
+      font-size: 10px; 
+    }
+
+
     .close-button {
         margin-left: auto; /* 오른쪽으로 이동 */
         background: white;
@@ -420,5 +470,18 @@ export default {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     } */
+
+    @media only screen and (max-width: 600px) {
+    .custom-dialog {
+        width: 95%;
+        height: 90%;
+    }
+    .subtitle-detail {
+        font-size: 13px;
+    }
+
+  
+}
+
 
 </style>

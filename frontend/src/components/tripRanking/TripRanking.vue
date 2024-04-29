@@ -1,7 +1,7 @@
 <template>
-  <v-container class="custom-container">
+  <v-container class="custom-container" fluid>
 
-     <v-row>
+     <v-row v-if="this.mobileFlag === false">
         <v-col cols="11">
           <v-text-field 
             v-model="searchKeyword" 
@@ -10,6 +10,19 @@
             @keyup.enter="search(searchKeyword)"></v-text-field>
         </v-col>
         <v-col cols="1"> 
+          <v-btn @click="search(searchKeyword)" size="x-large" class="button-style center-button">검색</v-btn>
+        </v-col>
+      </v-row>
+
+       <v-row v-if="this.mobileFlag === true">
+        <v-col cols="8">
+          <v-text-field 
+            v-model="searchKeyword" 
+            label="검색어"
+            :rules="keywordRules"
+            @keyup.enter="search(searchKeyword)"></v-text-field>
+        </v-col>
+        <v-col cols="4"> 
           <v-btn @click="search(searchKeyword)" size="x-large" class="button-style center-button">검색</v-btn>
         </v-col>
       </v-row>
@@ -92,6 +105,7 @@ export default{
       TripSearchModal,
     },
     created(){
+        this.isMobile();
         this.tripProjectNo = sessionStorage.getItem("projectNoSession");
         this.tripUserNo = sessionStorage.getItem("userNoSession");
     },
@@ -110,9 +124,21 @@ export default{
               v => !!v || '검색어를 입력해 주시길 바랍니다.',
             ],
             isModalVisible: false,
+            mobileFlag: "",
         } 
     },
     methods:{
+      isMobile() {
+        // 모바일 화면 여부를 확인하는 로직을 여기에 추가
+        // 윈도우 객체에서 innerWidth 속성을 사용하여 현재 창의 너비를 가져옴
+        const screenWidth = window.innerWidth;
+        if( screenWidth > 768){
+          this.mobileFlag = false;
+        }else{
+          this.mobileFlag = true;
+        }
+      },
+
       closeModal(){
         // this.$refs.privateCostMethod.costShow();
         this.isModalVisible = false;
@@ -215,6 +241,20 @@ export default{
         font-weight: bold;
     }
   
+  @media screen and (max-width: 768px) {
+    .custom-container {
+      width: 100%; /* 모바일 화면에 대응하여 전체 너비로 조정 */
+    }
+
+     .button-style{
+      background-color: #333;
+      color: #fff;
+      font-size: 15px;
+      margin-left: 5px;
+      margin-top: 3px; /* 적용 버튼을 조금 아래로 이동 */
+    }
+
+  }
 
    
 </style>

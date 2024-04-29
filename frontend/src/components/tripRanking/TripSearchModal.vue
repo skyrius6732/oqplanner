@@ -1,6 +1,6 @@
 <template>
     <v-dialog class="custom-dialog">
-    <v-container class="custom-container">
+    <v-container class="custom-container" fluid>
         <v-row>
             <div class="close-button" @click="closeModal"><v-icon>mdi-close</v-icon></div>
         </v-row>
@@ -201,6 +201,36 @@
     .bold-text {
         font-weight: bold;
     }
+
+    @media only screen and (max-width: 768px) {
+    .custom-dialog {
+        width: 95%;
+        height: 90%;
+    }
+    .title {
+        font-size: 15px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: white;
+    }
+
+    .title.sfont {
+        font-size: 13px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: white;
+    }
+
+     .logo-image {
+        width: 10px; /* 원하는 이미지 폭 */
+        height: 10px; /* 원하는 이미지 높이 */
+    }
+
+    .bold-text {
+        font-weight: bold;
+    }
+  
+}
 
 
  </style>

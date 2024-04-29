@@ -87,14 +87,18 @@ export default {
   mounted(){
     // window.addEventListener('wheel', this.handleScroll);
     window.addEventListener('scroll', this.handleScroll, true);
+
+    // setInterval(this.getChatters(), 5000);
   },
   created(){
     this.userNo = sessionStorage.getItem("userNoSession");
     // this.userNo = '66f21fb2b35c'; // 임시
     this.projectNo = sessionStorage.getItem("projectNoSession");
     this.getTripUserInfo();
+    // this.connect();
     
   },
+
   data() {
     return {
       showChat: false,
@@ -119,8 +123,21 @@ export default {
     };
   },
   methods: {
+
+    // handleWebSocketClose(event) {
+    //   // WebSocket이 닫힐 때 수행할 작업을 여기에 작성
+    //   console.log('WebSocket이 닫혔습니다.', event);
+    //   this.getChatters();
+    //   // 예를 들어, 재연결을 시도할 수 있습니다.
+    //   // this.reconnectWebSocket();
+    // },
+
+
     connect(){
       this.websocket = new WebSocket(this.address);
+
+      // WebSocket 연결이 닫힐 때의 이벤트 핸들러
+
 
       if(!this.chatEnterFlag){  // 첫 입장
         this.websocket.onopen=()=>{
@@ -130,6 +147,17 @@ export default {
         }
       }
 
+      this.websocket.onclose=(event)=>{
+        // WebSocket이 닫힐 때 수행할 작업을 여기에 작성
+        console.log('WebSocket이 닫혔습니다.', event);
+        this.getChatters();
+        // 예를 들어, 재연결을 시도할 수 있습니다.
+        // this.reconnectWebSocket();
+      }
+
+      
+
+  
       this.websocket.onmessage = (event)=>{
           console.log('take a message');
           console.log("onmessage", event.data);
@@ -147,7 +175,7 @@ export default {
               systemMessage: message.systemMessage,
             });
 
-            // 현재 채팅자 목록 get
+            // 현재 채팅자 목록 get (정상적으로 enter/exit 시)
             if(message.flag=="enter" || message.flag=="exit"){
               this.getChatters();
             }

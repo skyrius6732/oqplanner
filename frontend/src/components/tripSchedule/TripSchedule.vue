@@ -98,8 +98,6 @@
         :headers="tableHeaders"
         :items="selectedScheduleDetails"
         :items-per-page="60"
-        height="800px"
-        mobile-breakpoint="1000px"
         >
         <template v-slot:body="{ items }">
             <tr v-for="(schedule, index) in items" :key="index" class="tr-style">
@@ -239,7 +237,9 @@
       width="auto"
     >
       <v-card>
-        <v-card-title class="text-h5">
+        <v-card-title :class="{'text-h5': this.mobileFlag === false,
+        'mobile-font': this.mobileFlag === true}"
+        >
           이전 데이터를 보시겠습니까?
         </v-card-title>
         <v-card-text>지금까지 수정 하신 데이터가 저장되지 않습니다.</v-card-text>
@@ -328,6 +328,7 @@ export default {
     // VDataTableVirtual,
     TripScheduleModal,
   },
+
   created() {
 
     this.tripProjectNo = sessionStorage.getItem("projectNoSession");
@@ -340,7 +341,7 @@ export default {
     // 추후에 지워야함
     // if(sessionStorage.getItem("projectNoSession")){
     //   console.log('강제로 넣어줌 안타?');
-    //   this.tripProjectNo = "64c9505cf55f";
+    //   this.tripProjectNo = "9210e148da87";
     // }else{
     //   console.log('강제로 넣어줌 안타?2222222');
     //   this.tripProjectNo = sessionStorage.getItem("projectNoSession")
@@ -984,6 +985,11 @@ export default {
   height: 150px;
 }
 
+.mobile-font{
+  font-size: 16px;
+  font-weight: bold;
+}
+
 /** 모바일, pc */
 /* Styles for mobile devices (adjust font sizes and paddings as needed) */
   @media (max-width: 768px) {
@@ -1003,11 +1009,29 @@ export default {
     .spot-button-style{
       padding: 0px
     }
-    .v-data-table td {
-      /* transform: rotate(0deg); */
-      width:300px;
-    }
+
+    .v-data-table .v-data-table__wrapper {
+    overflow-x: auto;
   }
+
+  .v-data-table th,
+  .v-data-table td {
+    white-space: nowrap; /* 셀 내용이 줄 바꿈되지 않도록 설정 */
+    width: auto !important; /* 셀 너비를 자동으로 조정하여 가독성을 향상시킵니다. */
+  }
+
+  .v-data-table td v-select,
+.v-data-table td v-text-field {
+  width: 100%; /* 셀 너비에 맞게 입력 상자와 버튼의 너비를 조정합니다. */
+}
+
+.spot-button-style{
+   margin-left: -10px;
+   margin-top: 12px;
+}
+
+    
+}
 
 /* .plus-button-card{
   height: 360px;
