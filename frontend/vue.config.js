@@ -33,6 +33,11 @@ module.exports = defineConfig({
     historyApiFallback: true,
   },
 
+  server: {
+    // proxy: 'http://localhost/oqplanner',
+    historyApiFallback: true,
+  },
+
   pluginOptions: {
     vuetify: {
 			// https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vuetify-loader
