@@ -29,7 +29,8 @@ module.exports = defineConfig({
   // },
 
   devServer: {
-    proxy: 'http://localhost/oqplanner',
+    // proxy: 'http://localhost/oqplanner',
+    historyApiFallback: true,
   },
 
   pluginOptions: {
